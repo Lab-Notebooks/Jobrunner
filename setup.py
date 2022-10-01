@@ -5,7 +5,7 @@ import re
 from setuptools import setup, find_packages
 
 # get long description from README.rst
-with open("README.md", mode="r") as readme:
+with open("README.rst", mode="r") as readme:
     long_description = readme.read()
 
 # get package metadata by parsing __meta__ module
