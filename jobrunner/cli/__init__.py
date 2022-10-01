@@ -1,1 +1,1 @@
-from .jobrunner import jobrunner
+from ._jobrunner import jobrunner

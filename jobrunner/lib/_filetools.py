@@ -2,73 +2,7 @@
 import os
 import subprocess
 
-# Feature libraries
-import toml
-import click
-
-
-@click.group(name="jobrunner")
-def jobrunner():
-    """
-    CLI for managing simulations jobs
-    """
-    pass
-
-
-@jobrunner.command(name="submit")
-@click.argument("workdir", default=None, type=str)
-def submit(workdir):
-    """
-    Command to submit a job from a working directory
-    """
-    # Read TOML file and replace
-    job = toml.load("job.toml")
-    jobscript = "job.sh"
-
-    # Get current directory
-    os.chdir(workdir)
-    workdir = os.getcwd()
-
-    # Build inputfile
-    print(f'Creating input file: {workdir + "/" + job["inputfile"]}')
-
-    return_code = _createInputFile(job, workdir)
-    if return_code != 0:
-        raise ValueError()
-
-    # Build jobfile
-    print(f'Creating job file: {workdir + "/" + jobscript}')
-
-    return_code = _createJobFile(job, jobscript, workdir)
-    if return_code != 0:
-        raise ValueError()
-
-    # Submit job
-    print("Submitting job")
-
-    subprocess.run(f'{job["schedular"]} {jobscript}', shell=True, check=True)
-
-
-@jobrunner.command(name="clean")
-@click.argument("workdir", default=None, type=str, nargs=-1)
-def clean(workdir):
-    """
-    Command to clean artifacts from working directory
-    """
-    job = toml.load("job.toml")
-    jobscript = "job.sh"
-
-    # run cleanup
-    for dir_ in workdir:
-        job["name"] = dir_.split("/")[-1] + ".sh"
-        process = subprocess.run(
-            f'rm -vf {dir_ + "/" + job["inputfile"]} {dir_ + "/" + jobscript}',
-            shell=True,
-            check=True,
-        )
-
-
-def _createInputFile(job, workdir):
+def createInputFile(job, workdir):
     """
     create an input file for a given simulation recursively using
     `job.input` between `basedir` and `workdir`
@@ -89,7 +23,7 @@ def _createInputFile(job, workdir):
     return process.returncode
 
 
-def _createJobFile(job, jobscript, workdir):
+def createJobFile(job, jobscript, workdir):
     """
     create `jobrunner.sh` for a given simulation recursively using
     `inputfile` between `basedir` and `workdir`
