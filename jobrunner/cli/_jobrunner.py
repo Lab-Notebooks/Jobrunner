@@ -8,6 +8,7 @@ import click
 
 from .. import lib
 
+
 @click.group(name="jobrunner")
 def jobrunner():
     """
@@ -22,48 +23,47 @@ def submit(workdir):
     """
     Command to submit a job from a working directory
     """
-    # Read TOML file and replace
-    job = toml.load("job.toml")
-    jobscript = "job.sh"
+    # Get base directory
+    basedir = os.getcwd()
 
-    # Get current directory
+    # chdir to working directory
     os.chdir(workdir)
     workdir = os.getcwd()
 
-    # Build inputfile
-    print(f'Creating input file: {workdir + "/" + job["inputfile"]}')
+    # Build `job` dictionary
+    print(f"Parsing job.toml")
+    job = lib.parseJobToml(basedir, workdir)
 
-    return_code = lib.createInputFile(job, workdir)
-    if return_code != 0:
-        raise ValueError()
+    # Build inputfile
+    print(f'Creating input file: {workdir + "/" + job["info"]["input"]}')
+    lib.createInputFile(job)
 
     # Build jobfile
-    print(f'Creating job file: {workdir + "/" + jobscript}')
-
-    return_code = lib.createJobFile(job, jobscript, workdir)
-    if return_code != 0:
-        raise ValueError()
+    print(f'Creating job file: {workdir + "/" + "job.sh"}')
+    lib.createJobFile(job)
 
     # Submit job
     print("Submitting job")
 
-    subprocess.run(f'{job["schedular"]} {jobscript}', shell=True, check=True)
+    subprocess.run(f'{job["info"]["schedular"]} job.sh', shell=True, check=True)
 
 
 @jobrunner.command(name="clean")
-@click.argument("workdir", default=None, type=str, nargs=-1)
-def clean(workdir):
+@click.argument("workdir_list", default=None, type=str, nargs=-1)
+def clean(workdir_list):
     """
     Command to clean artifacts from working directory
     """
-    job = toml.load("job.toml")
-    jobscript = "job.sh"
+    # Get base directory
+    basedir = os.getcwd()
 
     # run cleanup
-    for dir_ in workdir:
-        job["name"] = dir_.split("/")[-1] + ".sh"
+    for workdir in workdir_list:
+
+        job = lib.parseJobToml(basedir, workdir)
+
         process = subprocess.run(
-            f'rm -vf {dir_ + "/" + job["inputfile"]} {dir_ + "/" + jobscript}',
+            f'rm -vf {workdir + "/" + job["info"]["input"]} {workdir + "/" + "job.sh"}',
             shell=True,
             check=True,
         )

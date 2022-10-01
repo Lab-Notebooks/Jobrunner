@@ -2,52 +2,81 @@
 import os
 import subprocess
 
-def createInputFile(job, workdir):
+import toml
+
+
+def parseJobToml(basedir, workdir):
+    """
+    `basedir` : base directory
+    `workdir` : work directory
+    """
+    # Build a list of all toml files in the directory structure
+    jobtoml_list = _getFileList(basedir, workdir, "job.toml")
+
+    # Create an empty dictionary for job object
+    job = {
+        "info": {"schedular": "None", "input": "None"},
+        "config": {"commands": [], "schedular": []},
+    }
+
+    # Loop over individual files
+    for jobtoml in jobtoml_list:
+
+        # Load the toml file
+        jobdict = toml.load(jobtoml)
+
+        if "info" in jobdict:
+            job.update({"info": jobdict["info"]})
+
+        if "config" in jobdict:
+            for key, values in jobdict["config"].items():
+                job["config"][key].extend(values)
+
+    job["basedir"] = basedir
+    job["workdir"] = workdir
+
+    return job
+
+
+def createInputFile(job):
     """
     create an input file for a given simulation recursively using
-    `job.input` between `basedir` and `workdir`
+    `job.inf.input` between `basedir` and `workdir`
 
-    `job`     :  Job dictionary
-    `workdir` :  Current job directory
     """
     # get inputfile_list from internal method
-    inputfile_list = _getFileList(job["basedir"], workdir, "job.input")
+    inputfile_list = _getFileList(job["basedir"], job["workdir"], "job.input")
 
     # run a subprocess to build flash.par
     process = subprocess.run(
-        f'rm -f {job["inputfile"]} && cat {" ".join(inputfile_list)} > {job["inputfile"]}',
+        f'rm -f {job["info"]["input"]} && cat {" ".join(inputfile_list)} > {job["info"]["input"]}',
         shell=True,
         check=True,
     )
 
-    return process.returncode
 
-
-def createJobFile(job, jobscript, workdir):
+def createJobFile(job):
     """
-    create `jobrunner.sh` for a given simulation recursively using
-    `inputfile` between `basedir` and `workdir`
+    create `job.sh` for a given simulation recursively using configuration
+    `job` dictionary
 
     `job`       :  Job dictionary
-    `jobscript` : Job script file
-    `workdir`   :  Current job directory
     """
-    # get config_list and submit_list from internal method
-    config_list = _getFileList(job["basedir"], workdir, "job.config")
-    submit_list = _getFileList(job["basedir"], workdir, "job.submit")
-
     # set header for the submit script
-    with open(workdir + "/" + jobscript, "w") as jobfile:
+    with open(job["workdir"] + "/" + "job.sh", "w") as jobfile:
+
+        # write the header
         jobfile.write("#!/bin/bash\n\n")
 
-    # run the subprocess
-    process = subprocess.run(
-        f'cat {" ".join(submit_list)} {" ".join(config_list)} >> {jobscript}',
-        shell=True,
-        check=True,
-    )
+        # Add schedular commands
+        for entry in job["config"]["schedular"]:
+            jobfile.write(f"{entry}\n")
 
-    return process.returncode
+        # Add an extra space
+        jobfile.write("\n")
+
+        for entry in job["config"]["commands"]:
+            jobfile.write(f"{entry}\n")
 
 
 def _getFileList(basedir, workdir, filename):
