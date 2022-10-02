@@ -39,9 +39,10 @@ def parseJobToml(basedir, workdir):
 
                 # special case for `source` assign
                 # absolute path
-                if key == "source" and values:
+                if key in ["source", "scripts"] and values:
                     values = [jobtoml.replace("job.toml", value) for value in values]
 
+                # extend main dict
                 main_dict["config"][key].extend(values)
 
     # Add basedir and workdir to main_dict
@@ -52,11 +53,22 @@ def parseJobToml(basedir, workdir):
     return main_dict
 
 
+def runConfigScripts(main_dict):
+    """
+    run configuration scripts
+
+    `main_dict` : job dictionary
+    """
+    for script in main_dict["config"]["scripts"]:
+        subprocess.run(f"{script}", shell=True, check=True)
+
+
 def createInputFile(main_dict):
     """
     create an input file for a given simulation recursively using
     `job.input` between `basedir` and `workdir`
 
+    `main_dict` : job dictionary
     """
     # get inputfile_list from internal method
     inputfile_list = _getFileList(

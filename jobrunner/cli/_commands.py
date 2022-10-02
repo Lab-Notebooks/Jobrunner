@@ -28,6 +28,10 @@ def submit(workdir):
     main_dict = lib.parseJobToml(basedir, workdir)
 
     # Build inputfile
+    print(f"Running config scripts")
+    lib.runConfigScripts(main_dict)
+
+    # Build inputfile
     print(f'Creating input file: {workdir + "/" + main_dict["info"]["input"]}')
     lib.createInputFile(main_dict)
 
