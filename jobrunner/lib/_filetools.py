@@ -35,14 +35,14 @@ def parseJobToml(basedir, workdir):
         if "config" in job_dict:
 
             # looping over items
-            for key, value in job_dict["config"].items():
+            for key, values in job_dict["config"].items():
 
                 # special case for `source` assign
                 # absolute path
-                if key == "source" and value:
-                    value = jobtoml.replace("job.toml", value)
+                if key == "source" and values:
+                    values = [jobtoml.replace("job.toml", value) for value in values]
 
-                main_dict["config"][key].extend(value)
+                main_dict["config"][key].extend(values)
 
     # Add basedir and workdir to main_dict
     # for future use
