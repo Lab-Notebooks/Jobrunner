@@ -121,7 +121,7 @@ def _getFileList(basedir, workdir, filename):
 
     # Get a list of directory levels between `basedir` and `workdir`
     dir_levels = [
-        level for level in workdir.split("/") if level not in basedir.split("/")
+        "/" + level for level in workdir.split("/") if level not in basedir.split("/")
     ]
 
     # Create an empty file list
@@ -134,7 +134,7 @@ def _getFileList(basedir, workdir, filename):
     for level in [""] + dir_levels:
 
         # Set current level
-        current_level = current_level + "/" + level
+        current_level = current_level + level
 
         # set file path
         file_path = current_level + "/" + filename
