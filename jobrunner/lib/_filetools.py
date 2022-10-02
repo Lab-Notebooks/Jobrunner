@@ -14,68 +14,92 @@ def parseJobToml(basedir, workdir):
     jobtoml_list = _getFileList(basedir, workdir, "job.toml")
 
     # Create an empty dictionary for job object
-    job = {
+    main_dict = {
         "info": {"schedular": "None", "input": "None"},
-        "config": {"commands": [], "schedular": []},
+        "config": {"commands": [], "schedular": [], "source": [], "scripts": []},
     }
 
     # Loop over individual files
     for jobtoml in jobtoml_list:
 
         # Load the toml file
-        jobdict = toml.load(jobtoml)
+        job_dict = toml.load(jobtoml)
 
-        if "info" in jobdict:
-            job.update({"info": jobdict["info"]})
+        # parse `info` in job_dict
+        # and update main_dict
+        if "info" in job_dict:
+            main_dict.update({"info": job_dict["info"]})
 
-        if "config" in jobdict:
-            for key, values in jobdict["config"].items():
-                job["config"][key].extend(values)
+        # parse job config and loop
+        # over items
+        if "config" in job_dict:
 
-    job["basedir"] = basedir
-    job["workdir"] = workdir
+            # looping over items
+            for key, value in job_dict["config"].items():
 
-    return job
+                # special case for `source` assign
+                # absolute path
+                if key == "source" and value:
+                    value = jobtoml.replace("job.toml", value)
+
+                main_dict["config"][key].extend(value)
+
+    # Add basedir and workdir to main_dict
+    # for future use
+    main_dict["basedir"] = basedir
+    main_dict["workdir"] = workdir
+
+    return main_dict
 
 
-def createInputFile(job):
+def createInputFile(main_dict):
     """
     create an input file for a given simulation recursively using
-    `job.inf.input` between `basedir` and `workdir`
+    `job.input` between `basedir` and `workdir`
 
     """
     # get inputfile_list from internal method
-    inputfile_list = _getFileList(job["basedir"], job["workdir"], "job.input")
+    inputfile_list = _getFileList(
+        main_dict["basedir"], main_dict["workdir"], "job.input"
+    )
 
     # run a subprocess to build flash.par
     process = subprocess.run(
-        f'rm -f {job["info"]["input"]} && cat {" ".join(inputfile_list)} > {job["info"]["input"]}',
+        f'rm -f {main_dict["info"]["input"]} && cat {" ".join(inputfile_list)} > {main_dict["info"]["input"]}',
         shell=True,
         check=True,
     )
 
 
-def createJobFile(job):
+def createJobFile(main_dict):
     """
     create `job.sh` for a given simulation recursively using configuration
     `job` dictionary
 
-    `job`       :  Job dictionary
+    `main_dict`       :  Job dictionary
     """
     # set header for the submit script
-    with open(job["workdir"] + "/" + "job.sh", "w") as jobfile:
+    with open(main_dict["workdir"] + "/" + "job.sh", "w") as jobfile:
 
         # write the header
         jobfile.write("#!/bin/bash\n\n")
 
         # Add schedular commands
-        for entry in job["config"]["schedular"]:
+        for entry in main_dict["config"]["schedular"]:
             jobfile.write(f"{entry}\n")
 
         # Add an extra space
         jobfile.write("\n")
 
-        for entry in job["config"]["commands"]:
+        # Add commands to source scripts
+        for entry in main_dict["config"]["source"]:
+            jobfile.write(f"source {entry}\n")
+
+        # Add an extra space
+        jobfile.write("\n")
+
+        # Add bash commands
+        for entry in main_dict["config"]["commands"]:
             jobfile.write(f"{entry}\n")
 
 
