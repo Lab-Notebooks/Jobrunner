@@ -1,7 +1,7 @@
-Job runner for simulation workloads
-===================================
+Jobrunner
+=========
 
-`Jobrunner` is a minimal command line tool to manage and deploy computing jobs and organize your directories. Created because I cannot do anything without organizing it first.
+Jobrunner is a minimal command line tool to manage and deploy computing jobs and organize your directories. Created because I cannot do anything without organizing it first.
 
 Examples:
 
