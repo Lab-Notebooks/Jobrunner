@@ -1,7 +1,7 @@
 Job runner for simulation workloads
 ===================================
 
-Job runner is a minimal command line tool to manage and deploy computing jobs and organize your directories
+`Jobrunner` is a minimal command line tool to manage and deploy computing jobs and organize your directories. Created because I cannot do anything without organizing it first.
 
 Examples:
 
@@ -14,5 +14,5 @@ Install in development mode
 
 ::
 
-   cd myproject
+   cd jobrunner
    python3 setup.py develop --user
