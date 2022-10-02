@@ -1,6 +1,6 @@
 """Metadata for jobrunner""
 
-__pkgname__     = 'jobrunner'
+__pkgname__     = 'PyJobRunner'
 __version__     = '0.0.0'
 __authors__     = 'Akash Dhruv'
 __license__     = 'MIT License'
