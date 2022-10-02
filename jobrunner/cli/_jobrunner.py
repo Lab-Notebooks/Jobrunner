@@ -12,6 +12,6 @@ from .. import lib
 @click.group(name="jobrunner")
 def jobrunner():
     """
-    CLI for managing simulations jobs
+    CLI for organizing and managing computing jobs
     """
     pass
