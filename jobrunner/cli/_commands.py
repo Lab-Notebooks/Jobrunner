@@ -32,7 +32,7 @@ def submit(workdir):
     lib.runConfigScripts(main_dict)
 
     # Build inputfile
-    print(f'Creating input file: {workdir + "/" + main_dict["info"]["input"]}')
+    print(f'Creating input file: {workdir + "/" + main_dict["job"]["input"]}')
     lib.createInputFile(main_dict)
 
     # Build jobfile
@@ -42,7 +42,7 @@ def submit(workdir):
     # Submit job
     print("Submitting job")
 
-    subprocess.run(f'{main_dict["info"]["schedular"]} job.sh', shell=True, check=True)
+    subprocess.run(f'{main_dict["job"]["schedular"]} job.sh', shell=True, check=True)
 
 
 @jobrunner.command(name="clean")
@@ -60,7 +60,7 @@ def clean(workdir_list):
         main_dict = lib.parseJobToml(basedir, workdir)
 
         process = subprocess.run(
-            f'rm -vf {workdir + "/" + main_dict["info"]["input"]} {workdir + "/" + "job.sh"}',
+            f'rm -vf {workdir + "/" + main_dict["job"]["input"]} {workdir + "/" + "job.sh"}',
             shell=True,
             check=True,
         )

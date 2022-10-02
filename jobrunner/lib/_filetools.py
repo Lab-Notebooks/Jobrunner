@@ -15,7 +15,7 @@ def parseJobToml(basedir, workdir):
 
     # Create an empty dictionary for job object
     main_dict = {
-        "info": {"schedular": "None", "input": "None"},
+        "job": {"schedular": "None", "input": "None"},
         "config": {"commands": [], "schedular": [], "source": [], "scripts": []},
     }
 
@@ -25,10 +25,10 @@ def parseJobToml(basedir, workdir):
         # Load the toml file
         job_dict = toml.load(jobtoml)
 
-        # parse `info` in job_dict
+        # parse `job` in job_dict
         # and update main_dict
-        if "info" in job_dict:
-            main_dict.update({"info": job_dict["info"]})
+        if "job" in job_dict:
+            main_dict.update({"job": job_dict["job"]})
 
         # parse job config and loop
         # over items
@@ -77,7 +77,7 @@ def createInputFile(main_dict):
 
     # run a subprocess to build flash.par
     process = subprocess.run(
-        f'rm -f {main_dict["info"]["input"]} && cat {" ".join(inputfile_list)} > {main_dict["info"]["input"]}',
+        f'rm -f {main_dict["job"]["input"]} && cat {" ".join(inputfile_list)} > {main_dict["job"]["input"]}',
         shell=True,
         check=True,
     )
