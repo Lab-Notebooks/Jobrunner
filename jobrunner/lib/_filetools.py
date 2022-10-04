@@ -28,22 +28,27 @@ def parseJobToml(basedir, workdir):
         # parse `job` in job_dict
         # and update main_dict
         if "job" in job_dict:
-            main_dict.update({"job": job_dict["job"]})
+
+            # looping over items
+            for key, value in job_dict["job"].items():
+                main_dict["job"].update({key: value})
 
         # parse job config and loop
         # over items
         if "config" in job_dict:
 
             # looping over items
-            for key, values in job_dict["config"].items():
+            for key, value_list in job_dict["config"].items():
 
                 # special case for `source` assign
                 # absolute path
-                if key in ["source", "scripts"] and values:
-                    values = [jobtoml.replace("job.toml", value) for value in values]
+                if key in ["source", "scripts"] and value_list:
+                    value_list = [
+                        jobtoml.replace("job.toml", value) for value in value_list
+                    ]
 
                 # extend main dict
-                main_dict["config"][key].extend(values)
+                main_dict["config"][key].extend(value_list)
 
     # Add basedir and workdir to main_dict
     # for future use
