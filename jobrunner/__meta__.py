@@ -1,4 +1,4 @@
-"""Metadata for jobrunner""
+"""Metadata for jobrunner"""
 
 __pkgname__     = 'PyJobRunner'
 __version__     = '0.0.0'
