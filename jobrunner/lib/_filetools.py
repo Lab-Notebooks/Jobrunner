@@ -59,6 +59,9 @@ def ParseJobToml(basedir, workdir):
                 # extend main dict
                 main_dict["config"][key].extend(value_list)
 
+    # Reverse source list
+    main_dict["config"]["source"].reverse()
+
     # Add basedir and workdir to main_dict
     # for future use
     main_dict["basedir"] = basedir
