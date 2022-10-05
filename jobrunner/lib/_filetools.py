@@ -15,12 +15,15 @@ def ParseJobToml(basedir, workdir):
 
     # Create an empty dictionary for job object
     main_dict = {
-        "job": {"schedular": "None", "input": "None"},
+        "job": {
+            "schedular": "None",
+            "input": "None",
+        },
         "config": {
             "commands": [],
             "schedular": [],
             "source": [],
-            "build": [],
+            "scripts": [],
             "setup": [],
         },
     }
@@ -46,9 +49,9 @@ def ParseJobToml(basedir, workdir):
             # looping over items
             for key, value_list in job_dict["config"].items():
 
-                # special case for `source` assign
+                # special case for `source` and `scripts` assign
                 # absolute path
-                if key in ["source", "build", "setup"] and value_list:
+                if key in ["source", "scripts", "setup"] and value_list:
                     value_list = [
                         jobtoml.replace("job.toml", value) for value in value_list
                     ]
@@ -64,24 +67,28 @@ def ParseJobToml(basedir, workdir):
     return main_dict
 
 
-def RunBuildScripts(main_dict):
+def RunConfigScripts(main_dict):
     """
-    run build scripts
+    run scripts
 
     `main_dict` : job dictionary
     """
-    for script in main_dict["config"]["build"]:
+    for script in main_dict["config"]["scripts"]:
         subprocess.run(f"{script}", shell=True, check=True)
 
 
-def RunSetupScripts(main_dict):
+def RunSetupScripts(basedir, setup_list):
     """
     run setup scripts
 
-    `main_dict` : job dictionary
+    `basedir`  : base directory
+    `setup_list` : list of setup scripts
     """
-    for script in main_dict["config"]["setup"]:
+    for script in setup_list:
+        os.chdir(os.path.dirname(script))
         subprocess.run(f"{script}", shell=True, check=True)
+
+    os.chdir(basedir)
 
 
 def CreateInputFile(main_dict):

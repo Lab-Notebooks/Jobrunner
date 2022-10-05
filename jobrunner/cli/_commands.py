@@ -19,6 +19,8 @@ def setup(workdir_list):
     # Get base directory
     basedir = os.getcwd()
 
+    setup_list = []
+
     # loop over workdir_list
     for workdir in workdir_list:
 
@@ -29,13 +31,21 @@ def setup(workdir_list):
         print(f"Working directory: {workdir}")
 
         # Build `job` dictionary
-        print(f"Setting up job configuration")
+        print(f"Getting setup configuration")
         main_dict = lib.ParseJobToml(basedir, workdir)
-        # config scripts
-        lib.RunSetupScripts(main_dict)
+        setup_list.extend(main_dict["config"]["setup"])
 
         # Return to base directory
         os.chdir(basedir)
+
+    print(f"-------------------------------------------------------------")
+
+    # Remove duplicates and sort setup_list
+    setup_list = [*set(setup_list)]
+    setup_list.sort(key=len)
+
+    print(f"Running setup scripts")
+    lib.RunSetupScripts(basedir, setup_list)
 
 
 @jobrunner.command(name="submit")
@@ -57,10 +67,10 @@ def submit(workdir_list):
         print(f"Working directory: {workdir}")
 
         # Build `job` dictionary
-        print(f"Parsing and build job configuration")
+        print(f"Parsing and building job configuration")
         main_dict = lib.ParseJobToml(basedir, workdir)
         # config scripts
-        lib.RunBuildScripts(main_dict)
+        lib.RunConfigScripts(main_dict)
 
         # Build inputfile
         print(f'Creating job input file: {main_dict["job"]["input"]}')
