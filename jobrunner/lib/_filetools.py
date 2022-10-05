@@ -16,7 +16,13 @@ def ParseJobToml(basedir, workdir):
     # Create an empty dictionary for job object
     main_dict = {
         "job": {"schedular": "None", "input": "None"},
-        "config": {"commands": [], "schedular": [], "source": [], "scripts": []},
+        "config": {
+            "commands": [],
+            "schedular": [],
+            "source": [],
+            "build": [],
+            "setup": [],
+        },
     }
 
     # Loop over individual files
@@ -42,7 +48,7 @@ def ParseJobToml(basedir, workdir):
 
                 # special case for `source` assign
                 # absolute path
-                if key in ["source", "scripts"] and value_list:
+                if key in ["source", "build", "setup"] and value_list:
                     value_list = [
                         jobtoml.replace("job.toml", value) for value in value_list
                     ]
@@ -58,13 +64,23 @@ def ParseJobToml(basedir, workdir):
     return main_dict
 
 
-def RunConfigScripts(main_dict):
+def RunBuildScripts(main_dict):
     """
-    run configuration scripts
+    run build scripts
 
     `main_dict` : job dictionary
     """
-    for script in main_dict["config"]["scripts"]:
+    for script in main_dict["config"]["build"]:
+        subprocess.run(f"{script}", shell=True, check=True)
+
+
+def RunSetupScripts(main_dict):
+    """
+    run setup scripts
+
+    `main_dict` : job dictionary
+    """
+    for script in main_dict["config"]["setup"]:
         subprocess.run(f"{script}", shell=True, check=True)
 
 

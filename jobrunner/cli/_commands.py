@@ -10,6 +10,34 @@ from . import jobrunner
 from .. import lib
 
 
+@jobrunner.command(name="setup")
+@click.argument("workdir_list", default=None, nargs=-1, type=str)
+def setup(workdir_list):
+    """
+    Command to setup a job in working directory
+    """
+    # Get base directory
+    basedir = os.getcwd()
+
+    # loop over workdir_list
+    for workdir in workdir_list:
+
+        # chdir to working directory
+        print(f"-------------------------------------------------------------")
+        os.chdir(workdir)
+        workdir = os.getcwd()
+        print(f"Working directory: {workdir}")
+
+        # Build `job` dictionary
+        print(f"Setting up job configuration")
+        main_dict = lib.ParseJobToml(basedir, workdir)
+        # config scripts
+        lib.RunSetupScripts(main_dict)
+
+        # Return to base directory
+        os.chdir(basedir)
+
+
 @jobrunner.command(name="submit")
 @click.argument("workdir_list", default=None, nargs=-1, type=str)
 def submit(workdir_list):
@@ -29,10 +57,10 @@ def submit(workdir_list):
         print(f"Working directory: {workdir}")
 
         # Build `job` dictionary
-        print(f"Parsing job configuration and running config scripts")
+        print(f"Parsing and build job configuration")
         main_dict = lib.ParseJobToml(basedir, workdir)
         # config scripts
-        lib.RunConfigScripts(main_dict)
+        lib.RunBuildScripts(main_dict)
 
         # Build inputfile
         print(f'Creating job input file: {main_dict["job"]["input"]}')
