@@ -11,42 +11,49 @@ from .. import lib
 
 
 @jobrunner.command(name="submit")
-@click.argument("workdir", default=None, type=str)
-def submit(workdir):
+@click.argument("workdir_list", default=None, nargs=-1, type=str)
+def submit(workdir_list):
     """
     Command to submit a job from a working directory
     """
     # Get base directory
     basedir = os.getcwd()
 
-    # chdir to working directory
-    os.chdir(workdir)
-    workdir = os.getcwd()
+    # loop over workdir_list
+    for workdir in workdir_list:
 
-    # Build `job` dictionary
-    print(f"Parsing job.toml")
-    main_dict = lib.parseJobToml(basedir, workdir)
+        # chdir to working directory
+        print(f"-------------------------------------------------------------")
+        os.chdir(workdir)
+        workdir = os.getcwd()
+        print(f"Working directory: {workdir}")
 
-    # Build inputfile
-    print(f"Running config scripts")
-    lib.runConfigScripts(main_dict)
+        # Build `job` dictionary
+        print(f"Parsing job configuration and running config scripts")
+        main_dict = lib.ParseJobToml(basedir, workdir)
+        # config scripts
+        lib.RunConfigScripts(main_dict)
 
-    # Build inputfile
-    print(f'Creating input file: {workdir + "/" + main_dict["job"]["input"]}')
-    lib.createInputFile(main_dict)
+        # Build inputfile
+        print(f'Creating job input file: {main_dict["job"]["input"]}')
+        lib.CreateInputFile(main_dict)
 
-    # Build jobfile
-    print(f'Creating job file: {workdir + "/" + "job.sh"}')
-    lib.createJobFile(main_dict)
+        # Build jobfile
+        print(f"Creating job file: job.sh")
+        lib.CreateJobFile(main_dict)
 
-    # Submit job
-    print("Submitting job")
+        # Submit job
+        print(f"Submitting job")
+        subprocess.run(
+            f'{main_dict["job"]["schedular"]} job.sh', shell=True, check=True
+        )
 
-    subprocess.run(f'{main_dict["job"]["schedular"]} job.sh', shell=True, check=True)
+        # Return to base directory
+        os.chdir(basedir)
 
 
 @jobrunner.command(name="clean")
-@click.argument("workdir_list", default=None, type=str, nargs=-1)
+@click.argument("workdir_list", default=None, nargs=-1, type=str)
 def clean(workdir_list):
     """
     Command to clean artifacts from working directory
@@ -57,7 +64,7 @@ def clean(workdir_list):
     # run cleanup
     for workdir in workdir_list:
 
-        main_dict = lib.parseJobToml(basedir, workdir)
+        main_dict = lib.ParseJobToml(basedir, workdir)
 
         process = subprocess.run(
             f'rm -vf {workdir + "/" + main_dict["job"]["input"]} {workdir + "/" + "job.sh"}',

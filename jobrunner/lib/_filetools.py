@@ -5,13 +5,13 @@ import subprocess
 import toml
 
 
-def parseJobToml(basedir, workdir):
+def ParseJobToml(basedir, workdir):
     """
     `basedir` : base directory
     `workdir` : work directory
     """
     # Build a list of all toml files in the directory structure
-    jobtoml_list = _getFileList(basedir, workdir, "job.toml")
+    jobtoml_list = GetFileList(basedir, workdir, "job.toml")
 
     # Create an empty dictionary for job object
     main_dict = {
@@ -58,7 +58,7 @@ def parseJobToml(basedir, workdir):
     return main_dict
 
 
-def runConfigScripts(main_dict):
+def RunConfigScripts(main_dict):
     """
     run configuration scripts
 
@@ -68,7 +68,7 @@ def runConfigScripts(main_dict):
         subprocess.run(f"{script}", shell=True, check=True)
 
 
-def createInputFile(main_dict):
+def CreateInputFile(main_dict):
     """
     create an input file for a given simulation recursively using
     `job.input` between `basedir` and `workdir`
@@ -76,7 +76,7 @@ def createInputFile(main_dict):
     `main_dict` : job dictionary
     """
     # get inputfile_list from internal method
-    inputfile_list = _getFileList(
+    inputfile_list = GetFileList(
         main_dict["basedir"], main_dict["workdir"], "job.input"
     )
 
@@ -88,7 +88,7 @@ def createInputFile(main_dict):
     )
 
 
-def createJobFile(main_dict):
+def CreateJobFile(main_dict):
     """
     create `job.sh` for a given simulation recursively using configuration
     `job` dictionary
@@ -120,7 +120,7 @@ def createJobFile(main_dict):
             jobfile.write(f"{entry}\n")
 
 
-def _getFileList(basedir, workdir, filename):
+def GetFileList(basedir, workdir, filename):
     """
     Get a list of paths containing a file with name
     `filename` between `basedir` and `workdir`
