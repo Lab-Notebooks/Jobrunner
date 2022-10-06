@@ -1,6 +1,0 @@
-[submodule "examples/channel-flow"]
-	path = examples/channel-flow
-	url = git@github.com:akashdhruv/channel-flow-container.git
-[submodule "examples/nucleate-boiling"]
-	path = examples/nucleate-boiling
-	url = git@github.com:akashdhruv/nucleate-boiling.git
