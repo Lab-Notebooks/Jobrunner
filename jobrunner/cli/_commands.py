@@ -19,8 +19,6 @@ def setup(workdir_list):
     # Get base directory
     basedir = os.getcwd()
 
-    setup_list = []
-
     # loop over workdir_list
     for workdir in workdir_list:
 
@@ -31,21 +29,26 @@ def setup(workdir_list):
         print(f"Working directory: {workdir}")
 
         # Build `job` dictionary
-        print(f"Getting setup configuration")
+        print(f"Parsing job configuration")
         main_dict = lib.ParseJobToml(basedir, workdir)
-        setup_list.extend(main_dict["config"]["setup"])
+
+        # Build setupfile
+        print(f"Creating setup file: setup.job")
+        lib.CreateSetupFile(main_dict)
+
+        # Run setup
+        print(f"Running setup")
+        subprocess.run(f"bash setup.job", shell=True, check=True)
 
         # Return to base directory
         os.chdir(basedir)
 
     print(f"-------------------------------------------------------------")
 
+    # TODO: Saving this useful piece of code
     # Remove duplicates and sort setup_list
-    setup_list = [*set(setup_list)]
-    setup_list.sort(key=len)
-
-    print(f"Running setup scripts")
-    lib.RunSetupScripts(basedir, setup_list)
+    # setup_list = [*set(setup_list)]
+    # setup_list.sort(key=len)
 
 
 @jobrunner.command(name="submit")
@@ -67,23 +70,21 @@ def submit(workdir_list):
         print(f"Working directory: {workdir}")
 
         # Build `job` dictionary
-        print(f"Parsing and building job configuration")
+        print(f"Parsing job configuration")
         main_dict = lib.ParseJobToml(basedir, workdir)
-        # config scripts
-        lib.RunConfigScripts(main_dict)
 
         # Build inputfile
         print(f'Creating job input file: {main_dict["job"]["input"]}')
         lib.CreateInputFile(main_dict)
 
         # Build jobfile
-        print(f"Creating job file: job.sh")
+        print(f"Creating job file: run.job")
         lib.CreateJobFile(main_dict)
 
         # Submit job
         print(f"Submitting job")
         subprocess.run(
-            f'{main_dict["job"]["schedular"]} job.sh', shell=True, check=True
+            f'{main_dict["job"]["schedular"]} run.job', shell=True, check=True
         )
 
         # Return to base directory
@@ -105,7 +106,11 @@ def clean(workdir_list):
         main_dict = lib.ParseJobToml(basedir, workdir)
 
         process = subprocess.run(
-            f'rm -vf {workdir + "/" + main_dict["job"]["input"]} {workdir + "/" + "job.sh"}',
+            f'rm -vf {workdir + "/" + main_dict["job"]["input"]}'
+            + " "
+            + f'{workdir + "/" + "run.job"}'
+            + " "
+            + f'{workdir + "/" + "setup.job"}',
             shell=True,
             check=True,
         )

@@ -20,10 +20,8 @@ def ParseJobToml(basedir, workdir):
             "input": "None",
         },
         "config": {
-            "commands": [],
             "schedular": [],
-            "source": [],
-            "scripts": [],
+            "run": [],
             "setup": [],
         },
     }
@@ -49,15 +47,15 @@ def ParseJobToml(basedir, workdir):
             # looping over items
             for key, value_list in job_dict["config"].items():
 
-                # special case for `source`, `scripts`,
+                # special case for `run`, `scripts`,
                 # and `setup', assign absolute path
-                if key in ["source", "scripts", "setup"] and value_list:
+                if key in ["run", "setup"] and value_list:
                     value_list = [
                         jobtoml.replace("job.toml", value) for value in value_list
                     ]
 
                 # Extend main dictionary in bottom-up order
-                main_dict["config"][key] = value_list + main_dict["config"][key]
+                main_dict["config"][key].extend(value_list)
 
     # Add basedir and workdir to main_dict
     # for future use
@@ -67,28 +65,29 @@ def ParseJobToml(basedir, workdir):
     return main_dict
 
 
-def RunConfigScripts(main_dict):
+def CreateSetupFile(main_dict):
     """
-    run scripts
+    create a setup script
 
     `main_dict` : job dictionary
     """
-    for script in main_dict["config"]["scripts"]:
-        subprocess.run(f"{script}", shell=True, check=True)
+    # set header for the setup script
+    with open(main_dict["workdir"] + "/" + "setup.job", "w") as setupfile:
 
+        # write the header
+        setupfile.write("#!/bin/bash\n")
 
-def RunSetupScripts(basedir, setup_list):
-    """
-    run setup scripts
+        # set environment variable
+        # to working directory
+        setupfile.write(f'\n\nexport JOB_WORKDIR="{main_dict["workdir"]}"')
 
-    `basedir`  : base directory
-    `setup_list` : list of setup scripts
-    """
-    for script in setup_list:
-        os.chdir(os.path.dirname(script))
-        subprocess.run(f"{script}", shell=True, check=True)
+        # add commands to source run scripts
+        for entry in main_dict["config"]["setup"]:
+            setupfile.write(f'\n\nexport JOB_FILEDIR="{os.path.dirname(entry)}"')
+            setupfile.write(f"\nsource {entry}")
 
-    os.chdir(basedir)
+        # Add an extra space
+        setupfile.write("\n")
 
 
 def CreateInputFile(main_dict):
@@ -105,7 +104,9 @@ def CreateInputFile(main_dict):
 
     # run a subprocess to build flash.par
     process = subprocess.run(
-        f'rm -f {main_dict["job"]["input"]} && cat {" ".join(inputfile_list)} > {main_dict["job"]["input"]}',
+        f'rm -f {main_dict["job"]["input"]} &&'
+        + " "
+        + f'cat {" ".join(inputfile_list)} > {main_dict["job"]["input"]}',
         shell=True,
         check=True,
     )
@@ -113,34 +114,40 @@ def CreateInputFile(main_dict):
 
 def CreateJobFile(main_dict):
     """
-    create `job.sh` for a given simulation recursively using configuration
+    create `job.run` for a given simulation recursively using configuration
     `job` dictionary
 
     `main_dict`       :  Job dictionary
     """
     # set header for the submit script
-    with open(main_dict["workdir"] + "/" + "job.sh", "w") as jobfile:
+    with open(main_dict["workdir"] + "/" + "run.job", "w") as jobfile:
 
         # write the header
-        jobfile.write("#!/bin/bash\n\n")
+        jobfile.write("#!/bin/bash\n")
 
-        # Add schedular commands
+        # add schedular commands
         for entry in main_dict["config"]["schedular"]:
-            jobfile.write(f"{entry}\n")
+            jobfile.write(f"\n{entry}")
 
-        # Add an extra space
+        # set environment variable
+        # to working directory
+        jobfile.write(f'\n\nexport JOB_WORKDIR="{main_dict["workdir"]}"')
+
+        # add commands to source run scripts
+        for entry in main_dict["config"]["run"]:
+            jobfile.write(f'\n\nexport JOB_FILEDIR="{os.path.dirname(entry)}"')
+            jobfile.write(f"\nsource {entry}")
+
+        # Set path to job.sh script
+        job_exec = main_dict["basedir"] + "/job.sh"
+
+        if os.path.exists(job_exec):
+            jobfile.write(f"\n\nsource {job_exec}")
+        else:
+            raise ValueError("[jobrunner] `job.sh` not present in base directory")
+
+        # add an extra space
         jobfile.write("\n")
-
-        # Add commands to source scripts
-        for entry in main_dict["config"]["source"]:
-            jobfile.write(f"source {entry}\n")
-
-        # Add an extra space
-        jobfile.write("\n")
-
-        # Add bash commands
-        for entry in main_dict["config"]["commands"]:
-            jobfile.write(f"{entry}\n")
 
 
 def GetFileList(basedir, workdir, filename):
@@ -159,12 +166,14 @@ def GetFileList(basedir, workdir, filename):
     file_list :   A list of path containing the file
     """
 
-    # Get a list of directory levels between `basedir` and `workdir`
+    # get a list of directory levels
+    # between `basedir` and `workdir`
     dir_levels = [
         "/" + level for level in workdir.split("/") if level not in basedir.split("/")
     ]
 
-    # Create an empty file list
+    # create an empty
+    # file list
     file_list = []
 
     # start with current level
