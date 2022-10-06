@@ -23,7 +23,7 @@ with open("jobrunner/__meta__.py", mode="r") as source:
     }
 
 # core dependancies
-DEPENDENCIES = ["numpy"]
+DEPENDENCIES = []
 
 setup(
     name=metadata["__pkgname__"],
