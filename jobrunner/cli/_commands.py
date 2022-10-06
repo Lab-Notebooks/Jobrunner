@@ -105,12 +105,21 @@ def clean(workdir_list):
 
         main_dict = lib.ParseJobToml(basedir, workdir)
 
+        if main_dict["job"]["input"]:
+            process = subprocess.run(
+                f'rm -vf {workdir + "/" + main_dict["job"]["input"]}',
+                shell=True,
+                check=True,
+            )
+
         process = subprocess.run(
-            f'rm -vf {workdir + "/" + main_dict["job"]["input"]}'
-            + " "
-            + f'{workdir + "/" + "run.job"}'
-            + " "
-            + f'{workdir + "/" + "setup.job"}',
+            f'rm -vf {workdir + "/" + "run.job"}',
+            shell=True,
+            check=True,
+        )
+
+        process = subprocess.run(
+            f'rm -vf {workdir + "/" + "setup.job"}',
             shell=True,
             check=True,
         )

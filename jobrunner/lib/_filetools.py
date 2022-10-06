@@ -16,8 +16,9 @@ def ParseJobToml(basedir, workdir):
     # Create an empty dictionary for job object
     main_dict = {
         "job": {
-            "schedular": "None",
-            "input": "None",
+            "schedular": None,
+            "input": None,
+            "exec": None,
         },
         "config": {
             "schedular": [],
@@ -39,6 +40,13 @@ def ParseJobToml(basedir, workdir):
             # looping over items
             for key, value in job_dict["job"].items():
                 main_dict["job"].update({key: value})
+
+        # set path to job.sh script
+        job_sh = jobtoml.replace("job.toml", "job.sh")
+
+        # update dictionary if job_sh in path
+        if os.path.exists(job_sh):
+            main_dict["job"].update({"exec": job_sh})
 
         # parse job config and loop
         # over items
@@ -138,13 +146,11 @@ def CreateJobFile(main_dict):
             jobfile.write(f'\n\nexport JOB_FILEDIR="{os.path.dirname(entry)}"')
             jobfile.write(f"\nsource {entry}")
 
-        # Set path to job.sh script
-        job_exec = main_dict["basedir"] + "/job.sh"
-
-        if os.path.exists(job_exec):
-            jobfile.write(f"\n\nsource {job_exec}")
+        # source `job.sh`
+        if main_dict["job"]["exec"]:
+            jobfile.write(f'\n\nsource {main_dict["job"]["exec"]}')
         else:
-            raise ValueError("[jobrunner] `job.sh` not present in base directory")
+            raise ValueError("[jobrunner] `job.sh` not present in path")
 
         # add an extra space
         jobfile.write("\n")
