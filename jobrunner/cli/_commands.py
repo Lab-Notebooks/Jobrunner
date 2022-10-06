@@ -33,12 +33,12 @@ def setup(workdir_list):
         main_dict = lib.ParseJobToml(basedir, workdir)
 
         # Build setupfile
-        print(f"Creating setup file: setup.job")
+        print(f"Creating setup file: job_setup.sh")
         lib.CreateSetupFile(main_dict)
 
         # Run setup
         print(f"Running setup")
-        subprocess.run(f"bash setup.job", shell=True, check=True)
+        subprocess.run(f"bash job_setup.sh", shell=True, check=True)
 
         # Return to base directory
         os.chdir(basedir)
@@ -78,13 +78,13 @@ def submit(workdir_list):
         lib.CreateInputFile(main_dict)
 
         # Build jobfile
-        print(f"Creating job file: run.job")
+        print(f"Creating job file: job_submit.sh")
         lib.CreateJobFile(main_dict)
 
         # Submit job
         print(f"Submitting job")
         subprocess.run(
-            f'{main_dict["job"]["schedular"]} run.job', shell=True, check=True
+            f'{main_dict["job"]["schedular"]} job_submit.sh', shell=True, check=True
         )
 
         # Return to base directory
@@ -113,13 +113,13 @@ def clean(workdir_list):
             )
 
         process = subprocess.run(
-            f'rm -vf {workdir + "/" + "run.job"}',
+            f'rm -vf {workdir + "/" + "job_submit.sh"}',
             shell=True,
             check=True,
         )
 
         process = subprocess.run(
-            f'rm -vf {workdir + "/" + "setup.job"}',
+            f'rm -vf {workdir + "/" + "job_setup.sh"}',
             shell=True,
             check=True,
         )

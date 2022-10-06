@@ -16,13 +16,13 @@ def ParseJobToml(basedir, workdir):
     # Create an empty dictionary for job object
     main_dict = {
         "job": {
-            "schedular": None,
-            "input": None,
-            "exec": None,
+            "schedular": "None",
+            "input": "None",
+            "exec": "None",
         },
         "config": {
             "schedular": [],
-            "run": [],
+            "submit": [],
             "setup": [],
         },
     }
@@ -57,7 +57,7 @@ def ParseJobToml(basedir, workdir):
 
                 # special case for `run`, `scripts`,
                 # and `setup', assign absolute path
-                if key in ["run", "setup"] and value_list:
+                if key in ["submit", "setup"] and value_list:
                     value_list = [
                         jobtoml.replace("job.toml", value) for value in value_list
                     ]
@@ -80,14 +80,14 @@ def CreateSetupFile(main_dict):
     `main_dict` : job dictionary
     """
     # set header for the setup script
-    with open(main_dict["workdir"] + "/" + "setup.job", "w") as setupfile:
+    with open(main_dict["workdir"] + "/" + "job_setup.sh", "w") as setupfile:
 
         # write the header
         setupfile.write("#!/bin/bash\n")
 
         # set environment variable
         # to working directory
-        setupfile.write(f'\n\nexport JOB_WORKDIR="{main_dict["workdir"]}"')
+        setupfile.write(f'\nexport JOB_WORKDIR="{main_dict["workdir"]}"')
 
         # add commands to source run scripts
         for entry in main_dict["config"]["setup"]:
@@ -128,7 +128,7 @@ def CreateJobFile(main_dict):
     `main_dict`       :  Job dictionary
     """
     # set header for the submit script
-    with open(main_dict["workdir"] + "/" + "run.job", "w") as jobfile:
+    with open(main_dict["workdir"] + "/" + "job_submit.sh", "w") as jobfile:
 
         # write the header
         jobfile.write("#!/bin/bash\n")
@@ -142,13 +142,16 @@ def CreateJobFile(main_dict):
         jobfile.write(f'\n\nexport JOB_WORKDIR="{main_dict["workdir"]}"')
 
         # add commands to source run scripts
-        for entry in main_dict["config"]["run"]:
+        for entry in main_dict["config"]["submit"]:
             jobfile.write(f'\n\nexport JOB_FILEDIR="{os.path.dirname(entry)}"')
             jobfile.write(f"\nsource {entry}")
 
         # source `job.sh`
-        if main_dict["job"]["exec"]:
-            jobfile.write(f'\n\nsource {main_dict["job"]["exec"]}')
+        if os.path.exists(main_dict["job"]["exec"]):
+            jobfile.write(
+                f'\n\nexport JOB_FILEDIR="{os.path.dirname(main_dict["job"]["exec"])}"'
+            )
+            jobfile.write(f'\nsource {main_dict["job"]["exec"]}')
         else:
             raise ValueError("[jobrunner] `job.sh` not present in path")
 
