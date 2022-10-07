@@ -3,15 +3,13 @@ import os
 import subprocess
 
 # Feature libraries
-import toml
 import click
-
-from .. import lib
 
 
 @click.group(name="jobrunner")
 def jobrunner():
     """
-    CLI for organizing and managing computing jobs
+    \b
+    Command line tool to organize and manage computing jobs.
     """
     pass

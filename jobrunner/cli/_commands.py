@@ -3,7 +3,6 @@ import os
 import subprocess
 
 # Feature libraries
-import toml
 import click
 
 from . import jobrunner
@@ -11,10 +10,24 @@ from .. import lib
 
 
 @jobrunner.command(name="setup")
-@click.argument("workdir_list", default=None, nargs=-1, type=str)
+@click.argument("workdir_list", required=True, nargs=-1, type=str)
 def setup(workdir_list):
     """
-    Command to setup a job in working directory
+    \b
+    Command to run setup scripts in a directory
+
+    \b
+    Jobfile(s) in a directory tree provide a list of
+    setup scripts which are composed into a job.setup
+    file and executed in the directories defined in
+    WORKDIR_LIST. A job.setup file is created as
+    a result of this command
+
+    \b
+    Environment variables
+    -------------------------------------------------
+    JOB_TARGET_HOME - Path to target working directory
+    JOB_FILE_HOME - Path to directory containing a file
     """
     # Get base directory
     basedir = os.getcwd()
@@ -33,12 +46,12 @@ def setup(workdir_list):
         main_dict = lib.ParseJobToml(basedir, workdir)
 
         # Build setupfile
-        print(f"Creating setup file: job_setup.sh")
+        print(f"Creating setup file: job.setup")
         lib.CreateSetupFile(main_dict)
 
         # Run setup
         print(f"Running setup")
-        subprocess.run(f"bash job_setup.sh", shell=True, check=True)
+        subprocess.run(f"bash job.setup", shell=True, check=True)
 
         # Return to base directory
         os.chdir(basedir)
@@ -52,10 +65,25 @@ def setup(workdir_list):
 
 
 @jobrunner.command(name="submit")
-@click.argument("workdir_list", default=None, nargs=-1, type=str)
+@click.argument("workdir_list", required=True, nargs=-1, type=str)
 def submit(workdir_list):
     """
-    Command to submit a job from a working directory
+    \b
+    Command to submit a job from a directory
+
+    \b
+    Jobfile(s) in a directory tree provide a list of
+    submit scripts which are composed into a job.submit
+    file and executed in the directories defined in
+    WORKDIR_LIST. A job.submit file is created as
+    a result of this command
+
+    \b
+    Environment variables
+    -------------------------------------------------
+    JOB_TARGET_HOME - Path to target working directory
+    JOB_FILE_HOME - Path to directory containing a file
+
     """
     # Get base directory
     basedir = os.getcwd()
@@ -74,17 +102,17 @@ def submit(workdir_list):
         main_dict = lib.ParseJobToml(basedir, workdir)
 
         # Build inputfile
-        print(f'Creating job input file: {main_dict["job"]["input"]}')
+        print(f'Creating input file: job.input, basedir: {main_dict["inputdir"]}')
         lib.CreateInputFile(main_dict)
 
         # Build jobfile
-        print(f"Creating job file: job_submit.sh")
-        lib.CreateJobFile(main_dict)
+        print(f"Creating submit file: job.submit")
+        lib.CreateSubmitFile(main_dict)
 
         # Submit job
         print(f"Submitting job")
         subprocess.run(
-            f'{main_dict["job"]["schedular"]} job_submit.sh', shell=True, check=True
+            f'{main_dict["schedular"]["command"]} job.submit', shell=True, check=True
         )
 
         # Return to base directory
@@ -92,10 +120,16 @@ def submit(workdir_list):
 
 
 @jobrunner.command(name="clean")
-@click.argument("workdir_list", default=None, nargs=-1, type=str)
+@click.argument("workdir_list", required=True, nargs=-1, type=str)
 def clean(workdir_list):
     """
-    Command to clean artifacts from working directory
+    \b
+    Command to clean artifacts in a directory
+
+    \b
+    This command removes job.input, job.setup, and
+    job.submit files in working directories provided
+    in WORKDIR_LIST
     """
     # Get base directory
     basedir = os.getcwd()
@@ -103,23 +137,20 @@ def clean(workdir_list):
     # run cleanup
     for workdir in workdir_list:
 
-        main_dict = lib.ParseJobToml(basedir, workdir)
-
-        if main_dict["job"]["input"]:
-            process = subprocess.run(
-                f'rm -vf {workdir + "/" + main_dict["job"]["input"]}',
-                shell=True,
-                check=True,
-            )
-
         process = subprocess.run(
-            f'rm -vf {workdir + "/" + "job_submit.sh"}',
+            f'rm -vf {workdir + "/" + "job.input"}',
             shell=True,
             check=True,
         )
 
         process = subprocess.run(
-            f'rm -vf {workdir + "/" + "job_setup.sh"}',
+            f'rm -vf {workdir + "/" + "job.submit"}',
+            shell=True,
+            check=True,
+        )
+
+        process = subprocess.run(
+            f'rm -vf {workdir + "/" + "job.setup"}',
             shell=True,
             check=True,
         )
