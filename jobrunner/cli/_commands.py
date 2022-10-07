@@ -102,7 +102,7 @@ def submit(workdir_list):
         main_dict = lib.ParseJobToml(basedir, workdir)
 
         # Build inputfile
-        print(f'Creating input file: job.input, basedir: {main_dict["inputdir"]}')
+        print(f"Creating input file: job.input")
         lib.CreateInputFile(main_dict)
 
         # Build jobfile

@@ -11,6 +11,10 @@ def ParseJobToml(basedir, workdir):
     basedir : base directory
     workdir : work directory
     """
+
+    if basedir not in workdir:
+        raise ValueError(f"[jobrunner] {workdir} not a sub-directory of {basedir}")
+
     # Build a list of all toml files in
     # a directory tree between basedir and workdir
     jobfile_list = GetFileList(basedir, workdir, "Jobfile")
@@ -72,7 +76,7 @@ def ParseJobToml(basedir, workdir):
                     # design requirements
                     if main_dict[key][subkey]:
                         raise ValueError(
-                            f"[jobrunner] {key}.{subkey} already defined in directory tree"
+                            f"[jobrunner] Found duplicates for {key}.{subkey} in directory tree"
                         )
                     else:
                         # set values if [key][subkey]
@@ -92,6 +96,32 @@ def ParseJobToml(basedir, workdir):
     # main_dict for future use
     main_dict["basedir"] = basedir
     main_dict["workdir"] = workdir
+
+    # perform checks to enforce desgin
+    # constraints for config.input and config.target
+    if main_dict["config"]["input"]:
+
+        # create a list of input files to perform checks
+        # along the directory tree
+        inputfile_list = GetFileList(
+            main_dict["basedir"], main_dict["workdir"], main_dict["config"]["input"]
+        )
+
+        targetfile = main_dict["config"]["target"]
+
+        # loop over input files and start comparing length of directories
+        for inputfile in inputfile_list:
+            if len(os.path.dirname(inputfile)) < len(main_dict["inputdir"]):
+                raise ValueError(
+                    f"[jobrunner] config.input: {inputfile} should not exist before it is defined in Jobfile"
+                )
+
+            if targetfile and len(os.path.dirname(targetfile)) < len(
+                main_dict["inputdir"]
+            ):
+                raise ValueError(
+                    f"[jobrunner] config.target: {targetfile} should not exist before config.input is defined in Jobfile"
+                )
 
     return main_dict
 

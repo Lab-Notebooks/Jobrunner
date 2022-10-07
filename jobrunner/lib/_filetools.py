@@ -15,6 +15,7 @@ def CreateSetupFile(main_dict):
 
     `main_dict` : job dictionary
     """
+
     # set header for the setup script
     with open(main_dict["workdir"] + os.sep + "job.setup", "w") as setupfile:
 
@@ -41,17 +42,19 @@ def CreateInputFile(main_dict):
 
     `main_dict` : job dictionary
     """
-    # get inputfile_list from internal method
-    inputfile_list = GetFileList(
-        main_dict["inputdir"], main_dict["workdir"], main_dict["config"]["input"]
-    )
+    if main_dict["config"]["input"]:
 
-    # run a subprocess to build flash.par
-    process = subprocess.run(
-        f"rm -f job.input &&" + " " + f'cat {" ".join(inputfile_list)} > job.input',
-        shell=True,
-        check=True,
-    )
+        # get inputfile_list from internal method
+        inputfile_list = GetFileList(
+            main_dict["basedir"], main_dict["workdir"], main_dict["config"]["input"]
+        )
+
+        # run a subprocess to build flash.par
+        process = subprocess.run(
+            f"rm -f job.input &&" + " " + f'cat {" ".join(inputfile_list)} > job.input',
+            shell=True,
+            check=True,
+        )
 
 
 def CreateSubmitFile(main_dict):
