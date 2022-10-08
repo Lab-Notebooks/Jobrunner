@@ -75,7 +75,7 @@ def ParseJobToml(basedir, workdir):
                     for value in work_obj:
                         archive_obj.extend(glob.glob(value))
 
-                    work_obj = archive_obj
+                    work_obj = [*set(archive_obj)]
 
                 # test combination of values
                 # here to handle exceptions

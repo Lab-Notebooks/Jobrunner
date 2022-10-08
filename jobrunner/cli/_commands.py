@@ -62,11 +62,6 @@ def setup(workdir_list):
 
     print(f"-------------------------------------------------------------")
 
-    # TODO: Saving this useful piece of code
-    # Remove duplicates and sort setup_list
-    # setup_list = [*set(setup_list)]
-    # setup_list.sort(key=len)
-
 
 @jobrunner.command(name="submit")
 @click.argument("workdir_list", required=True, nargs=-1, type=str)
