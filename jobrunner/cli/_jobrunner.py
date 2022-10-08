@@ -1,15 +1,22 @@
 # Standard libraries
 import os
 import subprocess
+import pkg_resources
 
 # Feature libraries
 import click
 
 
-@click.group(name="jobrunner")
-def jobrunner():
+@click.group(name="jobrunner", invoke_without_command=True)
+@click.pass_context
+@click.option("--version", "-v", is_flag=True)
+def jobrunner(ctx, version):
     """
     \b
     Command line tool to organize and manage computing jobs.
     """
-    pass
+    if ctx.invoked_subcommand is None and not version:
+        subprocess.run("jobrunner --help", shell=True, check=True)
+
+    if version:
+        click.echo(pkg_resources.require("PyJobrunner")[0].version)
