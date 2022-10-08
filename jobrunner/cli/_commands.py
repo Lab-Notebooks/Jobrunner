@@ -15,6 +15,7 @@ def setup(workdir_list):
     """
     \b
     Run setup scripts in a directory
+    \b
 
     \b
     Jobfiles in a directory tree provide a list of
@@ -22,6 +23,7 @@ def setup(workdir_list):
     file and executed in the directories defined in
     WORKDIR_LIST. A job.setup file is created as
     a result of this command
+    \b
 
     \b
     Environment variables
@@ -32,6 +34,7 @@ def setup(workdir_list):
     JOB_TREEDIR - Path to local tree directory, can be used
                   to reference directory containing a bash
                   script
+    \b
     """
     # Get base directory
     basedir = os.getcwd()
@@ -69,6 +72,7 @@ def submit(workdir_list):
     """
     \b
     Submit a job from a directory
+    \b
 
     \b
     Jobfiles in a directory tree provide a list of
@@ -76,6 +80,7 @@ def submit(workdir_list):
     file and executed in the directories defined in
     WORKDIR_LIST. A job.submit file is created as
     a result of this command
+    \b
 
     \b
     Environment variables
@@ -86,6 +91,7 @@ def submit(workdir_list):
     JOB_TREEDIR - Path to local tree directory, can be used
                   to reference directory containing a bash
                   script
+    \b
     """
     # Get base directory
     basedir = os.getcwd()
@@ -127,11 +133,13 @@ def clean(workdir_list):
     """
     \b
     Remove artifacts from a directory
+    \b
 
     \b
     This command removes job.input, job.setup, and
     job.submit files in working directories provided
     in WORKDIR_LIST
+    \b
     """
     # Get base directory
     basedir = os.getcwd()
@@ -165,6 +173,7 @@ def archive(tag, workdir_list):
     """
     \b
     Create an archive along a directory tree
+    \b
     """
     # Get base directory
     basedir = os.getcwd()
