@@ -76,3 +76,6 @@ def CreateArchive(main_dict, archive_tag):
                 # and archive contents
                 for filename in archive_list:
                     shutil.move(filename, treedir + os.sep + archive_tag)
+
+    # return back to working directory
+    os.chdir(main_dict["workdir"])
