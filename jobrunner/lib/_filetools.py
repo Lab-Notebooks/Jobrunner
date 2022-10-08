@@ -1,35 +1,45 @@
 # Standard libraries
 import os
-import subprocess
-
-# Feature libraries
-import toml
 
 # local imports
-from . import GetFileList
+from . import GetTreeList
 
 
 def CreateSetupFile(main_dict):
     """
-    create a setup script
+    Create a job.setup file using the list of
+    config.setup scripts from main dictionary
 
-    `main_dict` : job dictionary
+    Arguments
+    ---------
+    main_dict : Dictionary containing details of the
+                job configuration in directory tree
     """
-
-    # set header for the setup script
+    # open job.setup in write mode this
+    # will replace existing job.setup
+    # in the working directory
     with open(main_dict["workdir"] + os.sep + "job.setup", "w") as setupfile:
 
-        # write the header
+        # write the header for bash script
         setupfile.write("#!/bin/bash\n")
 
-        # set environment variable
-        # to working directory
-        setupfile.write(f'\nexport JOB_TARGET_HOME="{main_dict["workdir"]}"')
+        # set environment variable for
+        # working directory
+        setupfile.write(f'\nexport JOB_WORKDIR="{main_dict["workdir"]}"')
 
-        # add commands to source run scripts
-        for entry in main_dict["config"]["setup"]:
-            setupfile.write(f'\n\nexport JOB_FILE_HOME="{os.path.dirname(entry)}"')
-            setupfile.write(f"\nsource {entry}")
+        # add commands from config.setup script
+        # and set environment variable for tree
+        # directory to the location of script
+        for sourcefile in main_dict["config"]["setup"]:
+            setupfile.write(
+                f'\n\nexport JOB_TREEDIR="{os.path.dirname(sourcefile)}"\n\n'
+            )
+
+            # open sourcefile in read mode
+            # and write lines to setup script
+            with open(sourcefile, "r") as entry:
+                for line in entry:
+                    setupfile.write(line)
 
         # Add an extra space
         setupfile.write("\n")
@@ -37,59 +47,104 @@ def CreateSetupFile(main_dict):
 
 def CreateInputFile(main_dict):
     """
-    create an input file for a given simulation recursively using
-    `job.input` between `basedir` and `workdir`
+    Create an input file for a given simulation
+    recursively using job.input between basedir
+    and workdir using config.input
 
-    `main_dict` : job dictionary
+    main_dict : Dictionary containing details of the
+                job configuration in directory tree
     """
+    # check to see if input file is
+    # defined in the main dictionary
     if main_dict["config"]["input"]:
 
-        # get inputfile_list from internal method
-        inputfile_list = GetFileList(
-            main_dict["basedir"], main_dict["workdir"], main_dict["config"]["input"]
+        # get a list of all config.input
+        # files in the directory tree
+        # between basedir and workdir
+        sourcefile_list = GetTreeList(
+            main_dict["basedir"],
+            main_dict["workdir"],
+            tree_object=main_dict["config"]["input"],
         )
 
-        # run a subprocess to build flash.par
-        process = subprocess.run(
-            f"rm -f job.input &&" + " " + f'cat {" ".join(inputfile_list)} > job.input',
-            shell=True,
-            check=True,
-        )
+        # open a job.input file in write mode
+        # and replace existing
+        with open(main_dict["workdir"] + os.sep + "job.input", "w") as inputfile:
+
+            # loop through the list of
+            # source file from config.input
+            for sourcefile in sourcefile_list:
+
+                # open sourcefile in read mode
+                # write entries to inputfile
+                with open(sourcefile, "r") as entry:
+                    for line in entry:
+                        inputfile.write(line)
+
+                # add two spaces for the next file
+                inputfile.write(f"\n\n")
 
 
 def CreateSubmitFile(main_dict):
     """
-    create `job.run` for a given simulation recursively using configuration
-    `job` dictionary
+    Create a job.submit for a given simulation
+    using values from config.submit
 
-    `main_dict`       :  Job dictionary
+    Arguments
+    ---------
+    main_dict : Dictionary containing details of the
+                job configuration in directory tree
     """
-    # set header for the submit script
-    with open(main_dict["workdir"] + os.sep + "job.submit", "w") as jobfile:
+    # open job.submit in write mode
+    # and start populating
+    with open(main_dict["workdir"] + os.sep + "job.submit", "w") as submitfile:
 
         # write the header
-        jobfile.write("#!/bin/bash\n")
+        submitfile.write("#!/bin/bash\n")
 
-        # add schedular commands
+        # add commands from
+        # schedular.options
         for entry in main_dict["schedular"]["options"]:
-            jobfile.write(f"\n{entry}")
+            submitfile.write(f"\n{entry}")
 
         # set environment variable
         # to working directory
-        jobfile.write(f'\n\nexport JOB_TARGET_HOME="{main_dict["workdir"]}"')
+        submitfile.write(f'\n\nexport JOB_WORKDIR="{main_dict["workdir"]}"')
 
-        # add commands to source run scripts
-        for entry in main_dict["config"]["submit"]:
-            jobfile.write(f'\n\nexport JOB_FILE_HOME="{os.path.dirname(entry)}"')
-            jobfile.write(f"\nsource {entry}")
-
-        # source `job.sh`
-        if os.path.exists(main_dict["config"]["target"]):
-            jobfile.write(f'\n\nsource {main_dict["config"]["target"]}')
-        else:
-            raise ValueError(
-                f'[jobrunner] {main_dict["config"]["target"]} not present in path'
+        # add commands from config.submit script
+        # and set environment variable for tree
+        # directory to the location of script
+        for sourcefile in main_dict["config"]["submit"]:
+            submitfile.write(
+                f'\n\nexport JOB_TREEDIR="{os.path.dirname(sourcefile)}"\n\n'
             )
 
+            # open sourcefile in read mode
+            # and start populating contents
+            with open(sourcefile, "r") as entry:
+                for line in entry:
+                    submitfile.write(line)
+
+        # set target file from config.target
+        targetfile = main_dict["config"]["target"]
+
+        # check if path to targetfile
+        # exists and handle execptions
+        if os.path.exists(targetfile):
+
+            # add two line spaces
+            submitfile.write(f"\n\n")
+
+            # if path to targetfile exists
+            # open it in read mode and start
+            # writing lines
+            with open(targetfile, "r") as entry:
+                for line in entry:
+                    submitfile.write(line)
+        else:
+
+            # else raise exception
+            raise ValueError(f"[jobrunner] {targetfile} not present in path")
+
         # add an extra space
-        jobfile.write("\n")
+        submitfile.write("\n")

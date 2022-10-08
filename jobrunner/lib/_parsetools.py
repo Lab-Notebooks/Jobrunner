@@ -1,6 +1,5 @@
 # Standard libraries
 import os
-import subprocess
 
 # Feature libraries
 import toml
@@ -15,11 +14,11 @@ def ParseJobToml(basedir, workdir):
     if basedir not in workdir:
         raise ValueError(f"[jobrunner] {workdir} not a sub-directory of {basedir}")
 
-    # Build a list of all toml files in
+    # build a list of all toml files in
     # a directory tree between basedir and workdir
-    jobfile_list = GetFileList(basedir, workdir, "Jobfile")
+    jobfile_list = GetTreeList(basedir, workdir, tree_object="Jobfile")
 
-    # Create an empty dictionary to set default
+    # create an empty dictionary to set default
     # values for configuration variables
     main_dict = {
         "schedular": {
@@ -34,10 +33,10 @@ def ParseJobToml(basedir, workdir):
         },
     }
 
-    # Loop over individual files
+    # loop over individual files
     for jobfile in jobfile_list:
 
-        # Load the toml file
+        # load the toml file
         work_dict = toml.load(jobfile)
 
         # loop over keys in work_dict, parse
@@ -92,7 +91,7 @@ def ParseJobToml(basedir, workdir):
                     # extend main dictionary
                     main_dict[key][subkey].extend(value_obj)
 
-    # Add basedir and workdir to
+    # add basedir and workdir to
     # main_dict for future use
     main_dict["basedir"] = basedir
     main_dict["workdir"] = workdir
@@ -103,8 +102,10 @@ def ParseJobToml(basedir, workdir):
 
         # create a list of input files to perform checks
         # along the directory tree
-        inputfile_list = GetFileList(
-            main_dict["basedir"], main_dict["workdir"], main_dict["config"]["input"]
+        inputfile_list = GetTreeList(
+            main_dict["basedir"],
+            main_dict["workdir"],
+            tree_object=main_dict["config"]["input"],
         )
 
         targetfile = main_dict["config"]["target"]
@@ -126,20 +127,20 @@ def ParseJobToml(basedir, workdir):
     return main_dict
 
 
-def GetFileList(basedir, workdir, filename):
+def GetTreeList(basedir, workdir, tree_object=""):
     """
-    Get a list of paths containing a file with name
-    `filename` between `basedir` and `workdir`
+    Get a list of paths containing an object
+    with name tree_object between basedir and workdir
 
     Arguments
     ---------
-    `basedir`  :  Base directory (top level) of a project
-    `workdir`  :  Current job directory
-    `filename` :  Name of the file to query
+    basedir     :  Base directory (top level) of a project
+    workdir     :  Current job directory
+    tree_object :  Name of the directory object
 
     Returns
     --------
-    file_list :   A list of path containing the file
+    object_list :   A list of path containing the object
     """
 
     # get a list of directory levels
@@ -150,24 +151,24 @@ def GetFileList(basedir, workdir, filename):
         if level not in basedir.split(os.sep)
     ]
 
-    # create an empty
-    # file list
-    file_list = []
+    # create an empty list of objects
+    object_list = []
 
     # start with current level
     current_level = basedir
 
-    # Loop over directory levels
+    # loop over directory levels
     for level in [""] + dir_levels:
 
-        # Set current level
+        # set current level
         current_level = current_level + level
 
-        # set file path
-        file_path = current_level + os.sep + filename
+        # set object path
+        object_path = current_level + os.sep + tree_object
 
-        # Append to file list if path exists
-        if os.path.exists(file_path):
-            file_list.append(file_path)
+        # append to object_list
+        # if path exists
+        if os.path.exists(object_path):
+            object_list.append(object_path)
 
-    return file_list
+    return object_list

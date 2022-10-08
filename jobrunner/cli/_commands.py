@@ -25,9 +25,13 @@ def setup(workdir_list):
 
     \b
     Environment variables
-    -------------------------------------------------
-    JOB_TARGET_HOME - Path to target working directory
-    JOB_FILE_HOME - Path to directory containing a file
+    ----------------------------------------------------
+    JOB_WORKDIR - Path to working directory, can be used
+                  for reference in bash scripts
+    \b
+    JOB_TREEDIR - Path to local tree directory, can be used
+                  to reference directory containing a bash
+                  script
     """
     # Get base directory
     basedir = os.getcwd()
@@ -41,7 +45,7 @@ def setup(workdir_list):
         workdir = os.getcwd()
         print(f"Working directory: {workdir}")
 
-        # Build `job` dictionary
+        # Build main dictionary
         print(f"Parsing job configuration")
         main_dict = lib.ParseJobToml(basedir, workdir)
 
@@ -80,10 +84,13 @@ def submit(workdir_list):
 
     \b
     Environment variables
-    -------------------------------------------------
-    JOB_TARGET_HOME - Path to target working directory
-    JOB_FILE_HOME - Path to directory containing a file
-
+    ----------------------------------------------------
+    JOB_WORKDIR - Path to working directory, can be used
+                  for reference in bash scripts
+    \b
+    JOB_TREEDIR - Path to local tree directory, can be used
+                  to reference directory containing a bash
+                  script
     """
     # Get base directory
     basedir = os.getcwd()
@@ -97,7 +104,7 @@ def submit(workdir_list):
         workdir = os.getcwd()
         print(f"Working directory: {workdir}")
 
-        # Build `job` dictionary
+        # Build main dictionary
         print(f"Parsing job configuration")
         main_dict = lib.ParseJobToml(basedir, workdir)
 
@@ -154,3 +161,35 @@ def clean(workdir_list):
             shell=True,
             check=True,
         )
+
+
+@jobrunner.command(name="archive")
+@click.option("--tag", "-t", help="name of the archive", required=True, type=str)
+@click.argument("workdir_list", required=True, nargs=-1, type=str)
+def archive(tag, workdir_list):
+    """
+    \b
+    Create an archive along the directory tree
+    """
+    # Get base directory
+    basedir = os.getcwd()
+
+    # loop over workdir_list
+    for workdir in workdir_list:
+
+        # chdir to working directory
+        print(f"-------------------------------------------------------------")
+        os.chdir(workdir)
+        workdir = os.getcwd()
+        print(f"Working directory: {workdir}")
+
+        # Build main dictionary
+        print(f"Parsing job configuration")
+        main_dict = lib.ParseJobToml(basedir, workdir)
+
+        # Create archive
+        print(f"Creating archive")
+        lib.CreateArchive(main_dict, tag)
+
+        # Return to base directory
+        os.chdir(basedir)
