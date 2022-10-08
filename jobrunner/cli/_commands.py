@@ -26,14 +26,14 @@ def setup(workdir_list):
     \b
 
     \b
-    Environment variables
-    ----------------------------------------------------
-    JOB_WORKDIR - Path to working directory, can be used
-                  for reference in bash scripts
+    Bash Variables
+    --------------
+    JobWorkDir - Path to working directory, can be used
+                 for reference in bash scripts
     \b
-    JOB_TREEDIR - Path to local tree directory, can be used
-                  to reference directory containing a bash
-                  script
+    JobTreeDir - Path to local tree directory, can be used
+                 to reference directory containing a bash
+                 script
     \b
     """
     # Get base directory
@@ -83,14 +83,14 @@ def submit(workdir_list):
     \b
 
     \b
-    Environment variables
-    ----------------------------------------------------
-    JOB_WORKDIR - Path to working directory, can be used
-                  for reference in bash scripts
+    Bash Variables
+    --------------
+    JobWorkDir - Path to working directory, can be used
+                 for reference in bash scripts
     \b
-    JOB_TREEDIR - Path to local tree directory, can be used
-                  to reference directory containing a bash
-                  script
+    JobTreeDir - Path to local tree directory, can be used
+                 to reference directory containing a bash
+                 script
     \b
     """
     # Get base directory

@@ -25,7 +25,7 @@ def CreateSetupFile(main_dict):
 
         # set environment variable for
         # working directory
-        setupfile.write(f'\n\nexport JOB_WORKDIR="{main_dict["workdir"]}"')
+        setupfile.write(f'\n\nJobWorkDir="{main_dict["workdir"]}"')
 
         # add a space
         setupfile.write(f"\n")
@@ -34,7 +34,7 @@ def CreateSetupFile(main_dict):
         # and set environment variable for tree
         # directory to the location of script
         for sourcefile in main_dict["config"]["setup"]:
-            setupfile.write(f'\nexport JOB_TREEDIR="{os.path.dirname(sourcefile)}"')
+            setupfile.write(f'\nJobTreeDir="{os.path.dirname(sourcefile)}"')
 
             # add some spaces
             setupfile.write(f"\n\n")
@@ -111,7 +111,7 @@ def CreateSubmitFile(main_dict):
 
         # set environment variable
         # to working directory
-        submitfile.write(f'\n\nexport JOB_WORKDIR="{main_dict["workdir"]}"')
+        submitfile.write(f'\n\nJobWorkDir="{main_dict["workdir"]}"')
 
         # add a space
         submitfile.write(f"\n")
@@ -120,7 +120,7 @@ def CreateSubmitFile(main_dict):
         # and set environment variable for tree
         # directory to the location of script
         for sourcefile in main_dict["config"]["submit"]:
-            submitfile.write(f'\nexport JOB_TREEDIR="{os.path.dirname(sourcefile)}"')
+            submitfile.write(f'\nJobTreeDir="{os.path.dirname(sourcefile)}"')
 
             # add some spaces
             submitfile.write(f"\n\n")
