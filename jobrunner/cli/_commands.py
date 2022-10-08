@@ -14,10 +14,10 @@ from .. import lib
 def setup(workdir_list):
     """
     \b
-    Command to run setup scripts in a directory
+    Run setup scripts in a directory
 
     \b
-    Jobfile(s) in a directory tree provide a list of
+    Jobfiles in a directory tree provide a list of
     setup scripts which are composed into a job.setup
     file and executed in the directories defined in
     WORKDIR_LIST. A job.setup file is created as
@@ -46,7 +46,7 @@ def setup(workdir_list):
         print(f"Working directory: {workdir}")
 
         # Build main dictionary
-        print(f"Parsing job configuration")
+        print(f"Parsing Jobfiles in directory tree")
         main_dict = lib.ParseJobToml(basedir, workdir)
 
         # Build setupfile
@@ -73,10 +73,10 @@ def setup(workdir_list):
 def submit(workdir_list):
     """
     \b
-    Command to submit a job from a directory
+    Submit a job from a directory
 
     \b
-    Jobfile(s) in a directory tree provide a list of
+    Jobfiles in a directory tree provide a list of
     submit scripts which are composed into a job.submit
     file and executed in the directories defined in
     WORKDIR_LIST. A job.submit file is created as
@@ -105,7 +105,7 @@ def submit(workdir_list):
         print(f"Working directory: {workdir}")
 
         # Build main dictionary
-        print(f"Parsing job configuration")
+        print(f"Parsing Jobfiles in directory tree")
         main_dict = lib.ParseJobToml(basedir, workdir)
 
         # Build inputfile
@@ -131,7 +131,7 @@ def submit(workdir_list):
 def clean(workdir_list):
     """
     \b
-    Command to clean artifacts in a directory
+    Remove artifacts from a directory
 
     \b
     This command removes job.input, job.setup, and
@@ -169,7 +169,7 @@ def clean(workdir_list):
 def archive(tag, workdir_list):
     """
     \b
-    Create an archive along the directory tree
+    Create an archive along a directory tree
     """
     # Get base directory
     basedir = os.getcwd()
@@ -184,11 +184,11 @@ def archive(tag, workdir_list):
         print(f"Working directory: {workdir}")
 
         # Build main dictionary
-        print(f"Parsing job configuration")
+        print(f"Parsing Jobfile configuration")
         main_dict = lib.ParseJobToml(basedir, workdir)
 
         # Create archive
-        print(f"Creating archive")
+        print(f"Creating archive tag: {tag}")
         lib.CreateArchive(main_dict, tag)
 
         # Return to base directory

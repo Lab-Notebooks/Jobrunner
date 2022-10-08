@@ -21,28 +21,29 @@ def CreateSetupFile(main_dict):
     with open(main_dict["workdir"] + os.sep + "job.setup", "w") as setupfile:
 
         # write the header for bash script
-        setupfile.write("#!/bin/bash\n")
+        setupfile.write("#!/bin/bash")
 
         # set environment variable for
         # working directory
-        setupfile.write(f'\nexport JOB_WORKDIR="{main_dict["workdir"]}"')
+        setupfile.write(f'\n\nexport JOB_WORKDIR="{main_dict["workdir"]}"')
+
+        # add a space
+        setupfile.write(f"\n")
 
         # add commands from config.setup script
         # and set environment variable for tree
         # directory to the location of script
         for sourcefile in main_dict["config"]["setup"]:
-            setupfile.write(
-                f'\n\nexport JOB_TREEDIR="{os.path.dirname(sourcefile)}"\n\n'
-            )
+            setupfile.write(f'\nexport JOB_TREEDIR="{os.path.dirname(sourcefile)}"')
+
+            # add some spaces
+            setupfile.write(f"\n\n")
 
             # open sourcefile in read mode
             # and write lines to setup script
             with open(sourcefile, "r") as entry:
                 for line in entry:
                     setupfile.write(line)
-
-        # Add an extra space
-        setupfile.write("\n")
 
 
 def CreateInputFile(main_dict):
@@ -82,7 +83,7 @@ def CreateInputFile(main_dict):
                         inputfile.write(line)
 
                 # add two spaces for the next file
-                inputfile.write(f"\n\n")
+                inputfile.write(f"\n")
 
 
 def CreateSubmitFile(main_dict):
@@ -100,10 +101,11 @@ def CreateSubmitFile(main_dict):
     with open(main_dict["workdir"] + os.sep + "job.submit", "w") as submitfile:
 
         # write the header
-        submitfile.write("#!/bin/bash\n")
+        submitfile.write("#!/bin/bash")
 
         # add commands from
         # schedular.options
+        submitfile.write(f"\n")
         for entry in main_dict["schedular"]["options"]:
             submitfile.write(f"\n{entry}")
 
@@ -111,13 +113,17 @@ def CreateSubmitFile(main_dict):
         # to working directory
         submitfile.write(f'\n\nexport JOB_WORKDIR="{main_dict["workdir"]}"')
 
+        # add a space
+        submitfile.write(f"\n")
+
         # add commands from config.submit script
         # and set environment variable for tree
         # directory to the location of script
         for sourcefile in main_dict["config"]["submit"]:
-            submitfile.write(
-                f'\n\nexport JOB_TREEDIR="{os.path.dirname(sourcefile)}"\n\n'
-            )
+            submitfile.write(f'\nexport JOB_TREEDIR="{os.path.dirname(sourcefile)}"')
+
+            # add some spaces
+            submitfile.write(f"\n\n")
 
             # open sourcefile in read mode
             # and start populating contents
@@ -133,7 +139,7 @@ def CreateSubmitFile(main_dict):
         if os.path.exists(targetfile):
 
             # add two line spaces
-            submitfile.write(f"\n\n")
+            submitfile.write(f"\n")
 
             # if path to targetfile exists
             # open it in read mode and start
@@ -145,6 +151,3 @@ def CreateSubmitFile(main_dict):
 
             # else raise exception
             raise ValueError(f"[jobrunner] {targetfile} not present in path")
-
-        # add an extra space
-        submitfile.write("\n")

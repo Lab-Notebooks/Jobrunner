@@ -2,14 +2,17 @@
 import os
 import shutil
 
+# feature imports
+import toml
+
 # local imports
 from . import GetTreeList
 
 
 def CreateArchive(main_dict, archive_tag):
     """
-    Create an archive of artifacts along the
-    in workdir defined in main dictionary
+    Create an archive of artifacts
+    along a directory tree
 
     Arguments
     ---------
@@ -18,52 +21,58 @@ def CreateArchive(main_dict, archive_tag):
 
     archive_tag :  Tag for the archive
     """
+    # rename archive_tag with proper extension
+    archive_tag = "job." + archive_tag + ".archive"
+
     # get a list of directories along the
     # tree between basedir and workdir
     tree_list = GetTreeList(main_dict["basedir"], main_dict["workdir"])
 
-    # get targetfile, setupfiles, and
-    # submitfiles from main_dict
-    targetfile = main_dict["config"]["target"]
-    setupfile_list = [setupfile for setupfile in main_dict["config"]["setup"]]
-    submitfile_list = [submitfile for submitfile in main_dict["config"]["submit"]]
+    for treedir in tree_list:
 
-    # get a list of files that are designated
-    # to be ignored and should not be archived
-    ignore_list = (
-        [main_dict["config"]["input"]]
-        + [targetfile.replace(os.path.dirname(targetfile) + os.sep, "")]
-        + [
-            setupfile.replace(os.path.dirname(setupfile) + os.sep, "")
-            for setupfile in setupfile_list
-        ]
-        + [
-            submitfile.replace(os.path.dirname(submitfile) + os.sep, "")
-            for submitfile in submitfile_list
-        ]
-        + ["Jobfile", "README.md", "README.rst", "LICENSE", ".gitignore"]
-    )
+        os.chdir(treedir)
 
-    # get reference to working
-    # directory
-    workdir = main_dict["workdir"]
+        # check if archive directory already
+        # exists and handle exceptions
+        if os.path.exists(treedir + os.sep + archive_tag):
+            print(f"[jobrunner] {archive_tag} already exists in {treedir} SKIPPING")
 
-    # check if archive directory already
-    # exists and handle exceptions
-    if os.path.exists(workdir + os.sep + archive_tag):
-        print(f"Archive directory already exists in {workdir} skipping")
+        # create the archive directory
+        # and store results
+        else:
 
-    # create the archive directory
-    # and store results
-    else:
+            # create an empty
+            # list of archive file
+            archive_list = []
 
-        # create archive directory
-        os.mkdir(f"{workdir + os.sep + archive_tag}")
+            # get the list of
+            # files in treedir
+            treefile_list = [
+                os.path.abspath(treefile)
+                for treefile in next(os.walk("."), (None, None, []))[2]
+            ]
 
-        # get the list of
-        # files in treedir
-        file_list = next(os.walk(workdir), (None, None, []))[2]
+            # create a reference file list
+            # to test which treefile should
+            # be archived
+            ref_list = main_dict["config"]["archive"] + [
+                treedir + os.sep + "job.input",
+                treedir + os.sep + "job.setup",
+                treedir + os.sep + "job.submit",
+            ]
 
-        for filename in file_list:
-            if filename not in ignore_list:
-                shutil.move(filename, workdir + os.sep + archive_tag)
+            # loop over list of files in treedir
+            # and append to archive_list if file
+            # is present in config.archive
+            for filename in treefile_list:
+                if filename in ref_list:
+                    archive_list.append(filename)
+
+            if archive_list:
+                # create archive directory
+                os.mkdir(f"{treedir + os.sep + archive_tag}")
+
+                # loop over archive_list
+                # and archive contents
+                for filename in archive_list:
+                    shutil.move(filename, treedir + os.sep + archive_tag)

@@ -1,5 +1,6 @@
 # Standard libraries
 import os
+import glob
 
 # Feature libraries
 import toml
@@ -30,6 +31,7 @@ def ParseJobToml(basedir, workdir):
             "target": None,
             "submit": [],
             "setup": [],
+            "archive": [],
         },
     }
 
@@ -44,7 +46,7 @@ def ParseJobToml(basedir, workdir):
         for key in work_dict:
 
             # loop over subkey and values
-            for subkey, value_obj in work_dict[key].items():
+            for subkey, work_obj in work_dict[key].items():
 
                 # test combination of values here to get
                 # absolute path for setup and submit scripts
@@ -52,15 +54,28 @@ def ParseJobToml(basedir, workdir):
                     "config.setup",
                     "config.submit",
                 ]:
-                    value_obj = [
-                        os.path.dirname(jobfile) + os.sep + value for value in value_obj
+                    work_obj = [
+                        os.path.dirname(jobfile) + os.sep + value for value in work_obj
                     ]
 
                 # absolute path for config.target
                 if f"{key}.{subkey}" in [
                     "config.target",
                 ]:
-                    value_obj = os.path.dirname(jobfile) + os.sep + value_obj
+                    work_obj = os.path.dirname(jobfile) + os.sep + work_obj
+
+                if f"{key}.{subkey}" in [
+                    "config.archive",
+                ]:
+                    work_obj = [
+                        os.path.dirname(jobfile) + os.sep + value for value in work_obj
+                    ]
+
+                    archive_obj = []
+                    for value in work_obj:
+                        archive_obj.extend(glob.glob(value))
+
+                    work_obj = archive_obj
 
                 # test combination of values
                 # here to handle exceptions
@@ -80,7 +95,7 @@ def ParseJobToml(basedir, workdir):
                     else:
                         # set values if [key][subkey]
                         # not already set
-                        main_dict[key][subkey] = value_obj
+                        main_dict[key][subkey] = work_obj
 
                         # store directory name
                         # where input is defined
@@ -89,7 +104,7 @@ def ParseJobToml(basedir, workdir):
 
                 else:
                     # extend main dictionary
-                    main_dict[key][subkey].extend(value_obj)
+                    main_dict[key][subkey].extend(work_obj)
 
     # add basedir and workdir to
     # main_dict for future use
@@ -169,6 +184,6 @@ def GetTreeList(basedir, workdir, tree_object=""):
         # append to object_list
         # if path exists
         if os.path.exists(object_path):
-            object_list.append(object_path)
+            object_list.append(os.path.abspath(object_path))
 
     return object_list
