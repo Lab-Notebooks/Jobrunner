@@ -115,7 +115,7 @@ def CreateSubmitFile(main_dict):
 
         # set environment variable for
         # base directory
-        setupfile.write(f'\nJobBaseDir="{main_dict["basedir"]}"\n')
+        submitfile.write(f'\nJobBaseDir="{main_dict["basedir"]}"\n')
 
         # set environment variable
         # to working directory
@@ -137,7 +137,7 @@ def CreateSubmitFile(main_dict):
                     submitfile.write(line)
 
             # chdir into working directory
-            setupfile.write(f"\ncd $JobWorkDir\n")
+            submitfile.write(f"\ncd $JobWorkDir\n")
 
         # set target file from config.target
         targetfile = main_dict["config"]["target"]
