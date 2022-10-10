@@ -28,8 +28,9 @@ def setup(workdir_list):
     \b
     Bash Variables
     --------------
-    JobWorkDir - Path to working directory, can be used
-                 for reference in bash scripts
+    JobWorkDir - Path to working directory of the job
+    \b
+    JobNodeDir - Path to node directory of a bash script
     """
     # Get base directory
     basedir = os.getcwd()
@@ -80,8 +81,9 @@ def submit(workdir_list):
     \b
     Bash Variables
     --------------
-    JobWorkDir - Path to working directory, can be used
-                 for reference in bash scripts
+    JobWorkDir - Path to working directory of the job
+    \b
+    JobNodeDir - Path to node directory of a bash script
     """
     # Get base directory
     basedir = os.getcwd()

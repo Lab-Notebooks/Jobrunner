@@ -23,17 +23,6 @@ def CreateSetupFile(main_dict):
         # write the header for bash script
         setupfile.write("#!/bin/bash\n")
 
-        # TODO: Save it for now remove later
-        # TODO: Identify if this variable should be
-        # exposed in job.setup, currently the design
-        # requirements enforce that a node should only
-        # be aware of working directory and not base
-        # directory. Exposing base directory will violate
-        # tree-based directory design.
-        #
-        # set environment variable for base directory
-        # setupfile.write(f'\nJobBaseDir="{main_dict["basedir"]}"\n')
-
         # set environment variable for
         # working directory
         setupfile.write(f'\nJobWorkDir="{main_dict["workdir"]}"\n')
@@ -43,20 +32,10 @@ def CreateSetupFile(main_dict):
         # the node directory
         for nodefile in main_dict["config"]["setup"]:
 
-            # TODO: Save it for now remove later
-            # setupfile.write(f'\nJobNodeDir="{os.path.dirname(nodefile)}"\n')
-            #
-            # TODO: chdir into working
-            # directory or node directory
-            #
-            # chdir into node directory
-            # setupfile.write(f"cd $JobNodeDir\n")
-
-            # get value for node directory
-            nodedir = os.path.dirname(nodefile)
-
-            # chdir into node directory
-            setupfile.write(f"\ncd {nodedir}\n")
+            # set variable for node directory
+            # and chdir into it
+            setupfile.write(f'\nJobNodeDir="{os.path.dirname(nodefile)}"\n')
+            setupfile.write(f"cd $JobNodeDir\n")
 
             # add some spaces
             setupfile.write(f"\n")
@@ -66,14 +45,6 @@ def CreateSetupFile(main_dict):
             with open(nodefile, "r") as entry:
                 for line in entry:
                     setupfile.write(line)
-
-            # TODO: Save it for now remove later
-            #
-            # TODO: chdir into working
-            # directory or node directory
-            #
-            # chdir into working directory
-            # setupfile.write(f"\ncd $JobWorkDir\n")
 
 
 def CreateInputFile(main_dict):
@@ -139,13 +110,6 @@ def CreateSubmitFile(main_dict):
         for entry in main_dict["schedular"]["options"]:
             submitfile.write(f"{entry}\n")
 
-        # TODO: Save for now remove later
-        #
-        # TODO: Identify if this variable should be expose
-        #       to job.submit
-        # set environment variable for base directory
-        # submitfile.write(f'\nJobBaseDir="{main_dict["basedir"]}"\n')
-
         # set environment variable
         # to working directory
         submitfile.write(f'\nJobWorkDir="{main_dict["workdir"]}"\n')
@@ -155,20 +119,10 @@ def CreateSubmitFile(main_dict):
         # the location of script
         for nodefile in main_dict["config"]["submit"]:
 
-            # TODO: save for now remove later
-            # submitfile.write(f'\nJobNodeDir="{os.path.dirname(nodefile)}"\n')
-            #
-            # TODO: chdir into working
-            # directory or node directory
-            #
-            # chdir into node directory
-            # submitfile.write(f"cd $JobNodeDir\n")
-
-            # get value for node directory
-            nodedir = os.path.dirname(nodefile)
-
-            # chdir into node directory
-            submitfile.write(f"\ncd {nodedir}\n")
+            # set variable for node directory
+            # and chdir into it
+            submitfile.write(f'\nJobNodeDir="{os.path.dirname(nodefile)}"\n')
+            submitfile.write(f"cd $JobNodeDir\n")
 
             # add some spaces
             submitfile.write(f"\n")
@@ -179,14 +133,6 @@ def CreateSubmitFile(main_dict):
                 for line in entry:
                     submitfile.write(line)
 
-            # TODO: save for now remove later
-            #
-            # TODO: chdir into working
-            # directory or node directory
-            #
-            # chdir into working directory
-            # submitfile.write(f"\ncd $JobWorkDir\n")
-
         # set target file from config.target
         targetfile = main_dict["config"]["target"]
 
@@ -194,11 +140,13 @@ def CreateSubmitFile(main_dict):
         # exists and handle execptions
         if os.path.exists(targetfile):
 
-            # Get target directory
-            targetdir = os.path.dirname(targetfile)
+            # set environment variable for target file and
+            # chdir into it
+            submitfile.write(f'\nJobNodeDir="{os.path.dirname(targetfile)}"\n')
+            submitfile.write(f"cd $JobNodeDir\n")
 
-            # chdir into traget directory
-            submitfile.write(f"\ncd {targetdir}\n")
+            # add an extra space
+            submitfile.write(f"\n")
 
             # if path to targetfile exists
             # open it in read mode and start
