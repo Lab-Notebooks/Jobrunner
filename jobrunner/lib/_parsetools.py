@@ -17,7 +17,7 @@ def ParseJobToml(basedir, workdir):
 
     # build a list of all toml files in
     # a directory tree between basedir and workdir
-    jobfile_list = GetTreeList(basedir, workdir, tree_object="Jobfile")
+    jobfile_list = GetNodeList(basedir, workdir, tree_object="Jobfile")
 
     # create an empty dictionary to set default
     # values for configuration variables
@@ -117,7 +117,7 @@ def ParseJobToml(basedir, workdir):
 
         # create a list of input files to perform checks
         # along the directory tree
-        inputfile_list = GetTreeList(
+        inputfile_list = GetNodeList(
             main_dict["basedir"],
             main_dict["workdir"],
             tree_object=main_dict["config"]["input"],
@@ -142,7 +142,7 @@ def ParseJobToml(basedir, workdir):
     return main_dict
 
 
-def GetTreeList(basedir, workdir, tree_object=""):
+def GetNodeList(basedir, workdir, tree_object=""):
     """
     Get a list of paths containing an object
     with name tree_object between basedir and workdir

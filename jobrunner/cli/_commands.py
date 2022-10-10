@@ -30,11 +30,6 @@ def setup(workdir_list):
     --------------
     JobWorkDir - Path to working directory, can be used
                  for reference in bash scripts
-    \b
-    JobTreeDir - Path to local tree directory, can be used
-                 to reference directory containing a bash
-                 script
-    \b
     """
     # Get base directory
     basedir = os.getcwd()
@@ -87,11 +82,6 @@ def submit(workdir_list):
     --------------
     JobWorkDir - Path to working directory, can be used
                  for reference in bash scripts
-    \b
-    JobTreeDir - Path to local tree directory, can be used
-                 to reference directory containing a bash
-                 script
-    \b
     """
     # Get base directory
     basedir = os.getcwd()

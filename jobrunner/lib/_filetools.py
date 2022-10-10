@@ -2,7 +2,7 @@
 import os
 
 # local imports
-from . import GetTreeList
+from . import GetNodeList
 
 
 def CreateSetupFile(main_dict):
@@ -23,31 +23,57 @@ def CreateSetupFile(main_dict):
         # write the header for bash script
         setupfile.write("#!/bin/bash\n")
 
-        # set environment variable for
-        # base directory
-        setupfile.write(f'\nJobBaseDir="{main_dict["basedir"]}"\n')
+        # TODO: Save it for now remove later
+        # TODO: Identify if this variable should be
+        # exposed in job.setup, currently the design
+        # requirements enforce that a node should only
+        # be aware of working directory and not base
+        # directory. Exposing base directory will violate
+        # tree-based directory design.
+        #
+        # set environment variable for base directory
+        # setupfile.write(f'\nJobBaseDir="{main_dict["basedir"]}"\n')
 
         # set environment variable for
         # working directory
         setupfile.write(f'\nJobWorkDir="{main_dict["workdir"]}"\n')
 
         # add commands from config.setup script
-        # and set environment variable for tree
-        # directory to the location of script
-        for sourcefile in main_dict["config"]["setup"]:
-            setupfile.write(f'\nJobTreeDir="{os.path.dirname(sourcefile)}"\n')
+        # and place a command to chdir into
+        # the node directory
+        for nodefile in main_dict["config"]["setup"]:
+
+            # TODO: Save it for now remove later
+            # setupfile.write(f'\nJobNodeDir="{os.path.dirname(nodefile)}"\n')
+            #
+            # TODO: chdir into working
+            # directory or node directory
+            #
+            # chdir into node directory
+            # setupfile.write(f"cd $JobNodeDir\n")
+
+            # get value for node directory
+            nodedir = os.path.dirname(nodefile)
+
+            # chdir into node directory
+            setupfile.write(f"\ncd {nodedir}\n")
 
             # add some spaces
             setupfile.write(f"\n")
 
-            # open sourcefile in read mode
+            # open nodefile in read mode
             # and write lines to setup script
-            with open(sourcefile, "r") as entry:
+            with open(nodefile, "r") as entry:
                 for line in entry:
                     setupfile.write(line)
 
+            # TODO: Save it for now remove later
+            #
+            # TODO: chdir into working
+            # directory or node directory
+            #
             # chdir into working directory
-            setupfile.write(f"\ncd $JobWorkDir\n")
+            # setupfile.write(f"\ncd $JobWorkDir\n")
 
 
 def CreateInputFile(main_dict):
@@ -66,7 +92,7 @@ def CreateInputFile(main_dict):
         # get a list of all config.input
         # files in the directory tree
         # between basedir and workdir
-        sourcefile_list = GetTreeList(
+        nodefile_list = GetNodeList(
             main_dict["basedir"],
             main_dict["workdir"],
             tree_object=main_dict["config"]["input"],
@@ -78,11 +104,11 @@ def CreateInputFile(main_dict):
 
             # loop through the list of
             # source file from config.input
-            for sourcefile in sourcefile_list:
+            for nodefile in nodefile_list:
 
-                # open sourcefile in read mode
+                # open nodefile in read mode
                 # write entries to inputfile
-                with open(sourcefile, "r") as entry:
+                with open(nodefile, "r") as entry:
                     for line in entry:
                         inputfile.write(line)
 
@@ -113,31 +139,53 @@ def CreateSubmitFile(main_dict):
         for entry in main_dict["schedular"]["options"]:
             submitfile.write(f"{entry}\n")
 
-        # set environment variable for
-        # base directory
-        submitfile.write(f'\nJobBaseDir="{main_dict["basedir"]}"\n')
+        # TODO: Save for now remove later
+        #
+        # TODO: Identify if this variable should be expose
+        #       to job.submit
+        # set environment variable for base directory
+        # submitfile.write(f'\nJobBaseDir="{main_dict["basedir"]}"\n')
 
         # set environment variable
         # to working directory
         submitfile.write(f'\nJobWorkDir="{main_dict["workdir"]}"\n')
 
         # add commands from config.submit script
-        # and set environment variable for tree
-        # directory to the location of script
-        for sourcefile in main_dict["config"]["submit"]:
-            submitfile.write(f'\nJobTreeDir="{os.path.dirname(sourcefile)}"\n')
+        # and chdir into node directory given by
+        # the location of script
+        for nodefile in main_dict["config"]["submit"]:
+
+            # TODO: save for now remove later
+            # submitfile.write(f'\nJobNodeDir="{os.path.dirname(nodefile)}"\n')
+            #
+            # TODO: chdir into working
+            # directory or node directory
+            #
+            # chdir into node directory
+            # submitfile.write(f"cd $JobNodeDir\n")
+
+            # get value for node directory
+            nodedir = os.path.dirname(nodefile)
+
+            # chdir into node directory
+            submitfile.write(f"\ncd {nodedir}\n")
 
             # add some spaces
             submitfile.write(f"\n")
 
-            # open sourcefile in read mode
+            # open nodefile in read mode
             # and start populating contents
-            with open(sourcefile, "r") as entry:
+            with open(nodefile, "r") as entry:
                 for line in entry:
                     submitfile.write(line)
 
+            # TODO: save for now remove later
+            #
+            # TODO: chdir into working
+            # directory or node directory
+            #
             # chdir into working directory
-            submitfile.write(f"\ncd $JobWorkDir\n")
+            # submitfile.write(f"\ncd $JobWorkDir\n")
 
         # set target file from config.target
         targetfile = main_dict["config"]["target"]
@@ -145,6 +193,12 @@ def CreateSubmitFile(main_dict):
         # check if path to targetfile
         # exists and handle execptions
         if os.path.exists(targetfile):
+
+            # Get target directory
+            targetdir = os.path.dirname(targetfile)
+
+            # chdir into traget directory
+            submitfile.write(f"\ncd {targetdir}\n")
 
             # if path to targetfile exists
             # open it in read mode and start
