@@ -55,7 +55,7 @@ def CreateArchive(main_dict, archive_tag):
             # create a reference file list
             # to test which nodefile should
             # be archived
-            ref_list = main_dict["config"]["archive"] + [
+            ref_list = main_dict["job"]["archive"] + [
                 nodedir + os.sep + "job.input",
                 nodedir + os.sep + "job.setup",
                 nodedir + os.sep + "job.submit",
@@ -63,7 +63,7 @@ def CreateArchive(main_dict, archive_tag):
 
             # loop over list of files in nodedir
             # and append to archive_list if file
-            # is present in config.archive
+            # is present in job.archive
             for filename in nodefile_list:
                 if filename in ref_list:
                     archive_list.append(filename)

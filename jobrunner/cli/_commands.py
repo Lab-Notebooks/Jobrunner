@@ -1,6 +1,7 @@
 # Standard libraries
 import os
 import subprocess
+from datetime import date
 
 # Feature libraries
 import click
@@ -20,17 +21,13 @@ def setup(workdir_list):
     \b
     Jobfiles in a directory tree provide a list of
     setup scripts which are composed into a job.setup
-    file and executed in the directories defined in
-    WORKDIR_LIST. A job.setup file is created as
-    a result of this command
+    file and run along the directory tree
     \b
 
     \b
     Bash Variables
     --------------
     JobWorkDir - Path to working directory of the job
-    \b
-    JobNodeDir - Path to node directory of a bash script
     """
     # Get base directory
     basedir = os.getcwd()
@@ -73,17 +70,13 @@ def submit(workdir_list):
     \b
     Jobfiles in a directory tree provide a list of
     submit scripts which are composed into a job.submit
-    file and executed in the directories defined in
-    WORKDIR_LIST. A job.submit file is created as
-    a result of this command
+    file for linux schedulars
     \b
 
     \b
     Bash Variables
     --------------
     JobWorkDir - Path to working directory of the job
-    \b
-    JobNodeDir - Path to node directory of a bash script
     """
     # Get base directory
     basedir = os.getcwd()
@@ -129,8 +122,7 @@ def clean(workdir_list):
 
     \b
     This command removes job.input, job.setup, and
-    job.submit files in working directories provided
-    in WORKDIR_LIST
+    job.submit files from a working directory
     \b
     """
     # Get base directory
@@ -159,7 +151,7 @@ def clean(workdir_list):
 
 
 @jobrunner.command(name="archive")
-@click.option("--tag", "-t", help="name of the archive", required=True, type=str)
+@click.option("--tag", "-t", help="name of the archive", default=str(date.today()), type=str)
 @click.argument("workdir_list", required=True, nargs=-1, type=str)
 def archive(tag, workdir_list):
     """

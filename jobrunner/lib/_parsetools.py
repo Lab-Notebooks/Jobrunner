@@ -17,7 +17,7 @@ def ParseJobToml(basedir, workdir):
 
     # build a list of all toml files in
     # a directory tree between basedir and workdir
-    jobfile_list = GetNodeList(basedir, workdir, tree_object="Jobfile")
+    jobfile_list = GetNodeList(basedir, workdir, node_object="Jobfile")
 
     # create an empty dictionary to set default
     # values for configuration variables
@@ -26,7 +26,7 @@ def ParseJobToml(basedir, workdir):
             "command": None,
             "options": [],
         },
-        "config": {
+        "job": {
             "input": None,
             "target": None,
             "submit": [],
@@ -51,21 +51,21 @@ def ParseJobToml(basedir, workdir):
                 # test combination of values here to get
                 # absolute path for setup and submit scripts
                 if f"{key}.{subkey}" in [
-                    "config.setup",
-                    "config.submit",
+                    "job.setup",
+                    "job.submit",
                 ]:
                     work_obj = [
                         os.path.dirname(jobfile) + os.sep + value for value in work_obj
                     ]
 
-                # absolute path for config.target
+                # absolute path for job.target
                 if f"{key}.{subkey}" in [
-                    "config.target",
+                    "job.target",
                 ]:
                     work_obj = os.path.dirname(jobfile) + os.sep + work_obj
 
                 if f"{key}.{subkey}" in [
-                    "config.archive",
+                    "job.archive",
                 ]:
                     work_obj = [
                         os.path.dirname(jobfile) + os.sep + value for value in work_obj
@@ -81,8 +81,8 @@ def ParseJobToml(basedir, workdir):
                 # here to handle exceptions
                 if f"{key}.{subkey}" in [
                     "schedular.command",
-                    "config.input",
-                    "config.target",
+                    "job.input",
+                    "job.target",
                 ]:
 
                     # check if main dictionary already contains
@@ -112,46 +112,46 @@ def ParseJobToml(basedir, workdir):
     main_dict["workdir"] = workdir
 
     # perform checks to enforce desgin
-    # constraints for config.input and config.target
-    if main_dict["config"]["input"]:
+    # constraints for job.input and job.target
+    if main_dict["job"]["input"]:
 
         # create a list of input files to perform checks
         # along the directory tree
         inputfile_list = GetNodeList(
             main_dict["basedir"],
             main_dict["workdir"],
-            tree_object=main_dict["config"]["input"],
+            node_object=main_dict["job"]["input"],
         )
 
-        targetfile = main_dict["config"]["target"]
+        targetfile = main_dict["job"]["target"]
 
         # loop over input files and start comparing length of directories
         for inputfile in inputfile_list:
             if len(os.path.dirname(inputfile)) < len(main_dict["inputdir"]):
                 raise ValueError(
-                    f"[jobrunner] config.input: {inputfile} should not exist before it is defined in Jobfile"
+                    f"[jobrunner] job.input: {inputfile} should not exist before it is defined in Jobfile"
                 )
 
             if targetfile and len(os.path.dirname(targetfile)) < len(
                 main_dict["inputdir"]
             ):
                 raise ValueError(
-                    f"[jobrunner] config.target: {targetfile} should not exist before config.input is defined in Jobfile"
+                    f"[jobrunner] job.target: {targetfile} should not exist before job.input is defined in Jobfile"
                 )
 
     return main_dict
 
 
-def GetNodeList(basedir, workdir, tree_object=""):
+def GetNodeList(basedir, workdir, node_object=""):
     """
     Get a list of paths containing an object
-    with name tree_object between basedir and workdir
+    with name node_object between basedir and workdir
 
     Arguments
     ---------
     basedir     :  Base directory (top level) of a project
     workdir     :  Current job directory
-    tree_object :  Name of the directory object
+    node_object :  Name of the directory object
 
     Returns
     --------
@@ -179,7 +179,7 @@ def GetNodeList(basedir, workdir, tree_object=""):
         current_level = current_level + level
 
         # set object path
-        object_path = current_level + os.sep + tree_object
+        object_path = current_level + os.sep + node_object
 
         # append to object_list
         # if path exists

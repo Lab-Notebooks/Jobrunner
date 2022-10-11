@@ -8,7 +8,7 @@ from . import GetNodeList
 def CreateSetupFile(main_dict):
     """
     Create a job.setup file using the list of
-    config.setup scripts from main dictionary
+    job.setup scripts from main dictionary
 
     Arguments
     ---------
@@ -27,15 +27,16 @@ def CreateSetupFile(main_dict):
         # working directory
         setupfile.write(f'\nJobWorkDir="{main_dict["workdir"]}"\n')
 
-        # add commands from config.setup script
+        # add commands from job.setup script
         # and place a command to chdir into
         # the node directory
-        for nodefile in main_dict["config"]["setup"]:
+        for nodefile in main_dict["job"]["setup"]:
 
-            # set variable for node directory
-            # and chdir into it
-            setupfile.write(f'\nJobNodeDir="{os.path.dirname(nodefile)}"\n')
-            setupfile.write(f"cd $JobNodeDir\n")
+            # get node directory from nodefile
+            nodedir = os.path.dirname(nodefile)
+
+            # chdir into node directory
+            setupfile.write(f"\ncd {nodedir}\n")
 
             # add some spaces
             setupfile.write(f"\n")
@@ -51,22 +52,22 @@ def CreateInputFile(main_dict):
     """
     Create an input file for a given simulation
     recursively using job.input between basedir
-    and workdir using config.input
+    and workdir using job.input
 
     main_dict : Dictionary containing details of the
                 job configuration in directory tree
     """
     # check to see if input file is
     # defined in the main dictionary
-    if main_dict["config"]["input"]:
+    if main_dict["job"]["input"]:
 
-        # get a list of all config.input
+        # get a list of all job.input
         # files in the directory tree
         # between basedir and workdir
         nodefile_list = GetNodeList(
             main_dict["basedir"],
             main_dict["workdir"],
-            tree_object=main_dict["config"]["input"],
+            node_object=main_dict["job"]["input"],
         )
 
         # open a job.input file in write mode
@@ -74,7 +75,7 @@ def CreateInputFile(main_dict):
         with open(main_dict["workdir"] + os.sep + "job.input", "w") as inputfile:
 
             # loop through the list of
-            # source file from config.input
+            # source file from job.input
             for nodefile in nodefile_list:
 
                 # open nodefile in read mode
@@ -90,7 +91,7 @@ def CreateInputFile(main_dict):
 def CreateSubmitFile(main_dict):
     """
     Create a job.submit for a given simulation
-    using values from config.submit
+    using values from job.submit
 
     Arguments
     ---------
@@ -114,15 +115,16 @@ def CreateSubmitFile(main_dict):
         # to working directory
         submitfile.write(f'\nJobWorkDir="{main_dict["workdir"]}"\n')
 
-        # add commands from config.submit script
+        # add commands from job.submit script
         # and chdir into node directory given by
         # the location of script
-        for nodefile in main_dict["config"]["submit"]:
+        for nodefile in main_dict["job"]["submit"]:
 
-            # set variable for node directory
-            # and chdir into it
-            submitfile.write(f'\nJobNodeDir="{os.path.dirname(nodefile)}"\n')
-            submitfile.write(f"cd $JobNodeDir\n")
+            # get node directory from nodefile
+            nodedir = os.path.dirname(nodefile)
+
+            # chdir into node directory
+            submitfile.write(f"\ncd {nodedir}\n")
 
             # add some spaces
             submitfile.write(f"\n")
@@ -133,17 +135,18 @@ def CreateSubmitFile(main_dict):
                 for line in entry:
                     submitfile.write(line)
 
-        # set target file from config.target
-        targetfile = main_dict["config"]["target"]
+        # set target file from job.target
+        targetfile = main_dict["job"]["target"]
 
         # check if path to targetfile
         # exists and handle execptions
         if os.path.exists(targetfile):
 
-            # set environment variable for target file and
-            # chdir into it
-            submitfile.write(f'\nJobNodeDir="{os.path.dirname(targetfile)}"\n')
-            submitfile.write(f"cd $JobNodeDir\n")
+            # get target directory from targetfile
+            targetdir = os.path.dirname(targetfile)
+
+            # chdir into target directory
+            submitfile.write(f"\ncd {targetdir}\n")
 
             # add an extra space
             submitfile.write(f"\n")
