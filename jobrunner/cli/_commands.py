@@ -151,7 +151,9 @@ def clean(workdir_list):
 
 
 @jobrunner.command(name="archive")
-@click.option("--tag", "-t", help="name of the archive", default=str(date.today()), type=str)
+@click.option(
+    "--tag", "-t", help="name of the archive", default=str(date.today()), type=str
+)
 @click.argument("workdir_list", required=True, nargs=-1, type=str)
 def archive(tag, workdir_list):
     """
