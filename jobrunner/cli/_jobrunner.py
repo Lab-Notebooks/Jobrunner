@@ -1,5 +1,6 @@
 # Standard libraries
 import os
+from os.path import expanduser
 import subprocess
 import pkg_resources
 
@@ -16,7 +17,9 @@ def jobrunner(ctx, version):
     Command line tool to organize and manage computing jobs.
     """
     if ctx.invoked_subcommand is None and not version:
-        subprocess.run("jobrunner --help", shell=True, check=True)
+        subprocess.run(
+            f'{expanduser("~")}/.local/bin/jobrunner --help', shell=True, check=True
+        )
 
     if version:
         click.echo(pkg_resources.require("PyJobrunner")[0].version)
