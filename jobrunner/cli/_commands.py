@@ -149,6 +149,12 @@ def clean(workdir_list):
             check=True,
         )
 
+        process = subprocess.run(
+            f'rm -vf {workdir + "/" + "job.target"}',
+            shell=True,
+            check=True,
+        )
+
 
 @jobrunner.command(name="archive")
 @click.option(

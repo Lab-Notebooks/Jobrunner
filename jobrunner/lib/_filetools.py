@@ -1,5 +1,6 @@
 # Standard libraries
 import os
+import subprocess
 
 # local imports
 from . import GetNodeList
@@ -143,21 +144,12 @@ def CreateSubmitFile(main_dict):
         if targetfile:
             if os.path.exists(targetfile):
 
-                # get target directory from targetfile
-                targetdir = os.path.dirname(targetfile)
+                subprocess.run(
+                    f"rm -f job.target && ln -s {targetfile} job.target",
+                    shell=True,
+                    check=True,
+                )
 
-                # chdir into target directory
-                submitfile.write(f"\ncd {targetdir}\n")
-
-                # add an extra space
-                submitfile.write(f"\n")
-
-                # if path to targetfile exists
-                # open it in read mode and start
-                # writing lines
-                with open(targetfile, "r") as entry:
-                    for line in entry:
-                        submitfile.write(line)
             else:
 
                 # else raise exception
