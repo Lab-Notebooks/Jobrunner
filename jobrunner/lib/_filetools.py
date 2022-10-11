@@ -140,24 +140,25 @@ def CreateSubmitFile(main_dict):
 
         # check if path to targetfile
         # exists and handle execptions
-        if os.path.exists(targetfile):
+        if targetfile:
+            if os.path.exists(targetfile):
 
-            # get target directory from targetfile
-            targetdir = os.path.dirname(targetfile)
+                # get target directory from targetfile
+                targetdir = os.path.dirname(targetfile)
 
-            # chdir into target directory
-            submitfile.write(f"\ncd {targetdir}\n")
+                # chdir into target directory
+                submitfile.write(f"\ncd {targetdir}\n")
 
-            # add an extra space
-            submitfile.write(f"\n")
+                # add an extra space
+                submitfile.write(f"\n")
 
-            # if path to targetfile exists
-            # open it in read mode and start
-            # writing lines
-            with open(targetfile, "r") as entry:
-                for line in entry:
-                    submitfile.write(line)
-        else:
+                # if path to targetfile exists
+                # open it in read mode and start
+                # writing lines
+                with open(targetfile, "r") as entry:
+                    for line in entry:
+                        submitfile.write(line)
+            else:
 
-            # else raise exception
-            raise ValueError(f"[jobrunner] {targetfile} not present in path")
+                # else raise exception
+                raise ValueError(f"[jobrunner] {targetfile} not present in path")
