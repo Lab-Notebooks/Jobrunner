@@ -27,7 +27,7 @@ def ParseJobToml(basedir, workdir):
             "options": [],
         },
         "job": {
-            "input": None,
+            "input": [],
             "target": None,
             "submit": [],
             "setup": [],
@@ -53,16 +53,28 @@ def ParseJobToml(basedir, workdir):
                 if f"{key}.{subkey}" in [
                     "job.setup",
                     "job.submit",
+                    "job.input",
                 ]:
                     work_obj = [
                         os.path.dirname(jobfile) + os.sep + value for value in work_obj
                     ]
+
+                    # check paths and raise error as
+                    # appropriate
+                    # for value in work_obj:
+                    #    if not os.path.exists(value):
+                    #        raise ValueError(f"[jobrunner]: {value} does not exist")
 
                 # absolute path for job.target
                 if f"{key}.{subkey}" in [
                     "job.target",
                 ]:
                     work_obj = os.path.dirname(jobfile) + os.sep + work_obj
+
+                    # check paths and raise error as
+                    # appropriate
+                    # if not os.path.exists(work_obj):
+                    #    raise ValueError(f"[jobrunner]: {work_obj} does not exist")
 
                 if f"{key}.{subkey}" in [
                     "job.archive",
@@ -81,7 +93,6 @@ def ParseJobToml(basedir, workdir):
                 # here to handle exceptions
                 if f"{key}.{subkey}" in [
                     "schedular.command",
-                    "job.input",
                     "job.target",
                 ]:
 
@@ -97,11 +108,6 @@ def ParseJobToml(basedir, workdir):
                         # not already set
                         main_dict[key][subkey] = work_obj
 
-                        # store directory name
-                        # where input is defined
-                        if subkey in ["input"]:
-                            main_dict[subkey + "dir"] = os.path.dirname(jobfile)
-
                 else:
                     # extend main dictionary
                     main_dict[key][subkey].extend(work_obj)
@@ -111,33 +117,18 @@ def ParseJobToml(basedir, workdir):
     main_dict["basedir"] = basedir
     main_dict["workdir"] = workdir
 
-    # perform checks to enforce desgin
+    # perform checks to enforce design
     # constraints for job.input and job.target
-    if main_dict["job"]["input"]:
+    if main_dict["job"]["input"] and main_dict["job"]["target"]:
 
-        # create a list of input files to perform checks
-        # along the directory tree
-        inputfile_list = GetNodeList(
-            main_dict["basedir"],
-            main_dict["workdir"],
-            node_object=main_dict["job"]["input"],
-        )
+        targetdir = os.path.dirname(main_dict["job"]["target"])
+        inputdir = os.path.dirname(main_dict["job"]["input"][0])
 
-        targetfile = main_dict["job"]["target"]
-
-        # loop over input files and start comparing length of directories
-        for inputfile in inputfile_list:
-            if len(os.path.dirname(inputfile)) < len(main_dict["inputdir"]):
-                raise ValueError(
-                    f"[jobrunner] job.input: {inputfile} should not exist before it is defined in Jobfile"
-                )
-
-            if targetfile and len(os.path.dirname(targetfile)) < len(
-                main_dict["inputdir"]
-            ):
-                raise ValueError(
-                    f"[jobrunner] job.target: {targetfile} should not exist before job.input is defined in Jobfile"
-                )
+        if len(targetdir) < len(inputdir):
+            raise ValueError(
+                f'[jobrunner] job.target: {main_dict["job"]["target"]} should not exist'
+                + f"before job.input is defined in Jobfile"
+            )
 
     return main_dict
 

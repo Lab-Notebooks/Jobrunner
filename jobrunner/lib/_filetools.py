@@ -53,23 +53,14 @@ def CreateInputFile(main_dict):
     """
     Create an input file for a given simulation
     recursively using job.input between basedir
-    and workdir using job.input
+    and workdir defined in main_dict
 
     main_dict : Dictionary containing details of the
                 job configuration in directory tree
     """
-    # check to see if input file is
+    # check to see if input files are
     # defined in the main dictionary
     if main_dict["job"]["input"]:
-
-        # get a list of all job.input
-        # files in the directory tree
-        # between basedir and workdir
-        nodefile_list = GetNodeList(
-            main_dict["basedir"],
-            main_dict["workdir"],
-            node_object=main_dict["job"]["input"],
-        )
 
         # open a job.input file in write mode
         # and replace existing
@@ -77,7 +68,7 @@ def CreateInputFile(main_dict):
 
             # loop through the list of
             # source file from job.input
-            for nodefile in nodefile_list:
+            for nodefile in main_dict["job"]["input"]:
 
                 # open nodefile in read mode
                 # write entries to inputfile
@@ -89,10 +80,40 @@ def CreateInputFile(main_dict):
                 inputfile.write(f"\n")
 
 
+def CreateTargetFile(main_dict):
+    """
+    Create a job.target for a given simulation
+    using values from job.target in main_dict
+
+    Arguments
+    ---------
+    main_dict : Dictionary containing details of the
+                job configuration in directory tree
+    """
+    # set target file from job.target
+    targetfile = main_dict["job"]["target"]
+
+    # check if path to targetfile
+    # exists and handle execptions
+    if targetfile:
+        if os.path.exists(targetfile):
+
+            subprocess.run(
+                f"rm -f job.target && ln -s {targetfile} job.target",
+                shell=True,
+                check=True,
+            )
+
+        else:
+
+            # else raise exception
+            raise ValueError(f"[jobrunner] {targetfile} not present in path")
+
+
 def CreateSubmitFile(main_dict):
     """
-    Create a job.submit for a given simulation
-    using values from job.submit
+    Create a job.submit file for using values
+    from job.submit list define in main_dict
 
     Arguments
     ---------
@@ -135,22 +156,3 @@ def CreateSubmitFile(main_dict):
             with open(nodefile, "r") as entry:
                 for line in entry:
                     submitfile.write(line)
-
-        # set target file from job.target
-        targetfile = main_dict["job"]["target"]
-
-        # check if path to targetfile
-        # exists and handle execptions
-        if targetfile:
-            if os.path.exists(targetfile):
-
-                subprocess.run(
-                    f"rm -f job.target && ln -s {targetfile} job.target",
-                    shell=True,
-                    check=True,
-                )
-
-            else:
-
-                # else raise exception
-                raise ValueError(f"[jobrunner] {targetfile} not present in path")

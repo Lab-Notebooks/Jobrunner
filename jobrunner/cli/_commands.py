@@ -1,5 +1,6 @@
 # Standard libraries
 import os
+import sys
 import subprocess
 from datetime import date
 
@@ -12,7 +13,8 @@ from .. import lib
 
 @jobrunner.command(name="setup")
 @click.argument("workdir_list", required=True, nargs=-1, type=str)
-def setup(workdir_list):
+@click.option("--show", is_flag=True, help="only show configuration details")
+def setup(workdir_list, show):
     """
     \b
     Run setup scripts in a directory
@@ -36,32 +38,44 @@ def setup(workdir_list):
     for workdir in workdir_list:
 
         # chdir to working directory
-        print(f"-------------------------------------------------------------")
+        print(
+            f"[jobrunner]-------------------------------------------------------------"
+        )
         os.chdir(workdir)
         workdir = os.getcwd()
-        print(f"Working directory: {workdir}")
+        print(f"[jobrunner] Working directory: {workdir}")
 
         # Build main dictionary
-        print(f"Parsing Jobfiles in directory tree")
+        print(f"[jobrunner] Parsing Jobfiles in directory tree")
         main_dict = lib.ParseJobToml(basedir, workdir)
 
-        # Build setupfile
-        print(f"Creating setup file: job.setup")
-        lib.CreateSetupFile(main_dict)
+        if show:
+            # Print configuration details
+            print(f"[jobrunner] ---- Parsed Configuration ----")
+            print(f"[jobrunner] job.setup: [")
+            for value in main_dict["job"]["setup"]:
+                print(f"[jobrunner] \t{value}")
+            print(f"[jobrunner] \t]")
 
-        # Run setup
-        print(f"Running setup")
-        subprocess.run(f"bash job.setup", shell=True, check=True)
+        else:
+            # Build setupfile
+            print(f"[jobrunner] Creating setup file: job.setup")
+            lib.CreateSetupFile(main_dict)
+
+            # Run setup
+            print(f"[jobrunner] Running setup")
+            subprocess.run(f"bash job.setup", shell=True, check=True)
 
         # Return to base directory
         os.chdir(basedir)
 
-    print(f"-------------------------------------------------------------")
+    print(f"[jobrunner]-------------------------------------------------------------")
 
 
 @jobrunner.command(name="submit")
 @click.argument("workdir_list", required=True, nargs=-1, type=str)
-def submit(workdir_list):
+@click.option("--show", is_flag=True, help="only show configuration details")
+def submit(workdir_list, show):
     """
     \b
     Submit a job from a directory
@@ -88,25 +102,46 @@ def submit(workdir_list):
         print(f"-------------------------------------------------------------")
         os.chdir(workdir)
         workdir = os.getcwd()
-        print(f"Working directory: {workdir}")
+        print(f"[jobrunner] Working directory: {workdir}")
 
         # Build main dictionary
-        print(f"Parsing Jobfiles in directory tree")
+        print(f"[jobrunner] Parsing Jobfiles in directory tree")
         main_dict = lib.ParseJobToml(basedir, workdir)
 
-        # Build inputfile
-        print(f"Creating input file: job.input")
-        lib.CreateInputFile(main_dict)
+        if show:
+            # Print configuration details
+            print(f"[jobrunner] ---- Parsed Configuration ----")
+            print(f"[jobrunner] job.input: [")
+            for value in main_dict["job"]["input"]:
+                print(f"[jobrunner] \t{value}")
+            print(f"[jobrunner] \t]")
+            print(f"[jobrunner] job.target:")
+            print(f'[jobrunner] \t{main_dict["job"]["target"]}')
+            print(f"[jobrunner] job.submit: [")
+            for value in main_dict["job"]["submit"]:
+                print(f"[jobrunner] \t{value}")
+            print(f"[jobrunner] \t]")
 
-        # Build jobfile
-        print(f"Creating submit file: job.submit")
-        lib.CreateSubmitFile(main_dict)
+        else:
+            # Build inputfile
+            print(f"[jobrunner] Creating input file: job.input")
+            lib.CreateInputFile(main_dict)
 
-        # Submit job
-        print(f"Submitting job")
-        subprocess.run(
-            f'{main_dict["schedular"]["command"]} job.submit', shell=True, check=True
-        )
+            # Build targetfile
+            print(f"[jobrunner] Creating target file: job.target")
+            lib.CreateTargetFile(main_dict)
+
+            # Build submitfile
+            print(f"[jobrunner] Creating submit file: job.submit")
+            lib.CreateSubmitFile(main_dict)
+
+            # Submit job
+            print(f"[jobrunner] Submitting job")
+            subprocess.run(
+                f'{main_dict["schedular"]["command"]} job.submit',
+                shell=True,
+                check=True,
+            )
 
         # Return to base directory
         os.chdir(basedir)
@@ -121,12 +156,15 @@ def clean(workdir_list):
     \b
 
     \b
-    This command removes job.input, job.setup, and
-    job.submit files from a working directory
+    This command removes job.input, job.target,
+    job.setup, and job.submit files from a
+    working directory
     \b
     """
     # Get base directory
     basedir = os.getcwd()
+
+    print(f"[jobrunner] Cleaning up working directory")
 
     # run cleanup
     for workdir in workdir_list:
@@ -177,14 +215,14 @@ def archive(tag, workdir_list):
         print(f"-------------------------------------------------------------")
         os.chdir(workdir)
         workdir = os.getcwd()
-        print(f"Working directory: {workdir}")
+        print(f"[jobrunner] Working directory: {workdir}")
 
         # Build main dictionary
-        print(f"Parsing Jobfile configuration")
+        print(f"[jobrunner] Parsing Jobfile configuration")
         main_dict = lib.ParseJobToml(basedir, workdir)
 
         # Create archive
-        print(f"Creating archive tag: {tag}")
+        print(f"[jobrunner] Creating archive tag: {tag}")
         lib.CreateArchive(main_dict, tag)
 
         # Return to base directory
