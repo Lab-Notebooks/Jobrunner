@@ -154,5 +154,28 @@ def CreateSubmitFile(main_dict):
             # open nodefile in read mode
             # and start populating contents
             with open(nodefile, "r") as entry:
+
+                # loop over lines in entry
                 for line in entry:
+
+                    # if job.input and job.target used
+                    # in nodefile. Make sure they are
+                    # defined in the directory tree
+                    if (
+                        "job.target" in line.split("#")[0]
+                        and not main_dict["job"]["target"]
+                    ):
+                        raise ValueError(
+                            f"[jobrunner]: job.target used in {nodefile} but not defined in Jobfile"
+                        )
+
+                    if (
+                        "job.input" in line.split("#")[0]
+                        and not main_dict["job"]["input"]
+                    ):
+                        raise ValueError(
+                            f"[jobrunner]: job.input used in {nodefile} but not defined in Jobfile"
+                        )
+
+                    # write to submit file if checks passed
                     submitfile.write(line)
