@@ -13,6 +13,7 @@ Install in development mode
 ---------------------------
 
 ::
+
    pip3 install click
    cd jobrunner
    ./setup develop
