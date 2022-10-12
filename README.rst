@@ -13,21 +13,45 @@ Functionality of Jobrunner is best understood through example projects which can
 
 - `akashdhruv/channel-flow <https://github.com/akashdhruv/channel-flow>`_: Example simulations of the channel flow problem to showcase applicability of containerization tools for scientific computing problems
 
+Writing a Jobfile
+-----------------
+
+A Jobfile provides a 
+
+::
+
+   [schedular]
+      command = "bash"
+      options = []
+   [job]
+      setup = []
+      input = []
+      target = "target"
+      submit = []
+      archive = []
+
 Jobrunner commands
 ------------------
 
-Writing a Jobfile
------------------
+- **Setup**: Executes
+
+- **Submit**: Executes
+
+- **Archive**: Executes
+
+- **Clean**: Executes
 
 Installation
 ------------
 
 Using Python Package Index (PyPI)
 ::
+
    pip3 install PyJobrunner
 
 Development mode
 ::
+
    pip3 install click && ./setup develop
    
 .. |Code style: black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
