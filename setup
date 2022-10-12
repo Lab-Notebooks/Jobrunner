@@ -16,12 +16,14 @@ def develop():
     """Development mode"""
     subprocess.run("python3 setup.py develop --user", shell=True, check=True)
 
+
 @setup.command(name="install")
 def install():
     """Installation command"""
     subprocess.run("python3 setup.py develop --user", shell=True, check=True)
     subprocess.run("python3 setup.py build", shell=True, check=True)
     subprocess.run("python3 setup.py install --user", shell=True, check=True)
+
 
 @setup.command(name="publish")
 def publish():
@@ -34,6 +36,7 @@ def publish():
 def clean():
     """Clean installation artifacts"""
     subprocess.run("rm -rf *.egg-info build dist", shell=True, check=True)
+
 
 if __name__ == "__main__":
     setup()
