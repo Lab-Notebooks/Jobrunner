@@ -16,13 +16,14 @@ Functionality of Jobrunner is best understood through example projects which can
 Writing a Jobfile
 -----------------
 
-A Jobfile provides a 
+A Jobfile provides details on functionality of each file in a directory tree along with schedular configuration
 
 ::
 
    [schedular]
       command = "bash"
       options = []
+      
    [job]
       setup = []
       input = []
