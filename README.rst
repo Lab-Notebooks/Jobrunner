@@ -1,7 +1,7 @@
 Jobrunner
 =========
 
-Jobrunner is a minimal command line tool to manage and deploy computing jobs and organize your directories. Please refer to examples below for detailed instructions on how to use it.
+Jobrunner is a command line tool to manage and deploy computing jobs and organize your directories. Please refer to examples below for detailed instructions on how to use it.
 
 Examples:
 
@@ -14,6 +14,4 @@ Install in development mode
 
 ::
 
-   pip3 install click
-   cd jobrunner
-   ./setup develop
+   pip3 install click && cd jobrunner && ./setup develop
