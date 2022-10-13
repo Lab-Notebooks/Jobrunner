@@ -60,8 +60,8 @@ def ParseJobConfig(basedir, workdir):
 
                     # convert to a list
                     # if single entry
-                    if isinstance(work_obj, str):
-                        work_obj = [work_obj]
+                    if not isinstance(work_obj, list):
+                        raise ValueError(f"[jobrunner] {key}.{subkey} should be a list")
 
                     # set absolute paths
                     work_obj = [
@@ -95,8 +95,8 @@ def ParseJobConfig(basedir, workdir):
                 ]:
                     # convert to a list
                     # if single entry
-                    if isinstance(work_obj, str):
-                        work_obj = [work_obj]
+                    if not isinstance(work_obj, list):
+                        raise ValueError(f"[jobrunner] {key}.{subkey} should be a list")
 
                     # set absolute paths
                     work_obj = [
