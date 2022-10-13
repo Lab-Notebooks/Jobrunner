@@ -1,0 +1,53 @@
+#!/bin/bash
+#echo COLUMNS is "$COLUMNS"
+
+if [ -z "$COLUMNS" ]; then
+   export COLUMNS
+   if command -v resize >/dev/null 2>&1; then
+       eval $(SHELL=/bin/sh resize)
+   else
+       if command -v stty >/dev/null 2>&1; then
+	   eval $(stty -a|sed -ne '/columns /s/.*columns \([0-9]*\);.*/COLUMNS=\1/p')
+       fi
+   fi
+fi
+colopt=''
+
+if [ -n "$COLUMNS" ]; then
+   colopt="-w$COLUMNS"
+#   echo $colopt
+fi
+
+if [ "${0/llog/}" != "$0" ]; then
+    catlog=catloglast
+else
+    catlog=catlog
+fi
+
+if [ "${1#-}" != "$1" ]; then
+    diffcmd="/usr/bin/diff $1"
+    shift
+    while [ "${1#-}" != "$1" ]; do
+	diffcmd="$diffcmd $1"
+	shift
+    done
+    lesssrch='-i'
+else
+    diffcmd="/usr/bin/sdiff -ibW $colopt"
+    # lesssrch='-i +/ [<>|]'
+    lesssrch=('-i' '-p' '( [>|][	]| [<|]$)')
+fi
+
+if [ ! -r "$1" ]; then
+   echo "$0: readable file arguments required!"
+   exit 1
+fi
+if [ ! -r "$2" ]; then
+   echo "$0: two readable file arguments required!"
+   exit 1
+fi
+if [ -t 1 ]; then
+   $diffcmd <($catlog $1) <($catlog $2) | less "${lesssrch[@]}"
+else
+   $diffcmd <($catlog $1) <($catlog $2)
+fi

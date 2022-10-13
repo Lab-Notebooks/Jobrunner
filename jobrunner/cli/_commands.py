@@ -235,3 +235,17 @@ def archive(tag, workdir_list):
 
         # Return to base directory
         os.chdir(basedir)
+
+
+@jobrunner.command(name="diff")
+@click.argument("file1", type=str, required=True)
+@click.argument("file2", type=str, required=True)
+def diff(file1, file2):
+    """
+    Run diff on two files
+    """
+    subprocess.run(
+        f'{os.path.expanduser("~")}/.local/bin/logdiff {file1} {file2}',
+        shell=True,
+        check=True,
+    )

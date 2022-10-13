@@ -1,6 +1,5 @@
 # Standard libraries
 import os
-from os.path import expanduser
 import subprocess
 import pkg_resources
 
@@ -18,7 +17,9 @@ def jobrunner(ctx, version):
     """
     if ctx.invoked_subcommand is None and not version:
         subprocess.run(
-            f'{expanduser("~")}/.local/bin/jobrunner --help', shell=True, check=True
+            f'{os.path.expanduser("~")}/.local/bin/jobrunner --help',
+            shell=True,
+            check=True,
         )
 
     if version:
