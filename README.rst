@@ -18,24 +18,55 @@ Writing a Jobfile
 
 A Jobfile provides details on functionality of each file in a directory tree along with schedular configuration
 
+Directory contents
+
+..  code-block:: none
+
+    $ tree vendor/composer
+    |── ClassLoader.php
+    ├── LICENSE
+    ├── autoload_classmap.php
+    ├── ...
+    └── installed.json
+
 ::
 
+   > ls
+   buildFlash.sh  flash.par  flashx  Jobfile  preProcess.sh  runFlash.sh
+
+..  code-block:: python
+
    [schedular]
-       
-      # schedular command `bsub`, `qsub`, `slurm` or `bash`
+      
+      # schedular command to dispatch jobs
       command = "slurm"
+      
+      # schedular options job name, time, nodes/tasks
       options = [
-                 "#SBATCH --ntasks=5",
-                 "#SBATCH -t 0-30:00",
-                 "#SBATCH --job-name=myjob",
-                 ]
+                  "#SBATCH --ntasks=5",
+                  "#SBATCH -t 0-30:00",
+                  "#SBATCH --job-name=myjob",
+                ]
       
    [job]
-      setup = []
-      input = []
-      target = "target"
-      submit = []
-      archive = []
+   
+      # list of scripts that need to execute when running setup command
+      setup = ["buildFlash.sh"]
+      
+      # input for the job
+      input = ["flash.par"]
+      
+      # target file/executable for the job
+      target = "flashx"
+      
+      # list of scripts that need to execute when running submit command
+      submit = [
+                  "preProcess.sh", 
+                  "runFlash.sh",
+               ]
+               
+      # list of file/patterns to archive
+      archive = ["*_hdf5_*", "*.log"]
 
 Jobrunner commands
 ------------------
