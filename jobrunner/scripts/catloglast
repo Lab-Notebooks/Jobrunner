@@ -1,0 +1,13 @@
+#!/bin/bash
+
+lasthdrno=$(fgrep -n ' Run number: ' "$1"|tail -n 1|cut -d: -f1)
+typeset -f lastbeforeno
+lastbeforeno=$((lasthdrno-1))
+
+if [ $lastbeforeno -lt 1 ];then
+  catlog "$@"
+else
+#	sed -e "1,${lastbeforeno}{/ Run number: /{=;l};d;}" "$@"|catlog
+#	echo	sed -e "1,${lastbeforeno}{/ Run number: /!d;"'s/\\n//p;;=;P}' "$@"
+	sed -e "1,${lastbeforeno}{/ Run number: /l;d}" "$@"|catlog
+fi

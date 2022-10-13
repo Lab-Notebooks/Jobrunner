@@ -33,7 +33,12 @@ setup(
     license=metadata["__license__"],
     packages=find_packages(where="./"),
     package_dir={"": "./"},
-    scripts=["jobrunner/jobrunner", "jobrunner/logdiff"],
+    scripts=[
+        "jobrunner/scripts/jobrunner",
+        "jobrunner/scripts/logdiff",
+        "jobrunner/scripts/catlog",
+        "jobrunner/scripts/catloglast",
+    ],
     include_package_data=True,
     long_description=long_description,
     classifiers=[
