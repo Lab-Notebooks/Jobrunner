@@ -6,7 +6,7 @@ import glob
 import toml
 
 
-def ParseJobToml(basedir, workdir):
+def ParseJobConfig(basedir, workdir):
     """
     basedir : base directory
     workdir : work directory
@@ -23,15 +23,17 @@ def ParseJobToml(basedir, workdir):
     # values for configuration variables
     main_dict = {
         "schedular": {
-            "command": None,
+            "command": "",
             "options": [],
         },
         "job": {
             "input": [],
-            "target": None,
+            "target": "",
             "submit": [],
             "setup": [],
             "archive": [],
+            "basedir": basedir,
+            "workdir": workdir,
         },
     }
 
@@ -55,6 +57,13 @@ def ParseJobToml(basedir, workdir):
                     "job.submit",
                     "job.input",
                 ]:
+
+                    # convert to a list
+                    # if single entry
+                    if isinstance(work_obj, str):
+                        work_obj = [work_obj]
+
+                    # set absolute paths
                     work_obj = [
                         os.path.dirname(jobfile) + os.sep + value for value in work_obj
                     ]
@@ -79,6 +88,12 @@ def ParseJobToml(basedir, workdir):
                 if f"{key}.{subkey}" in [
                     "job.archive",
                 ]:
+                    # convert to a list
+                    # if single entry
+                    if isinstance(work_obj, str):
+                        work_obj = [work_obj]
+
+                    # set absolute paths
                     work_obj = [
                         os.path.dirname(jobfile) + os.sep + value for value in work_obj
                     ]
@@ -112,11 +127,6 @@ def ParseJobToml(basedir, workdir):
                     # extend main dictionary
                     main_dict[key][subkey].extend(work_obj)
 
-    # add basedir and workdir to
-    # main_dict for future use
-    main_dict["basedir"] = basedir
-    main_dict["workdir"] = workdir
-
     # perform checks to enforce design
     # constraints for job.input and job.target
     if main_dict["job"]["input"] and main_dict["job"]["target"]:
@@ -127,7 +137,7 @@ def ParseJobToml(basedir, workdir):
         if len(targetdir) < len(inputdir):
             raise ValueError(
                 f'[jobrunner] job.target: {main_dict["job"]["target"]} should not exist'
-                + f"before job.input is defined in Jobfile"
+                + "before job.input is defined in Jobfile"
             )
 
     return main_dict

@@ -2,9 +2,6 @@
 import os
 import shutil
 
-# feature imports
-import toml
-
 # local imports
 from . import GetNodeList
 
@@ -26,7 +23,7 @@ def CreateArchive(main_dict, archive_tag):
 
     # get a list of directories along the
     # node between basedir and workdir
-    node_list = GetNodeList(main_dict["basedir"], main_dict["workdir"])
+    node_list = GetNodeList(main_dict["job"]["basedir"], main_dict["job"]["workdir"])
 
     for nodedir in node_list:
 
@@ -78,4 +75,4 @@ def CreateArchive(main_dict, archive_tag):
                     shutil.move(filename, nodedir + os.sep + archive_tag)
 
     # return back to working directory
-    os.chdir(main_dict["workdir"])
+    os.chdir(main_dict["job"]["workdir"])

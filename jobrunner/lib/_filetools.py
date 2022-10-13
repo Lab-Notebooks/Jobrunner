@@ -2,9 +2,6 @@
 import os
 import subprocess
 
-# local imports
-from . import GetNodeList
-
 
 def CreateSetupFile(main_dict):
     """
@@ -19,14 +16,14 @@ def CreateSetupFile(main_dict):
     # open job.setup in write mode this
     # will replace existing job.setup
     # in the working directory
-    with open(main_dict["workdir"] + os.sep + "job.setup", "w") as setupfile:
+    with open(main_dict["job"]["workdir"] + os.sep + "job.setup", "w") as setupfile:
 
         # write the header for bash script
         setupfile.write("#!/bin/bash\n")
 
         # set environment variable for
         # working directory
-        setupfile.write(f'\nJobWorkDir="{main_dict["workdir"]}"\n')
+        setupfile.write(f'\nJobWorkDir="{main_dict["job"]["workdir"]}"\n')
 
         # add commands from job.setup script
         # and place a command to chdir into
@@ -64,7 +61,7 @@ def CreateInputFile(main_dict):
 
         # open a job.input file in write mode
         # and replace existing
-        with open(main_dict["workdir"] + os.sep + "job.input", "w") as inputfile:
+        with open(main_dict["job"]["workdir"] + os.sep + "job.input", "w") as inputfile:
 
             # loop through the list of
             # source file from job.input
@@ -122,7 +119,7 @@ def CreateSubmitFile(main_dict):
     """
     # open job.submit in write mode
     # and start populating
-    with open(main_dict["workdir"] + os.sep + "job.submit", "w") as submitfile:
+    with open(main_dict["job"]["workdir"] + os.sep + "job.submit", "w") as submitfile:
 
         # write the header
         submitfile.write("#!/bin/bash\n")
@@ -135,7 +132,7 @@ def CreateSubmitFile(main_dict):
 
         # set environment variable
         # to working directory
-        submitfile.write(f'\nJobWorkDir="{main_dict["workdir"]}"\n')
+        submitfile.write(f'\nJobWorkDir="{main_dict["job"]["workdir"]}"\n')
 
         # add commands from job.submit script
         # and chdir into node directory given by

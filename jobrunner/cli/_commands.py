@@ -47,7 +47,7 @@ def setup(workdir_list, show):
 
         # Build main dictionary
         print(f"Parsing Jobfiles in directory tree")
-        main_dict = lib.ParseJobToml(basedir, workdir)
+        main_dict = lib.ParseJobConfig(basedir, workdir)
 
         if show:
             # Print configuration details
@@ -106,7 +106,7 @@ def submit(workdir_list, show):
 
         # Build main dictionary
         print(f"Parsing Jobfiles in directory tree")
-        main_dict = lib.ParseJobToml(basedir, workdir)
+        main_dict = lib.ParseJobConfig(basedir, workdir)
 
         if show:
             # Print configuration details
@@ -227,7 +227,7 @@ def archive(tag, workdir_list):
 
         # Build main dictionary
         print(f"Parsing Jobfile configuration")
-        main_dict = lib.ParseJobToml(basedir, workdir)
+        main_dict = lib.ParseJobConfig(basedir, workdir)
 
         # Create archive
         print(f"Creating archive tag: {tag}")
