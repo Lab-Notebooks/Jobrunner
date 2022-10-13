@@ -1,4 +1,7 @@
 #!/bin/bash
+
+# Author: Klaus Weide
+
 #echo COLUMNS is "$COLUMNS"
 
 if [ -z "$COLUMNS" ]; then
