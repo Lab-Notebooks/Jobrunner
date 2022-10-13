@@ -21,8 +21,14 @@ A Jobfile provides details on functionality of each file in a directory tree alo
 ::
 
    [schedular]
-      command = "bash"
-      options = []
+       
+      # schedular command `bsub`, `qsub`, `slurm` or `bash`
+      command = "slurm"
+      options = [
+                 "#SBATCH --ntasks=5",
+                 "#SBATCH -t 0-30:00",
+                 "#SBATCH --job-name=myjob",
+                 ]
       
    [job]
       setup = []
