@@ -78,6 +78,11 @@ def ParseJobConfig(basedir, workdir):
                 if f"{key}.{subkey}" in [
                     "job.target",
                 ]:
+                    # some checks to enforce design
+                    # consistency
+                    if isinstance(work_obj, list):
+                        raise ValueError(f"[jobrunner] {key}.{subkey} cannot be a list")
+
                     work_obj = os.path.dirname(jobfile) + os.sep + work_obj
 
                     # check paths and raise error as
@@ -111,6 +116,11 @@ def ParseJobConfig(basedir, workdir):
                     "job.target",
                 ]:
 
+                    # some checks to enforce design
+                    # consistency
+                    if isinstance(work_obj, list):
+                        raise ValueError(f"[jobrunner] {key}.{subkey} cannot be a list")
+
                     # check if main dictionary already contains
                     # definitions for [key][subkey] and enforce
                     # design requirements
@@ -118,10 +128,10 @@ def ParseJobConfig(basedir, workdir):
                         raise ValueError(
                             f"[jobrunner] Found duplicates for {key}.{subkey} in directory tree"
                         )
-                    else:
-                        # set values if [key][subkey]
-                        # not already set
-                        main_dict[key][subkey] = work_obj
+
+                    # set values if [key][subkey]
+                    # not already set
+                    main_dict[key][subkey] = work_obj
 
                 else:
                     # extend main dictionary
