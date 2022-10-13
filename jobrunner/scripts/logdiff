@@ -22,9 +22,9 @@ if [ -n "$COLUMNS" ]; then
 fi
 
 if [ "${0/llog/}" != "$0" ]; then
-    catlog=catloglast
+    catlog=~/.local/bin/catloglast
 else
-    catlog=catlog
+    catlog=~/.local/bin/catlog
 fi
 
 if [ "${1#-}" != "$1" ]; then
