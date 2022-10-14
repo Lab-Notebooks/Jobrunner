@@ -1,4 +1,4 @@
-.. |icon| image:: ./icon.
+.. |ico| image:: ./icon.svg
   :width: 25 
 
 |icon| Jobrunner
