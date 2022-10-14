@@ -1,5 +1,5 @@
 .. |icon| image:: ./icon.svg
-  :width: 25 
+  :width: 50
 
 |icon| Jobrunner
 ================
