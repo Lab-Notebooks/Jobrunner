@@ -1,5 +1,8 @@
-Jobrunner
-=========
+.. |icon| image:: ./icon.svg 
+  :width: 25 
+
+|icon| Jobrunner
+================
 
 |Code style: black|
 
