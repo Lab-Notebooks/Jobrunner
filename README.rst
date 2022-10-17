@@ -39,6 +39,8 @@ Development mode enables testing of features/updates directly from the source co
 
   pip install click
 
+The ``jobrunner`` script is installed in ``$HOME/.local/bin`` directory and therfore the environment variable, ``PATH``, should be updated to include this location for command line use.
+
 Dependencies
 ============
 
