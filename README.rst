@@ -195,7 +195,7 @@ Archive
 Clean
 -----
 
-``jobrunner clean <JobWorkDir>`` remove Jobrunner artifacts from the working directory
+``jobrunner clean <JobWorkDir>`` removes Jobrunner artifacts from the working directory
    
 Examples
 ========
