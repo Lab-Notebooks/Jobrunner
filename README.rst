@@ -90,7 +90,7 @@ It makes sense to places this file at the level of project home directory and de
     # jobrunner submit command
     job.submit = ["environment.sh"]
     
-indicating that ``environment.sh`` should be included when executing both ``jobrunner setup`` and ``jobrunner submit`` commands. Descending down to the ``JobObject1`` level 
+indicating that ``environment.sh`` should be included when executing both ``jobrunner setup`` and ``jobrunner submit`` commands. At the level of sub-directory ``JobObject2`` 
 
 ..  code-block:: python
 
