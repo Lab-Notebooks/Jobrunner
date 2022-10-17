@@ -11,7 +11,7 @@ Jobrunner is a command line tool to manage and deploy computing jobs, organize c
 Installation
 ------------
 
-Stable releases of Jobrunner are hosted on Python Package Index website (`<https://pypi.org/project/PyJobRunner/>`_) and can be installed by executing
+Stable releases of Jobrunner are hosted on Python Package Index website (`<https://pypi.org/project/PyJobRunner/>`_) and can be installed by executing,
 
 ::
 
@@ -19,20 +19,20 @@ Stable releases of Jobrunner are hosted on Python Package Index website (`<https
    
 Note that ``pip`` should point to ``python3+`` installation package ``pip3``. 
 
-Upgrading and uninstallation is easily managed through this interface using
+Upgrading and uninstallation is easily managed through this interface using,
 
 ::
 
    pip install --upgrade PyJobrunner
    pip uninstall PyJobRunner
 
-There maybe situations where users may want to install Jobrunner in development mode $\\textemdash$ to design new features, debug, or customize options/commands to their needs. This can be easily accomplished using the ``setup`` script located in the project root directory and executing
+There maybe situations where users may want to install Jobrunner in development mode $\\textemdash$ to design new features, debug, or customize options/commands to their needs. This can be easily accomplished using the ``setup`` script located in the project root directory and executing,
 
 ::
 
    ./setup develop
 
-Development mode enables testing of features/updates directly from the source code and is an effective method for debugging. Note that the ``setup`` script relies on ``click``, which can be installed using
+Development mode enables testing of features/updates directly from the source code and is an effective method for debugging. Note that the ``setup`` script relies on ``click``, which can be installed using,
 
 ::
 
@@ -46,23 +46,51 @@ Dependencies
 Writing a Jobfile
 -----------------
 
-A Jobfile provides details on functionality of each file in a directory tree along with schedular configuration
-
-Directory contents
+A Jobfile provides details on functionality of each file in a directory tree along with schedular configuration. Consider the following directory tree for a project,
 
 ..  code-block:: none
 
-    $ tree vendor/composer
-    |── ClassLoader.php
-    ├── LICENSE
-    ├── autoload_classmap.php
-    ├── ...
-    └── installed.json
+    $ tree Project
+    ├── Jobfile
+    ├── environment.sh
+    ├── JobObject1
+    |── JobObject2
+        ├── Jobfile
+        ├── flash.par
+        ├── flashx
+        ├── setupScript.sh
+        ├── submitScript.sh
+        ├── preProcess.sh
+        ├── config1
+        ├── config2
+            ├── Jobfile
+            ├── flash.par
 
-::
+The base directory ``Project`` contains two different job object sub-directories ``JobObject1`` and ``JobObject2`` which share a common environment defined in ``environment.sh``,
 
-   > ls
-   buildFlash.sh  flash.par  flashx  Jobfile  preProcess.sh  runFlash.sh
+.. code-block:: bash
+
+   # module for OpenMPI
+   module load openmpi-4.1.1
+
+   # environment variables common to
+   # different job objects
+   export COMMON_ENV_VARIABLE_1=/path/to/a/libarary
+   export COMMON_ENV_VARIABLE_2="value"
+
+It makes sense to places this file at the level of project home directory and defined it ``Jobfile`` as,
+
+..  code-block:: python
+
+    # scripts to include during
+    # jobrunner setup command
+    job.setup = ["environment.sh"]
+
+    # scripts to include during
+    # jobrunner submit command
+    job.submit = ["environment.sh"]
+    
+indicating that ``environment.sh`` should be included when executing both ``jobrunner setup`` and ``jobrunner submit`` commands. Descending down to the ``JobObject1`` level 
 
 ..  code-block:: python
 
@@ -81,7 +109,7 @@ Directory contents
    [job]
    
       # list of scripts that need to execute when running setup command
-      setup = ["buildFlash.sh"]
+      setup = ["setupScript.sh"]
       
       # input for the job
       input = ["flash.par"]
@@ -92,7 +120,7 @@ Directory contents
       # list of scripts that need to execute when running submit command
       submit = [
                   "preProcess.sh", 
-                  "runFlash.sh",
+                  "submitScript.sh",
                ]
                
       # list of file/patterns to archive
