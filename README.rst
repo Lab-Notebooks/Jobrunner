@@ -1,6 +1,7 @@
 .. |icon| image:: ./icon.svg
   :width: 50
 
+================
 |icon| Jobrunner
 ================
 
@@ -9,7 +10,7 @@
 Jobrunner is a command line tool to manage and deploy computing jobs, organize complex workloads, and enforce a directory based hierarchy to enable reuse of files and bash scripts within a project. Organization details of a directory tree are encoded in Jobfiles which serve as an index of files/scripts, and indicate their purpose when deploying or setting up a job. It is a flexible tool that allows users to design their own directory structure, and simply perserves their design and maintains consistency with increase in complexity of the project.
 
 Installation
-------------
+============
 
 Stable releases of Jobrunner are hosted on Python Package Index website (`<https://pypi.org/project/PyJobRunner/>`_) and can be installed by executing,
 
@@ -39,12 +40,12 @@ Development mode enables testing of features/updates directly from the source co
   pip install click
 
 Dependencies
-------------
+============
 
 ``python3.8+`` ``toml``
 
 Writing a Jobfile
------------------
+=================
 
 A Jobfile provides details on functionality of each file in a directory tree along with schedular configuration. Consider the following directory tree for a project,
 
@@ -134,18 +135,61 @@ At this level, details regarding the job schedular are defined. ``schedular.comm
 ``job.archive`` provides a list of file/patterns that are moved over to the ``/Project/JobObject2/Config2/jobnode.archive/<tag_id>`` directory when running ``jobrunner archive --tag=<tag_id>``. This feature is provided to store results before cleaning up working directory for fresh runs
 
 Jobrunner commands
-------------------
+==================
 
-- **Setup**: Executes
+Setup
+-----
 
-- **Submit**: Executes
+``jobrunner setup <workdir>`` creates a ``job.setup`` file in ``<workdir>`` using ``job.setup`` scripts defined in Jobfiles along the directory tree. Jobrunner executes each script serially by changing the working directory to the location of the script. A special environment variable ``JobWorkDir`` provides the value of ``<workdir>`` supplied during invocation of the command.
 
-- **Archive**: Executes
+The ``--show`` option can be used to check which bash scripts will be included during invocation. Following is the result of ``jobrunner setup --show /Project/JobObject1`` for the example above,
 
-- **Clean**: Executes
+::
+
+      ------------------------------------------------------------------------------------------------------
+      Working directory: /Project/JobObject2
+      Parsing Jobfiles in directory tree
+
+      job.setup: [
+	      /Project/environment.sh
+	      /Project/JobObject2/setupScript.sh
+	      ]
+
+..  code-block:: bash
+      
+      #!/bin/bash
+
+      JobWorkDir="/Project/JobObject2"
+
+      cd /Users/Akash/Desktop/Project
+
+      # module for OpenMPI
+      module load openmpi-4.1.1
+
+      # environment variables common to
+      # different job objects
+      export COMMON_ENV_VARIABLE_1=/path/to/a/libarary
+      export COMMON_ENV_VARIABLE_2="value"
+
+      cd /Project/JobObject2
+
+      echo Hello from setup script
+
+
+Submit
+------
+
+Archive
+-------
+
+Clean
+-----
+
+Diff
+----
    
 Examples
---------
+========
 
 Functionality of Jobrunner is best understood through example projects which can be found in following repositories:
 
