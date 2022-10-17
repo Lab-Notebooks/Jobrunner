@@ -7,7 +7,7 @@
 
 |Code style: black|
 
-Jobrunner is a command line tool to manage and deploy computing jobs, organize complex workloads, and enforce a directory based hierarchy to enable reuse of files and bash scripts within a project. Organization details of a directory tree are encoded in Jobfiles which serve as an index of files/scripts, and indicate their purpose when deploying or setting up a job. It is a flexible tool that allows users to design their own directory structure, and simply perserves their design and maintains consistency with increase in complexity of the project.
+Jobrunner is a command line tool to manage and deploy computing jobs, organize complex workloads, and enforce a directory based hierarchy to enable reuse of files and bash scripts within a project. Organization details of a directory tree are encoded in Jobfiles which serve as an index of files/scripts, and indicate their purpose when deploying or setting up a job. It is a flexible tool that allows users to design their own directory structure, perserve their design, and maintain consistency with increase in complexity of the project.
 
 Installation
 ============
@@ -79,7 +79,7 @@ The base directory ``Project`` contains two different job object sub-directories
    export COMMON_ENV_VARIABLE_1=/path/to/a/libarary
    export COMMON_ENV_VARIABLE_2="value"
 
-It makes sense to places this file at the level of project home directory and define it in ``Jobfile`` as,
+It makes sense to places this file at the level of project home directory and define it in ``Jobfile`` as given below, indicating that ``environment.sh`` should be included when executing both ``jobrunner setup`` and ``jobrunner submit`` commands. 
 
 ..  code-block:: python
 
@@ -90,8 +90,8 @@ It makes sense to places this file at the level of project home directory and de
     # scripts to include during
     # jobrunner submit command
     job.submit = ["environment.sh"]
-    
-indicating that ``environment.sh`` should be included when executing both ``jobrunner setup`` and ``jobrunner submit`` commands. At the level of sub-directory ``/Project/JobObject2`` more files are added and lead to a Jobfile that looks like,
+
+At the level of sub-directory ``/Project/JobObject2`` more files are added and lead to a Jobfile that looks like,
 
 ..  code-block:: python
       
@@ -119,7 +119,7 @@ indicating that ``environment.sh`` should be included when executing both ``jobr
                   "submitScript.sh",
                ]
 
-At this level, details regarding the job schedular are defined. ``schedular.command`` $\\textemdash$ ``slurm`` in this case $\\textemdash$ is used to dispatch the jobs with options defined in ``schedular.options``. ``job.input`` refers to the inputs required to run ``job.target`` executable which is common for configurations ``/Project/JobObject2/Config1`` and ``/Project/JobObject2/Config2``, which contain their respective input files and schedular options which are added to the values present at the current level. The Jobfile at ``/Project/JobObject2/Config2`` becomes,
+At this level, details regarding the job schedular are defined. ``schedular.command`` $\\textemdash$ ``slurm`` in this case $\\textemdash$ is used to dispatch the jobs with options defined in ``schedular.options``. The variable, ``job.input``, refers to the inputs required to run ``job.target`` executable which is common for configurations ``/Project/JobObject2/Config1`` and ``/Project/JobObject2/Config2``, which contain their respective input files and schedular options which are added to the values present at the current level. The Jobfile at ``/Project/JobObject2/Config2`` becomes,
 
 ..  code-block:: python
 
@@ -132,7 +132,7 @@ At this level, details regarding the job schedular are defined. ``schedular.comm
       # list of file/patterns to archive
       job.archive = ["*_hdf5_*", "*.log"]
 
-``job.archive`` provides a list of file/patterns that are moved over to the ``/Project/JobObject2/Config2/jobnode.archive/<tag_id>`` directory when running ``jobrunner archive --tag=<tag_id>``. This feature is provided to store results before cleaning up working directory for fresh runs
+The variable, ``job.archive``, provides a list of file/patterns that are moved over to the ``/Project/JobObject2/Config2/jobnode.archive/<tagID>`` directory when running ``jobrunner archive --tag=<tagID>``. This feature is provided to store results before cleaning up working directory for fresh runs
 
 Jobrunner commands
 ==================
@@ -140,13 +140,12 @@ Jobrunner commands
 Setup
 -----
 
-``jobrunner setup <workdir>`` creates a ``job.setup`` file in ``<workdir>`` using ``job.setup`` scripts defined in Jobfiles along the directory tree. Jobrunner executes each script serially by changing the working directory to the location of the script. A special environment variable ``JobWorkDir`` provides the value of ``<workdir>`` supplied during invocation of the command.
+``jobrunner setup <JobWorkDir>`` creates a ``job.setup`` file in ``<workdir>`` using ``job.setup`` scripts defined in Jobfiles along the directory tree. Jobrunner executes each script serially by changing the working directory to the location of the script. A special environment variable ``JobWorkDir`` provides the value of ``<JobWorkDir>`` supplied during invocation of the command.
 
-The ``--show`` option can be used to check which bash scripts will be included during invocation. Following is the result of ``jobrunner setup --show /Project/JobObject1`` for the example above,
+The ``--show`` option can be used to check which bash scripts will be included during invocation. Following is the result of ``jobrunner setup --show JobObject1`` for the example above,
 
 ::
 
-      ------------------------------------------------------------------------------------------------------
       Working directory: /Project/JobObject2
       Parsing Jobfiles in directory tree
 
@@ -155,38 +154,48 @@ The ``--show`` option can be used to check which bash scripts will be included d
 	      /Project/JobObject2/setupScript.sh
 	      ]
 
-..  code-block:: bash
-      
-      #!/bin/bash
-
-      JobWorkDir="/Project/JobObject2"
-
-      cd /Users/Akash/Desktop/Project
-
-      # module for OpenMPI
-      module load openmpi-4.1.1
-
-      # environment variables common to
-      # different job objects
-      export COMMON_ENV_VARIABLE_1=/path/to/a/libarary
-      export COMMON_ENV_VARIABLE_2="value"
-
-      cd /Project/JobObject2
-
-      echo Hello from setup script
-
-
 Submit
 ------
+
+``jobrunner submit <JobWorkDir>`` creates a ``job.submit`` file in ``<JobWorkDir>`` using ``job.submit`` scripts and ``schedular.options`` values defined in Jobfiles along the directory tree. ``schedular.command`` is used to dispatch the result script.
+
+The ``--show`` option can be used to check schedular configuration and list of bash scripts that will be included during invocation. Following is the result of ``jobrunner submit --show JobObject1/Config2`` for the example above,
+
+::
+
+	Working directory: /Project/JobObject2/Config2
+	Parsing Jobfiles in directory tree
+
+	schedular.command:
+		slurm
+	schedular.options: [
+		#SBATCH -t 0-30:00
+		#SBATCH --job-name=myjob
+		#SBATCH --ntasks=5
+		]
+	job.input: [
+		/Project/JobObject2/flash.par
+		/Project/JobObject2/Config2/flash.par
+		]
+	job.target:
+		/Project/JobObject2/flashx
+	job.submit: [
+		/Project/environment.sh
+		/Project/JobObject2/preProcess.sh
+		/Project/JobObject2/submitScript.sh
+		]
+
+Along with the ``job.submit`` script, ``job.input`` and ``job.target`` files are also created in ``<JobWorkDir>`` and created using values defined in Jobfiles.
 
 Archive
 -------
 
+``jobrunner archive --tag=<tagID> <JobWorkDir>`` creates archives along the directory tree using the list of values defined ``job.archive``. The archives are created under the sub-directory ``jobnode.archive/<tagID>``
+
 Clean
 -----
 
-Diff
-----
+``jobrunner clean <JobWorkDir>`` remove Jobrunner artifacts from the working directory
    
 Examples
 ========
