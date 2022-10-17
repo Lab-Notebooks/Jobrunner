@@ -190,7 +190,7 @@ Along with the ``job.submit`` script, ``job.input`` and ``job.target`` files are
 Archive
 -------
 
-``jobrunner archive --tag=<tagID> <JobWorkDir>`` creates archives along the directory tree using the list of values defined ``job.archive``. The archives are created under the sub-directory ``jobnode.archive/<tagID>``
+``jobrunner archive --tag=<tagID> <JobWorkDir>`` creates archives along the directory tree using the list of values defined ``job.archive``. The archives are created under the sub-directory ``jobnode.archive/<tagID>`` and represent the state of the directory tree during the invocation.
 
 Clean
 -----
