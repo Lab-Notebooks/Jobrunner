@@ -52,10 +52,11 @@ A Jobfile provides details on functionality of each file in a directory tree alo
 ..  code-block:: none
 
     $ tree Project
+    
     ├── Jobfile
     ├── environment.sh
     ├── JobObject1
-    |── JobObject2
+    ├── JobObject2
         ├── Jobfile
         ├── flash.par
         ├── flashx
@@ -142,7 +143,7 @@ Setup
 
 ``jobrunner setup <JobWorkDir>`` creates a ``job.setup`` file in ``<workdir>`` using ``job.setup`` scripts defined in Jobfiles along the directory tree. Jobrunner executes each script serially by changing the working directory to the location of the script. A special environment variable ``JobWorkDir`` provides the value of ``<JobWorkDir>`` supplied during invocation of the command.
 
-The ``--show`` option can be used to check which bash scripts will be included during invocation. Following is the result of ``jobrunner setup --show JobObject1`` for the example above,
+The ``--show`` option can be used to check which bash scripts will be included during invocation. Following is the result of ``jobrunner setup --show JobObject2`` for the example above,
 
 ::
 
@@ -159,7 +160,7 @@ Submit
 
 ``jobrunner submit <JobWorkDir>`` creates a ``job.submit`` file in ``<JobWorkDir>`` using ``job.submit`` scripts and ``schedular.options`` values defined in Jobfiles along the directory tree. ``schedular.command`` is used to dispatch the result script.
 
-The ``--show`` option can be used to check schedular configuration and list of bash scripts that will be included during invocation. Following is the result of ``jobrunner submit --show JobObject1/Config2`` for the example above,
+The ``--show`` option can be used to check schedular configuration and list of bash scripts that will be included during invocation. Following is the result of ``jobrunner submit --show JobObject2/Config2`` for the example above,
 
 ::
 
