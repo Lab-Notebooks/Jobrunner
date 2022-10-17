@@ -61,12 +61,12 @@ A Jobfile provides details on functionality of each file in a directory tree alo
         ├── setupScript.sh
         ├── submitScript.sh
         ├── preProcess.sh
-        ├── config1
-        ├── config2
+        ├── Config1
+        ├── Config2
             ├── Jobfile
             ├── flash.par
 
-The base directory ``Project`` contains two different job object sub-directories ``JobObject1`` and ``JobObject2`` which share a common environment defined in ``environment.sh``,
+The base directory ``Project`` contains two different job object sub-directories ``/Project/JobObject1`` and ``/Project/JobObject2`` which share a common environment defined in ``environment.sh``,
 
 .. code-block:: bash
 
@@ -78,7 +78,7 @@ The base directory ``Project`` contains two different job object sub-directories
    export COMMON_ENV_VARIABLE_1=/path/to/a/libarary
    export COMMON_ENV_VARIABLE_2="value"
 
-It makes sense to places this file at the level of project home directory and defined it ``Jobfile`` as,
+It makes sense to places this file at the level of project home directory and define it in ``Jobfile`` as,
 
 ..  code-block:: python
 
@@ -90,41 +90,48 @@ It makes sense to places this file at the level of project home directory and de
     # jobrunner submit command
     job.submit = ["environment.sh"]
     
-indicating that ``environment.sh`` should be included when executing both ``jobrunner setup`` and ``jobrunner submit`` commands. At the level of sub-directory ``JobObject2`` 
+indicating that ``environment.sh`` should be included when executing both ``jobrunner setup`` and ``jobrunner submit`` commands. At the level of sub-directory ``/Project/JobObject2`` more files are added and lead to a Jobfile that looks like,
 
 ..  code-block:: python
-
-   [schedular]
       
       # schedular command to dispatch jobs
-      command = "slurm"
+      schedular.command = "slurm"
       
       # schedular options job name, time, nodes/tasks
-      options = [
-                  "#SBATCH --ntasks=5",
+      schedular.options = [
                   "#SBATCH -t 0-30:00",
                   "#SBATCH --job-name=myjob",
                 ]
       
-   [job]
-   
       # list of scripts that need to execute when running setup command
-      setup = ["setupScript.sh"]
+      job.setup = ["setupScript.sh"]
       
       # input for the job
-      input = ["flash.par"]
+      job.input = ["flash.par"]
       
       # target file/executable for the job
-      target = "flashx"
+      job.target = "flashx"
       
       # list of scripts that need to execute when running submit command
-      submit = [
+      job.submit = [
                   "preProcess.sh", 
                   "submitScript.sh",
                ]
-               
+
+At this level, details regarding the job schedular are defined. ``schedular.command`` $\\textemdash$ ``slurm`` in this case $\\textemdash$ is used to dispatch the jobs with options defined in ``schedular.options``. ``job.input`` refers to the inputs required to run ``job.target`` executable which is common for configurations ``/Project/JobObject2/Config1`` and ``/Project/JobObject2/Config2``, which contain their respective input files and schedular options which are added to the values present at the current level. The Jobfile at ``/Project/JobObject2/Config2`` becomes,
+
+..  code-block:: python
+
+      # schedular options job name, time, nodes/tasks
+      schedular.options = ["#SBATCH --ntasks=5"]
+                
+      # apppend to input file
+      job.input = ["flash.par"]
+
       # list of file/patterns to archive
-      archive = ["*_hdf5_*", "*.log"]
+      job.archive = ["*_hdf5_*", "*.log"]
+
+``job.archive`` provides a list of file/patterns that are moved over to the ``/Project/JobObject2/Config2/jobnode.archive/<tag_id>`` directory when running ``jobrunner archive --tag=<tag_id>``. This feature is provided to store results before cleaning up working directory for fresh runs
 
 Jobrunner commands
 ------------------
@@ -142,10 +149,9 @@ Examples
 
 Functionality of Jobrunner is best understood through example projects which can be found in following repositories:
 
-- `akashdhruv/boiling-simulations <https://github.com/akashdhruv/boiling-simulations>`_: A collection of high-fidelity flow/pool boiling simulations
+- `akashdhruv/Boiling-Simulations <https://github.com/akashdhruv/Boiling-Simulations>`_: A collection of high-fidelity flow/pool boiling simulations
 
-- `akashdhruv/paramesh-bittree-tests <https://github.com/akashdhruv/paramesh-bittree-tests>`_: A lab notebook for performance tests of multiphysics scientific software instrument, Flash-X
+- `akashdhruv/Channel-Flow <https://github.com/akashdhruv/Channel-Flow>`_: Example simulations of the channel flow problem to showcase applicability of containerization tools for scientific computing problems
 
-- `akashdhruv/channel-flow <https://github.com/akashdhruv/channel-flow>`_: Example simulations of the channel flow problem to showcase applicability of containerization tools for scientific computing problems
 .. |Code style: black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
    :target: https://github.com/psf/black
