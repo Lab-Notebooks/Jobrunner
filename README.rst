@@ -79,7 +79,7 @@ The base directory ``Project`` contains two different job object sub-directories
 
    # environment variables common to
    # different job objects
-   export COMMON_ENV_VARIABLE_1=/path/to/a/libarary
+   export COMMON_ENV_VARIABLE_1=/path/to/a/library
    export COMMON_ENV_VARIABLE_2="value"
 
 It makes sense to places this file at the level of project home directory and define it in ``Jobfile`` as given below, indicating that ``environment.sh`` should be included when executing both ``jobrunner setup`` and ``jobrunner submit`` commands. 
