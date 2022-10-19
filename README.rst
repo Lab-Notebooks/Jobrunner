@@ -44,7 +44,7 @@ The ``jobrunner`` script is installed in ``$HOME/.local/bin`` directory and ther
 Dependencies
 ============
 
-``python3.8+`` ``toml``
+``python3.8+`` ``click`` ``toml``
 
 Writing a Jobfile
 =================
