@@ -64,7 +64,7 @@ def setup(workdir_list, show):
 
             # Run setup
             print(f"Running setup")
-            subprocess.run(f"bash job.setup", shell=True, check=True)
+            subprocess.run(f"bash job.setup | tee job.output", shell=True, check=True)
 
         # Return to base directory
         os.chdir(basedir)
@@ -195,6 +195,12 @@ def clean(workdir_list):
 
         process = subprocess.run(
             f'rm -vf {workdir + "/" + "job.target"}',
+            shell=True,
+            check=True,
+        )
+
+        process = subprocess.run(
+            f'rm -vf {workdir + "/" + "job.output"}',
             shell=True,
             check=True,
         )
