@@ -215,14 +215,14 @@ Citation
 ::
 
 	@software{akash_dhruv_2022_7255620,
-  	author       = {Akash Dhruv},
-  	title        = {akashdhruv/Jobrunner: October 2022},
-  	month        = oct,
-  	year         = 2022,
-  	publisher    = {Zenodo},
-  	version      = {22.10},
-  	doi          = {10.5281/zenodo.7255620},
-  	url          = {https://doi.org/10.5281/zenodo.7255620}
+  	   author       = {Akash Dhruv},
+  	   title        = {akashdhruv/Jobrunner: October 2022},
+  	   month        = oct,
+  	   year         = 2022,
+  	   publisher    = {Zenodo},
+  	   version      = {22.10},
+  	   doi          = {10.5281/zenodo.7255620},
+           url          = {https://doi.org/10.5281/zenodo.7255620}
 	}
 
 .. |Code style: black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
