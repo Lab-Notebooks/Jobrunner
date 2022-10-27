@@ -251,7 +251,7 @@ def diff(file1, file2):
     Run diff on two files
     """
     subprocess.run(
-        f'{os.path.expanduser("~")}/.local/bin/logdiff {file1} {file2}',
+        f"logdiff {file1} {file2}",
         shell=True,
         check=True,
     )
