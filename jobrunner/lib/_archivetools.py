@@ -56,7 +56,6 @@ def CreateArchive(main_dict, archive_tag):
                 nodedir + os.sep + "job.input",
                 nodedir + os.sep + "job.setup",
                 nodedir + os.sep + "job.submit",
-                nodedir + os.sep + "job.output",
             ]
 
             # loop over list of files in nodedir

@@ -31,6 +31,7 @@ def ParseJobConfig(basedir, workdir):
             "target": "",
             "submit": [],
             "setup": [],
+            "clean": [],
             "archive": [],
             "basedir": basedir,
             "workdir": workdir,
@@ -92,6 +93,7 @@ def ParseJobConfig(basedir, workdir):
 
                 if f"{key}.{subkey}" in [
                     "job.archive",
+                    "job.clean",
                 ]:
                     # convert to a list
                     # if single entry
@@ -103,11 +105,11 @@ def ParseJobConfig(basedir, workdir):
                         os.path.dirname(jobfile) + os.sep + value for value in work_obj
                     ]
 
-                    archive_obj = []
+                    temp_obj = []
                     for value in work_obj:
-                        archive_obj.extend(glob.glob(value))
+                        temp_obj.extend(glob.glob(value))
 
-                    work_obj = [*set(archive_obj)]
+                    work_obj = [*set(temp_obj)]
 
                 # test combination of values
                 # here to handle exceptions

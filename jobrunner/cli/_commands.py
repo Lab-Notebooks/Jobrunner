@@ -64,7 +64,7 @@ def setup(workdir_list, show):
 
             # Run setup
             print(f"Running setup")
-            subprocess.run(f"bash job.setup | tee job.output", shell=True, check=True)
+            subprocess.run(f"bash job.setup", shell=True, check=True)
 
         # Return to base directory
         os.chdir(basedir)
@@ -170,40 +170,25 @@ def clean(workdir_list):
     # Get base directory
     basedir = os.getcwd()
 
-    print(f"Cleaning up working directory")
-
     # run cleanup
     for workdir in workdir_list:
 
-        process = subprocess.run(
-            f'rm -vf {workdir + "/" + "job.input"}',
-            shell=True,
-            check=True,
+        # chdir to working directory
+        print(
+            f"------------------------------------------------------------------------------------------------------"
         )
+        os.chdir(workdir)
+        workdir = os.getcwd()
+        print(f"Working directory: {workdir}")
 
-        process = subprocess.run(
-            f'rm -vf {workdir + "/" + "job.submit"}',
-            shell=True,
-            check=True,
-        )
+        # Build main dictionary
+        print(f"Parsing Jobfiles in directory tree")
+        main_dict = lib.ParseJobConfig(basedir, workdir)
 
-        process = subprocess.run(
-            f'rm -vf {workdir + "/" + "job.setup"}',
-            shell=True,
-            check=True,
-        )
+        print(f"Cleaning up working directory")
+        lib.RemoveNodeFiles(main_dict, workdir)
 
-        process = subprocess.run(
-            f'rm -vf {workdir + "/" + "job.target"}',
-            shell=True,
-            check=True,
-        )
-
-        process = subprocess.run(
-            f'rm -vf {workdir + "/" + "job.output"}',
-            shell=True,
-            check=True,
-        )
+        os.chdir(basedir)
 
 
 @jobrunner.command(name="archive")
