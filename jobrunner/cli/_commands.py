@@ -143,11 +143,19 @@ def submit(workdir_list, show):
 
             # Submit job
             print(f"Submitting job")
-            subprocess.run(
-                f'{main_dict["schedular"]["command"]} job.submit',
-                shell=True,
-                check=True,
-            )
+            if main_dict["schedular"]["command"] == "bash":
+                subprocess.run(
+                    f'{main_dict["schedular"]["command"]} job.submit > job.output',
+                    shell=True,
+                    check=True,
+                )
+
+            else:
+                subprocess.run(
+                    f'{main_dict["schedular"]["command"]} job.submit',
+                    shell=True,
+                    check=True,
+                )
 
         # Return to base directory
         os.chdir(basedir)
