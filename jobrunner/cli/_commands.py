@@ -145,7 +145,7 @@ def submit(workdir_list, show):
             print(f"Submitting job")
             if main_dict["schedular"]["command"] == "bash":
                 subprocess.run(
-                    f'{main_dict["schedular"]["command"]} job.submit > job.output > 2>&1',  # > /dev/null 2>&1 &',
+                    f'{main_dict["schedular"]["command"]} job.submit > job.output 2>&1',  # > /dev/null 2>&1 &',
                     shell=True,
                     check=True,
                 )
