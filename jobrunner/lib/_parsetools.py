@@ -4,6 +4,33 @@ import glob
 
 # Feature libraries
 import toml
+import yaml
+
+
+class __YamlLoader(yaml.SafeLoader):
+    """
+    Class YamlLoader for YAML
+    """
+
+    def __init__(self, stream):
+        """
+        Constructor
+        """
+        super().__init__(stream)
+        self._stream = stream
+
+    def construct_mapping(self, node, deep=False):
+        """
+        Mapping function
+        """
+        mapping = set()
+        for key_node, value_node in node.value:
+            key = self.construct_object(key_node, deep=deep)
+            if key in mapping:
+                print(f"ERROR:   Duplicate {key!r} key found in {self._stream.name!r}.")
+                raise ValueError()
+            mapping.add(key)
+        return super().construct_mapping(node, deep)
 
 
 def ParseJobConfig(basedir, workdir):
@@ -41,8 +68,21 @@ def ParseJobConfig(basedir, workdir):
     # loop over individual files
     for jobfile in jobfile_list:
 
-        # load the toml file
-        work_dict = toml.load(jobfile)
+        # load the job configuration
+        # both toml and yaml formats
+        # supported
+        #
+        # try toml load
+        try:
+            work_dict = toml.load(jobfile)
+        #
+        # if error try yaml load
+        except:
+            with open(jobfile, "r") as stream:
+                try:
+                    work_dict = yaml.load(stream, Loader=__YamlLoader)
+                except yaml.YAMLError as exc:
+                    print(exc)
 
         # loop over keys in work_dict, parse
         # configuration and handle exceptions
