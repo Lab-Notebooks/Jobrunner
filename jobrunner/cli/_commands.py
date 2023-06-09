@@ -266,7 +266,7 @@ def export(tag, workdir_list):
         main_dict = lib.ParseJobConfig(basedir, workdir)
 
         # Create archive
-        print(f"Creating archive tag: {tag}")
+        print(f"Exporting to: {tag}")
         lib.ExportTree(main_dict, tag)
 
         # Return to base directory
