@@ -76,3 +76,103 @@ def CreateArchive(main_dict, archive_tag):
 
     # return back to working directory
     os.chdir(main_dict["job"]["workdir"])
+
+
+def ExportTree(main_dict, archive_tag):
+    """
+    Export directory tree to archive
+
+    Arguments
+    ---------
+    main_dict : Dictionary containing details of the
+                job configuration in directory node
+
+    archive_tag :  Tag for the archive
+    """
+    # get a list of directories along the
+    # node between basedir and workdir
+    node_list = GetNodeList(main_dict["job"]["basedir"], main_dict["job"]["workdir"])
+
+    for nodedir in node_list:
+
+        os.chdir(nodedir)
+
+        # check if archive directory already
+        # exists and handle exceptions
+        if os.path.exists(
+            archive_tag + os.sep + nodedir.replace(main_dict["job"]["basedir"], "")
+        ):
+            print(f"[jobrunner] {archive_tag} already exists in {nodedir} SKIPPING")
+
+        # create the archive directory
+        # and store results
+        else:
+
+            # create an empty list of
+            # archive and copy file
+            archive_list = []
+            copy_list = []
+
+            # get the list of
+            # files in nodedir
+            nodefile_list = [
+                os.path.abspath(nodefile)
+                for nodefile in next(os.walk("."), (None, None, []))[2]
+            ]
+
+            # create a reference file list
+            # to test which nodefile should
+            # be archived
+            ref_list = main_dict["job"]["archive"] + [
+                nodedir + os.sep + "job.input",
+                nodedir + os.sep + "job.setup",
+                nodedir + os.sep + "job.submit",
+                nodedir + os.sep + "jobnode.archive",
+            ]
+
+            # loop over list of files in nodedir
+            # and append to archive_list and
+            # copy_list
+            for filename in nodefile_list:
+                if filename in ref_list:
+                    archive_list.append(filename)
+                else:
+                    copy_list.append(filename)
+
+            # create archive directory
+            os.makedirs(
+                f"{archive_tag + os.sep + nodedir.replace(main_dict['job']['basedir'],'')}"
+            )
+
+            if archive_list:
+                # loop over archive_list
+                # and archive contents
+                for filename in archive_list:
+                    shutil.move(
+                        filename,
+                        archive_tag
+                        + os.sep
+                        + nodedir.replace(main_dict["job"]["basedir"], ""),
+                    )
+
+            if copy_list:
+                # loop over copy_list
+                # and archive contents
+                for filename in copy_list:
+                    shutil.copy(
+                        filename,
+                        archive_tag
+                        + os.sep
+                        + nodedir.replace(main_dict["job"]["basedir"], ""),
+                    )
+
+            if os.path.exists(nodedir + os.sep + "jobnode.archive"):
+                shutil.move(
+                    nodedir + os.sep + "jobnode.archive",
+                    archive_tag
+                    + os.sep
+                    + nodedir.replace(main_dict["job"]["basedir"], ""),
+                )
+
+    # return back to working directory
+    os.chdir(main_dict["job"]["workdir"])

@@ -236,6 +236,43 @@ def archive(tag, workdir_list):
         os.chdir(basedir)
 
 
+@jobrunner.command(name="export")
+@click.option(
+    "--tag", "-t", help="name of the archive", default=str(date.today()), type=str
+)
+@click.argument("workdir_list", required=True, nargs=-1, type=str)
+def export(tag, workdir_list):
+    """
+    \b
+    Export directory tree to an external folder
+    \b
+    """
+    # Get base directory
+    basedir = os.getcwd()
+
+    # loop over workdir_list
+    for workdir in workdir_list:
+
+        # chdir to working directory
+        print(
+            f"------------------------------------------------------------------------------------------------------"
+        )
+        os.chdir(workdir)
+        workdir = os.getcwd()
+        print(f"Working directory: {workdir}")
+
+        # Build main dictionary
+        print(f"Parsing Jobfile configuration")
+        main_dict = lib.ParseJobConfig(basedir, workdir)
+
+        # Create archive
+        print(f"Creating archive tag: {tag}")
+        lib.ExportTree(main_dict, tag)
+
+        # Return to base directory
+        os.chdir(basedir)
+
+
 @jobrunner.command(name="diff")
 @click.argument("file1", type=str, required=True)
 @click.argument("file2", type=str, required=True)
