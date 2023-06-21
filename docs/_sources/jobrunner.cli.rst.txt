@@ -1,0 +1,32 @@
+jobrunner.cli package
+=====================
+
+Submodules
+----------
+
+jobrunner.cli.\_commands module
+-------------------------------
+
+.. automodule:: jobrunner.cli._commands
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :private-members:
+
+jobrunner.cli.\_jobrunner module
+--------------------------------
+
+.. automodule:: jobrunner.cli._jobrunner
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :private-members:
+
+Module contents
+---------------
+
+.. automodule:: jobrunner.cli
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :private-members:

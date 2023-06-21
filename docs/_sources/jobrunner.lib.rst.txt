@@ -1,0 +1,41 @@
+jobrunner.lib package
+=====================
+
+Submodules
+----------
+
+jobrunner.lib.\_archivetools module
+-----------------------------------
+
+.. automodule:: jobrunner.lib._archivetools
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :private-members:
+
+jobrunner.lib.\_filetools module
+--------------------------------
+
+.. automodule:: jobrunner.lib._filetools
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :private-members:
+
+jobrunner.lib.\_parsetools module
+---------------------------------
+
+.. automodule:: jobrunner.lib._parsetools
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :private-members:
+
+Module contents
+---------------
+
+.. automodule:: jobrunner.lib
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :private-members:

@@ -1,0 +1,1 @@
+sphinx-apidoc -f -P -o source ../../Jobrunner/jobrunner
