@@ -57,6 +57,128 @@ to efficiently organize their workflows without compromising their design perfer
 and requirements. We have applied this tool to manage performance and 
 computational fluid dynamics studies using Flash-X [@DHRUV2023; @multiphase-simulations].
 
+# Example
+
+Application of Jobrunner can be understood better with an example design
+of a computational experiment. Consider an experiment named `Project` with
+two different studies tiled `Study1` and `Study2`. Lets assume that
+`Study2` consists of a parameteric investigation using different
+configurations, `Config1` and `Config2`. All of this can be organized
+using the following directory tree,
+
+```
+   $ tree Project
+
+   ├── Jobfile
+   ├── environment.sh
+   ├── Study1
+   ├── Study2
+       ├── Jobfile
+       ├── application.input
+       ├── application.exe
+       ├── setupScript.sh
+       ├── submitScript.sh
+       ├── preProcess.sh
+       ├── Config1
+       ├── Config2
+           ├── Jobfile
+           ├── application.input
+
+```
+
+Lets say that both `Study1` and `Study2` are based on some 
+common environment options that can be defined in `environment.sh`,
+
+```bash
+
+   # module for OpenMPI
+   module load openmpi
+
+   # environment variables common to different job objects
+   export COMMON_ENV_VARIABLE_1=/path/to/a/library
+   export COMMON_ENV_VARIABLE_2="value"
+```
+
+It makes sense to places this file at the level of project home
+directory and define it in ``Jobfile`` as described below,
+
+```YAML
+
+   # scripts to include during jobrunner setup and submit commands
+   job:
+     setup:
+       - environment.sh
+     submit:
+       - environment.sh
+
+   # schedular command and options to dispatch jobs
+   schedular:
+     command: slurm
+     options:
+       - "#SBATCH -t 0-30:00"
+       - "#SBATCH --job-name=myjob"
+       - "#SBATCH --ntasks=5"
+```
+
+A Jobfile provides details on functionality of each file in a directory
+tree along with schedular configuration to execute specific studies
+with desired configuration. The Jobfile above indicates that 
+``environment.sh`` should be included when setting up and executing 
+experiments using Jobrunner. Details regarding the job
+schedular are also defined at this level. The schedular command,
+``slurm`` in this case, is used to dispatch
+the jobs with desired options.
+
+At the level of subdirectory ``/Project/Study2`` more files are
+added and lead to a Jobfile that looks like,
+
+```YAML
+
+   job:
+
+     # list of scripts and input files that need to execute during setup command
+     setup:
+       - setupScript.sh
+
+     # input for the job
+     input:
+       - application.input
+
+     # target file/executable for the job
+     target: application.exe
+
+     # list of scripts that need to execute when running submit command
+     submit:
+       - preProcess.sh
+       - submitScript.sh
+```
+
+The field, ``input``, refers to the inputs required to run
+``target`` executable common for configurations
+``/Project/Study2/Config1`` and ``/Project/Study2/Config2``.
+Each configuration contains additional input files with values that are
+appended to the ones provided at the current level. The Jobfile at
+``/Project/Study2/Config2`` becomes,
+
+```YAML
+
+   job:
+
+     # append to input file
+     input:
+       - application.input
+
+     # list of file/patterns to archive
+     archive:
+       - "*_hdf5_*"
+       - "*.log"
+```
+
+The field, ``archive``, provides a list of file/patterns that should
+be preserved as artifacts of an experiment. Jobrunner parses information provided 
+in these Jobfiles and stitches together computational experiments that can be 
+efficiently scaled and managed using a directory-based hierarchy.
+
 # Acknowledgements
 
 We acknowledge contributions from Laboratory Directed Research and Development

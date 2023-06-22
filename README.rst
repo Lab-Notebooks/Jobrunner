@@ -84,24 +84,24 @@ directory tree for a project,
    ├── JobObject1
    ├── JobObject2
        ├── Jobfile
-       ├── flash.par
-       ├── flashx
+       ├── application.input
+       ├── application.exe
        ├── setupScript.sh
        ├── submitScript.sh
        ├── preProcess.sh
        ├── Config1
        ├── Config2
            ├── Jobfile
-           ├── flash.par
+           ├── application.input
 
 The base directory ``Project`` contains two different job object
-sub-directories ``/Project/JobObject1`` and ``/Project/JobObject2``
-which share a common environment defined in ``environment.sh``,
+subdirectories ``/Project/JobObject1`` and ``/Project/JobObject2`` which
+share a common environment defined in ``environment.sh``,
 
 .. code:: bash
 
    # module for OpenMPI
-   module load openmpi-4.1.1
+   module load openmpi
 
    # environment variables common to different job objects
    export COMMON_ENV_VARIABLE_1=/path/to/a/library
@@ -111,9 +111,9 @@ It makes sense to places this file at the level of project home
 directory and define it in ``Jobfile`` as given below, indicating that
 ``environment.sh`` should be included when executing both ``jobrunner
 setup`` and ``jobrunner submit`` commands. Details regarding the job
-schedular are also defined at this level ``schedular.command``
+schedular are also defined at this level. The schedular command
 $\\textemdash$ ``slurm`` in this case $\\textemdash$ is used to dispatch
-the jobs with options defined in ``schedular.options``.
+the jobs with desired options.
 
 .. code:: YAML
 
@@ -132,7 +132,7 @@ the jobs with options defined in ``schedular.options``.
        - "#SBATCH --job-name=myjob"
        - "#SBATCH --ntasks=5"
 
-At the level of sub-directory ``/Project/JobObject2`` more files are
+At the level of subdirectory ``/Project/JobObject2`` more files are
 added and lead to a Jobfile that looks like,
 
 .. code:: yaml
@@ -145,21 +145,21 @@ added and lead to a Jobfile that looks like,
 
      # input for the job
      input:
-       - flash.par
+       - application.input
 
      # target file/executable for the job
-     target: flashx
+     target: application.exe
 
      # list of scripts that need to execute when running submit command
      submit:
        - preProcess.sh
        - submitScript.sh
 
-The field, ``job.input``, refers to the inputs required to run
-``job.target`` executable which is common for configurations
-``/Project/JobObject2/Config1`` and ``/Project/JobObject2/Config2``,
-which contain their respective input files and schedular options which
-are added to the values present at the current level. The Jobfile at
+The field, ``job:input``, refers to the inputs required to run
+``job:target`` executable common for configurations
+``/Project/JobObject2/Config1`` and ``/Project/JobObject2/Config2``.
+Each configuration contains additional input files with values that are
+appended to the ones provided at the current level. The Jobfile at
 ``/Project/JobObject2/Config2`` becomes,
 
 .. code:: YAML
@@ -168,7 +168,7 @@ are added to the values present at the current level. The Jobfile at
 
      # append to input file
      input:
-       - flash.par
+       - application.input
 
      # list of file/patterns to archive
      archive:
