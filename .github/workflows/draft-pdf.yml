@@ -1,9 +1,4 @@
-name: draft-pdf
-
-on:
-  push:
-    branches: 
-      - development
+on: [push]
 
 jobs:
   paper:
