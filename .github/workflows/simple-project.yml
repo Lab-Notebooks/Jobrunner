@@ -27,7 +27,7 @@ jobs:
       run: |
           cd tests/SimpleProject
           jobrunner setup JobObject
-          jobrunner submit JobOject
+          jobrunner submit JobObject
     - name: Verify output
       run: |
           cd tests/SimpleProject/JobObject
