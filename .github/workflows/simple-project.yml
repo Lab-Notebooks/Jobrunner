@@ -25,4 +25,12 @@ jobs:
           export PATH=$PATH:$HOME/.local/bin
     - name: Run jobrunner tests
       run: |
-          jobrunner -v
+          cd tests/SimpleProject
+          jobrunner setup JobObject
+          jobrunner submit JobOject
+    - name: Verify output
+      run: |
+          cd tests/SimpleProject/JobObject
+          diff job.setup setupSolution.sh
+          diff job.submit submitSolution.sh
+          diff job.output submitOutput.txt
