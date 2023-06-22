@@ -258,6 +258,13 @@ the directory tree using the list of values defined ``job.archive``. The
 archives are created under the sub-directory ``jobnode.archive/<tagID>``
 and represent the state of the directory tree during the invocation.
 
+Export
+======
+
+``jobrunner export --tag=<pathToArchive> <JobWorkDir>`` exports
+directory tree and archives objects to an external directory
+``<pathToArchive>`` to preserve state and curate execution environment.
+
 Clean
 =====
 
@@ -271,14 +278,9 @@ working directory
 Functionality of Jobrunner is best understood through example projects
 which can be found in following repositories:
 
--  `akashdhruv/Boiling-Simulations
-   <https://github.com/akashdhruv/Boiling-Simulations>`_: A collection
-   of high-fidelity flow/pool boiling simulations
-
--  `akashdhruv/Channel-Flow
-   <https://github.com/akashdhruv/Channel-Flow>`_: Example simulations
-   of the channel flow problem to showcase applicability of
-   containerization tools for scientific computing problems
+-  `akashdhruv/Multiphase-Simulations
+   <https://github.com/akashdhruv/Multiphase-Simulations>`_: A
+   collection of high-fidelity flow/pool boiling simulations
 
 **********
  Citation
