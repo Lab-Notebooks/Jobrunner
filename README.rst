@@ -65,7 +65,7 @@ include this location for command line use.
  Dependencies
 **************
 
-``python3.8+`` ``click`` ``toml``
+``python3.8+`` ``click`` ``toml`` ``pyyaml``
 
 *******************
  Writing a Jobfile
@@ -126,7 +126,7 @@ setup`` and ``jobrunner submit`` commands.
 At the level of sub-directory ``/Project/JobObject2`` more files are
 added and lead to a Jobfile that looks like,
 
-.. code:: python
+.. code:: yaml
 
    # schedular command to dispatch jobs
    schedular.command = "slurm"

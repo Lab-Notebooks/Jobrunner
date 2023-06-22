@@ -1,0 +1,9 @@
+# Jobfile for test
+
+job:
+  setup:
+    - setupScript.sh
+
+  submit:
+    - preProcess.sh
+    - submitScript.sh

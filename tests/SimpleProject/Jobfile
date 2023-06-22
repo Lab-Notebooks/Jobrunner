@@ -1,0 +1,11 @@
+# Jobfile for test
+
+schedular:
+  command: bash
+
+job:
+  setup:
+    - environment.sh
+
+  submit:
+    - environment.sh

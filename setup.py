@@ -23,7 +23,7 @@ with open("jobrunner/__meta__.py", mode="r") as source:
     }
 
 # core dependancies
-DEPENDENCIES = ["toml", "pyyaml"]
+DEPENDENCIES = ["click", "toml", "pyyaml"]
 
 setup(
     name=metadata["__pkgname__"],

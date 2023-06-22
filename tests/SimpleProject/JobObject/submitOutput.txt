@@ -1,0 +1,7 @@
+Hello from environment script
+Hello from pre process script
+ENV_VAR_1=First environment variable
+Env_Var_2=Second environment variable
+Hello from submit script
+ENV_VAR_1=First environment variable
+Env_Var_2=Second environment variable
