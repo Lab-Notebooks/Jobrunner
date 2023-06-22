@@ -32,24 +32,28 @@ with increase in complexity of the project.
 Scientific processes continue to rely on software as an important tool 
 for data acquisition, analysis, and discovery. This has allowed inclusion 
 of sustainable software development practices as an integral component of 
-research, enabling physics-based simulation instruments like Flash-X to 
-model problems ranging from pool boiling to stellar explosions. However, 
-design and management of software-based scientific studies is often left to 
+research, enabling physics-based simulation instruments like Flash-X 
+[@DUBEY2022] to model problems ranging from pool boiling to stellar explosions. 
+However, design and management of software-based scientific studies is often left to 
 individual researchers who design their computational experiments based on 
-personal preferences and nature of the study. Although applications are available 
-to create reproducible capsules for data generation, they do not provide tools to 
-manage research in a structured way which can enhance knowledge related to decisions 
-made by researchers to configure their software instruments. A well organized lab 
-notebook and execution environment enables systematic curation of the research 
-process and provides implicit documentation for software configuration and options 
-used to perform specific studies. This in turn enhances reproducibility by providing 
-a roadmap towards data generation and contributing towards knowledge and understanding 
-of an experiment. In this article we will provide an overview of tools and practices 
-that we have developed to manage computational fluid dynamics studies using Flash-X, 
-and demonstrate how research process can be efficiently organized without having 
-to compromise researcher preferences and requirements. The lightweight tools 
-that we provide can be applied to computational experiments that rely on unix style 
-interface for development and execution.
+personal preferences and nature of the study. 
+
+Although applications are available to create reproducible capsules for data 
+generation [@code-ocean], they do not provide tools to manage research in a 
+structured way which can enhance knowledge related to decisions made by 
+researchers to configure their software instruments. 
+A well organized lab notebook and execution environment enables systematic curation 
+of the research process and provides implicit documentation for software configuration 
+and options used to perform specific studies. This in turn enhances reproducibility 
+by providing a roadmap towards data generation and contributing towards knowledge and 
+understanding  of an experiment.
+
+Jobrunner is a lightweight tool that addresses this need by enabling management of
+software environments for computational experiments that rely on unix style interface
+for development and execution. Design and operation of the tool allows researchers
+to efficiently organize their workflows without compromising their design perferences
+and requirements. We have applied this tool to manage performance and 
+computational fluid dynamics studies using Flash-X [@DHRUV2023; @multiphase-simulations].
 
 # Acknowledgements
 
