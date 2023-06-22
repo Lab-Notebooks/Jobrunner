@@ -103,77 +103,79 @@ which share a common environment defined in ``environment.sh``,
    # module for OpenMPI
    module load openmpi-4.1.1
 
-   # environment variables common to
-   # different job objects
+   # environment variables common to different job objects
    export COMMON_ENV_VARIABLE_1=/path/to/a/library
    export COMMON_ENV_VARIABLE_2="value"
 
 It makes sense to places this file at the level of project home
 directory and define it in ``Jobfile`` as given below, indicating that
 ``environment.sh`` should be included when executing both ``jobrunner
-setup`` and ``jobrunner submit`` commands.
+setup`` and ``jobrunner submit`` commands. Details regarding the job
+schedular are also defined at this level ``schedular.command``
+$\\textemdash$ ``slurm`` in this case $\\textemdash$ is used to dispatch
+the jobs with options defined in ``schedular.options``.
 
-.. code:: python
+.. code:: YAML
 
-   # scripts to include during
-   # jobrunner setup command
-   job.setup = ["environment.sh"]
+   # scripts to include during jobrunner setup and submit commands
+   job:
+     setup:
+       - environment.sh
+     submit:
+       - environment.sh
 
-   # scripts to include during
-   # jobrunner submit command
-   job.submit = ["environment.sh"]
+   # schedular command and options to dispatch jobs
+   schedular:
+     command: slurm
+     options:
+       - "#SBATCH -t 0-30:00"
+       - "#SBATCH --job-name=myjob"
+       - "#SBATCH --ntasks=5"
 
 At the level of sub-directory ``/Project/JobObject2`` more files are
 added and lead to a Jobfile that looks like,
 
 .. code:: yaml
 
-   # schedular command to dispatch jobs
-   schedular.command = "slurm"
+   job:
 
-   # schedular options job name, time, nodes/tasks
-   schedular.options = [
-       "#SBATCH -t 0-30:00",
-       "#SBATCH --job-name=myjob",
-   ]
+     # list of scripts and input files that need to execute during setup command
+     setup:
+       - setupScript.sh
 
-   # list of scripts that need to execute when running setup command
-   job.setup = ["setupScript.sh"]
+     # input for the job
+     input:
+       - flash.par
 
-   # input for the job
-   job.input = ["flash.par"]
+     # target file/executable for the job
+     target: flashx
 
-   # target file/executable for the job
-   job.target = "flashx"
+     # list of scripts that need to execute when running submit command
+     submit:
+       - preProcess.sh
+       - submitScript.sh
 
-   # list of scripts that need to execute when running submit command
-   job.submit = [
-       "preProcess.sh",
-       "submitScript.sh",
-   ]
+The field, ``job.input``, refers to the inputs required to run
+``job.target`` executable which is common for configurations
+``/Project/JobObject2/Config1`` and ``/Project/JobObject2/Config2``,
+which contain their respective input files and schedular options which
+are added to the values present at the current level. The Jobfile at
+``/Project/JobObject2/Config2`` becomes,
 
-At this level, details regarding the job schedular are defined.
-``schedular.command`` $\\textemdash$ ``slurm`` in this case
-$\\textemdash$ is used to dispatch the jobs with options defined in
-``schedular.options``. The variable, ``job.input``, refers to the inputs
-required to run ``job.target`` executable which is common for
-configurations ``/Project/JobObject2/Config1`` and
-``/Project/JobObject2/Config2``, which contain their respective input
-files and schedular options which are added to the values present at the
-current level. The Jobfile at ``/Project/JobObject2/Config2`` becomes,
+.. code:: YAML
 
-.. code:: python
+   job:
 
-   # schedular options job name, time, nodes/tasks
-   schedular.options = ["#SBATCH --ntasks=5"]
+     # append to input file
+     input:
+       - flash.par
 
-   # apppend to input file
-   job.input = ["flash.par"]
+     # list of file/patterns to archive
+     archive:
+       - "*_hdf5_*"
+       - "*.log"
 
-   # list of file/patterns to archive
-   job.archive = ["*_hdf5_*", "*.log"]
-
-The variable, ``job.archive``, provides a list of file/patterns that are
+The field, ``job.archive``, provides a list of file/patterns that are
 moved over to the
 ``/Project/JobObject2/Config2/jobnode.archive/<tagID>`` directory when
 running ``jobrunner archive --tag=<tagID>``. This feature is provided to
