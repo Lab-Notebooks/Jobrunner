@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Jobrunner &mdash; Joburnner  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="jobrunner package" href="jobrunner.html" />
+    <link rel="prev" title="Welcome to Jobrunner’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Joburnner
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#"> Jobrunner</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#writing-a-jobfile">Writing a Jobfile</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#jobrunner-commands">Jobrunner commands</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#setup">Setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#submit">Submit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#archive">Archive</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#export">Export</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#clean">Clean</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#examples">Examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#citation">Citation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="jobrunner.html">jobrunner package</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Joburnner</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li> Jobrunner</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/README.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="section" id="icon-jobrunner">
+<h1><a class="reference internal" href="_images/icon.svg"><img alt="icon" src="_images/icon.svg" width="50" /></a> Jobrunner<a class="headerlink" href="#icon-jobrunner" title="Permalink to this headline"></a></h1>
+<p><a class="reference external" href="https://github.com/psf/black"><img alt="Code style: black" src="https://img.shields.io/badge/code%20style-black-000000.svg" /></a></p>
+<p>Jobrunner is a command line tool to manage and deploy computing jobs,
+organize complex workloads, and enforce a directory based hierarchy to
+enable reuse of files and bash scripts within a project. Organization
+details of a directory tree are encoded in Jobfiles which serve as an
+index of files/scripts, and indicate their purpose when deploying or
+setting up a job. It is a flexible tool that allows users to design
+their own directory structure, perserve their design, and maintain
+consistency with increase in complexity of the project.</p>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h2>
+<p>Stable releases of Jobrunner are hosted on Python Package Index website
+(<a class="reference external" href="https://pypi.org/project/PyJobRunner/">https://pypi.org/project/PyJobRunner/</a>) and can be installed by
+executing,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">PyJobrunner</span>
+</pre></div>
+</div>
+<p>Note that <code class="docutils literal notranslate"><span class="pre">pip</span></code> should point to <code class="docutils literal notranslate"><span class="pre">python3+</span></code> installation package
+<code class="docutils literal notranslate"><span class="pre">pip3</span></code>.</p>
+<p>Upgrading and uninstallation is easily managed through this interface
+using,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">PyJobrunner</span>
+<span class="n">pip</span> <span class="n">uninstall</span> <span class="n">PyJobRunner</span>
+</pre></div>
+</div>
+<p>There maybe situations where users may want to install Jobrunner in
+development mode $\textemdash$ to design new features, debug, or
+customize options/commands to their needs. This can be easily
+accomplished using the <code class="docutils literal notranslate"><span class="pre">setup</span></code> script located in the project root
+directory and executing,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">setup</span> <span class="n">develop</span>
+</pre></div>
+</div>
+<p>Development mode enables testing of features/updates directly from the
+source code and is an effective method for debugging. Note that the
+<code class="docutils literal notranslate"><span class="pre">setup</span></code> script relies on <code class="docutils literal notranslate"><span class="pre">click</span></code>, which can be installed using,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">click</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">jobrunner</span></code> script is installed in <code class="docutils literal notranslate"><span class="pre">$HOME/.local/bin</span></code> directory
+and therfore the environment variable, <code class="docutils literal notranslate"><span class="pre">PATH</span></code>, should be updated to
+include this location for command line use.</p>
+</div>
+<div class="section" id="dependencies">
+<h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">python3.8+</span></code> <code class="docutils literal notranslate"><span class="pre">click</span></code> <code class="docutils literal notranslate"><span class="pre">toml</span></code> <code class="docutils literal notranslate"><span class="pre">pyyaml</span></code></p>
+</div>
+<div class="section" id="writing-a-jobfile">
+<h2>Writing a Jobfile<a class="headerlink" href="#writing-a-jobfile" title="Permalink to this headline"></a></h2>
+<p>A Jobfile provides details on functionality of each file in a directory
+tree along with schedular configuration. Consider the following
+directory tree for a project,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$ tree Project
+
+├── Jobfile
+├── environment.sh
+├── JobObject1
+├── JobObject2
+    ├── Jobfile
+    ├── application.input
+    ├── application.exe
+    ├── setupScript.sh
+    ├── submitScript.sh
+    ├── preProcess.sh
+    ├── Config1
+    ├── Config2
+        ├── Jobfile
+        ├── application.input
+</pre></div>
+</div>
+<p>The base directory <code class="docutils literal notranslate"><span class="pre">Project</span></code> contains two different job object
+subdirectories <code class="docutils literal notranslate"><span class="pre">/Project/JobObject1</span></code> and <code class="docutils literal notranslate"><span class="pre">/Project/JobObject2</span></code> which
+share a common environment defined in <code class="docutils literal notranslate"><span class="pre">environment.sh</span></code>,</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># module for OpenMPI</span>
+module load openmpi
+
+<span class="c1"># environment variables common to different job objects</span>
+<span class="nb">export</span> <span class="nv">COMMON_ENV_VARIABLE_1</span><span class="o">=</span>/path/to/a/library
+<span class="nb">export</span> <span class="nv">COMMON_ENV_VARIABLE_2</span><span class="o">=</span><span class="s2">&quot;value&quot;</span>
+</pre></div>
+</div>
+<p>It makes sense to places this file at the level of project home
+directory and define it in <code class="docutils literal notranslate"><span class="pre">Jobfile</span></code> as given below, indicating that
+<code class="docutils literal notranslate"><span class="pre">environment.sh</span></code> should be included when executing both <code class="docutils literal notranslate"><span class="pre">jobrunner</span>
+<span class="pre">setup</span></code> and <code class="docutils literal notranslate"><span class="pre">jobrunner</span> <span class="pre">submit</span></code> commands. Details regarding the job
+schedular are also defined at this level. The schedular command
+$\textemdash$ <code class="docutils literal notranslate"><span class="pre">slurm</span></code> in this case $\textemdash$ is used to dispatch
+the jobs with desired options.</p>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="c1"># scripts to include during jobrunner setup and submit commands</span>
+<span class="nt">job</span><span class="p">:</span>
+  <span class="nt">setup</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">environment.sh</span>
+  <span class="nt">submit</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">environment.sh</span>
+
+<span class="c1"># schedular command and options to dispatch jobs</span>
+<span class="nt">schedular</span><span class="p">:</span>
+  <span class="nt">command</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">slurm</span>
+  <span class="nt">options</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="s">&quot;#SBATCH</span><span class="nv"> </span><span class="s">-t</span><span class="nv"> </span><span class="s">0-30:00&quot;</span>
+    <span class="p p-Indicator">-</span> <span class="s">&quot;#SBATCH</span><span class="nv"> </span><span class="s">--job-name=myjob&quot;</span>
+    <span class="p p-Indicator">-</span> <span class="s">&quot;#SBATCH</span><span class="nv"> </span><span class="s">--ntasks=5&quot;</span>
+</pre></div>
+</div>
+<p>At the level of subdirectory <code class="docutils literal notranslate"><span class="pre">/Project/JobObject2</span></code> more files are
+added and lead to a Jobfile that looks like,</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">job</span><span class="p">:</span>
+
+  <span class="c1"># list of scripts and input files that need to execute during setup command</span>
+  <span class="nt">setup</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">setupScript.sh</span>
+
+  <span class="c1"># input for the job</span>
+  <span class="nt">input</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">application.input</span>
+
+  <span class="c1"># target file/executable for the job</span>
+  <span class="nt">target</span><span class="p">:</span> <span class="l l-Scalar l-Scalar-Plain">application.exe</span>
+
+  <span class="c1"># list of scripts that need to execute when running submit command</span>
+  <span class="nt">submit</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">preProcess.sh</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">submitScript.sh</span>
+</pre></div>
+</div>
+<p>The field, <code class="docutils literal notranslate"><span class="pre">job:input</span></code>, refers to the inputs required to run
+<code class="docutils literal notranslate"><span class="pre">job:target</span></code> executable common for configurations
+<code class="docutils literal notranslate"><span class="pre">/Project/JobObject2/Config1</span></code> and <code class="docutils literal notranslate"><span class="pre">/Project/JobObject2/Config2</span></code>.
+Each configuration contains additional input files with values that are
+appended to the ones provided at the current level. The Jobfile at
+<code class="docutils literal notranslate"><span class="pre">/Project/JobObject2/Config2</span></code> becomes,</p>
+<div class="highlight-YAML notranslate"><div class="highlight"><pre><span></span><span class="nt">job</span><span class="p">:</span>
+
+  <span class="c1"># append to input file</span>
+  <span class="nt">input</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="l l-Scalar l-Scalar-Plain">application.input</span>
+
+  <span class="c1"># list of file/patterns to archive</span>
+  <span class="nt">archive</span><span class="p">:</span>
+    <span class="p p-Indicator">-</span> <span class="s">&quot;*_hdf5_*&quot;</span>
+    <span class="p p-Indicator">-</span> <span class="s">&quot;*.log&quot;</span>
+</pre></div>
+</div>
+<p>The field, <code class="docutils literal notranslate"><span class="pre">job.archive</span></code>, provides a list of file/patterns that are
+moved over to the
+<code class="docutils literal notranslate"><span class="pre">/Project/JobObject2/Config2/jobnode.archive/&lt;tagID&gt;</span></code> directory when
+running <code class="docutils literal notranslate"><span class="pre">jobrunner</span> <span class="pre">archive</span> <span class="pre">--tag=&lt;tagID&gt;</span></code>. This feature is provided to
+store results before cleaning up working directory for fresh runs</p>
+</div>
+<div class="section" id="jobrunner-commands">
+<h2>Jobrunner commands<a class="headerlink" href="#jobrunner-commands" title="Permalink to this headline"></a></h2>
+<div class="section" id="setup">
+<h3>Setup<a class="headerlink" href="#setup" title="Permalink to this headline"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">jobrunner</span> <span class="pre">setup</span> <span class="pre">&lt;JobWorkDir&gt;</span></code> creates a <code class="docutils literal notranslate"><span class="pre">job.setup</span></code> file in
+<code class="docutils literal notranslate"><span class="pre">&lt;workdir&gt;</span></code> using <code class="docutils literal notranslate"><span class="pre">job.setup</span></code> scripts defined in Jobfiles along the
+directory tree. Jobrunner executes each script serially by changing the
+working directory to the location of the script. A special environment
+variable <code class="docutils literal notranslate"><span class="pre">JobWorkDir</span></code> provides the value of <code class="docutils literal notranslate"><span class="pre">&lt;JobWorkDir&gt;</span></code> supplied
+during invocation of the command.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--show</span></code> option can be used to check which bash scripts will be
+included during invocation. Following is the result of <code class="docutils literal notranslate"><span class="pre">jobrunner</span> <span class="pre">setup</span>
+<span class="pre">--show</span> <span class="pre">JobObject2</span></code> for the example above,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Working</span> <span class="n">directory</span><span class="p">:</span> <span class="o">/</span><span class="n">Project</span><span class="o">/</span><span class="n">JobObject2</span>
+<span class="n">Parsing</span> <span class="n">Jobfiles</span> <span class="ow">in</span> <span class="n">directory</span> <span class="n">tree</span>
+
+<span class="n">job</span><span class="o">.</span><span class="n">setup</span><span class="p">:</span> <span class="p">[</span>
+        <span class="o">/</span><span class="n">Project</span><span class="o">/</span><span class="n">environment</span><span class="o">.</span><span class="n">sh</span>
+        <span class="o">/</span><span class="n">Project</span><span class="o">/</span><span class="n">JobObject2</span><span class="o">/</span><span class="n">setupScript</span><span class="o">.</span><span class="n">sh</span>
+        <span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="submit">
+<h3>Submit<a class="headerlink" href="#submit" title="Permalink to this headline"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">jobrunner</span> <span class="pre">submit</span> <span class="pre">&lt;JobWorkDir&gt;</span></code> creates a <code class="docutils literal notranslate"><span class="pre">job.submit</span></code> file in
+<code class="docutils literal notranslate"><span class="pre">&lt;JobWorkDir&gt;</span></code> using <code class="docutils literal notranslate"><span class="pre">job.submit</span></code> scripts and <code class="docutils literal notranslate"><span class="pre">schedular.options</span></code>
+values defined in Jobfiles along the directory tree.
+<code class="docutils literal notranslate"><span class="pre">schedular.command</span></code> is used to dispatch the result script.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">--show</span></code> option can be used to check schedular configuration and
+list of bash scripts that will be included during invocation. Following
+is the result of <code class="docutils literal notranslate"><span class="pre">jobrunner</span> <span class="pre">submit</span> <span class="pre">--show</span> <span class="pre">JobObject2/Config2</span></code> for the
+example above,</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">Working</span> <span class="n">directory</span><span class="p">:</span> <span class="o">/</span><span class="n">Project</span><span class="o">/</span><span class="n">JobObject2</span><span class="o">/</span><span class="n">Config2</span>
+<span class="n">Parsing</span> <span class="n">Jobfiles</span> <span class="ow">in</span> <span class="n">directory</span> <span class="n">tree</span>
+
+<span class="n">schedular</span><span class="o">.</span><span class="n">command</span><span class="p">:</span>
+        <span class="n">slurm</span>
+<span class="n">schedular</span><span class="o">.</span><span class="n">options</span><span class="p">:</span> <span class="p">[</span>
+        <span class="c1">#SBATCH -t 0-30:00</span>
+        <span class="c1">#SBATCH --job-name=myjob</span>
+        <span class="c1">#SBATCH --ntasks=5</span>
+        <span class="p">]</span>
+<span class="n">job</span><span class="o">.</span><span class="n">input</span><span class="p">:</span> <span class="p">[</span>
+        <span class="o">/</span><span class="n">Project</span><span class="o">/</span><span class="n">JobObject2</span><span class="o">/</span><span class="n">flash</span><span class="o">.</span><span class="n">par</span>
+        <span class="o">/</span><span class="n">Project</span><span class="o">/</span><span class="n">JobObject2</span><span class="o">/</span><span class="n">Config2</span><span class="o">/</span><span class="n">flash</span><span class="o">.</span><span class="n">par</span>
+        <span class="p">]</span>
+<span class="n">job</span><span class="o">.</span><span class="n">target</span><span class="p">:</span>
+        <span class="o">/</span><span class="n">Project</span><span class="o">/</span><span class="n">JobObject2</span><span class="o">/</span><span class="n">flashx</span>
+<span class="n">job</span><span class="o">.</span><span class="n">submit</span><span class="p">:</span> <span class="p">[</span>
+        <span class="o">/</span><span class="n">Project</span><span class="o">/</span><span class="n">environment</span><span class="o">.</span><span class="n">sh</span>
+        <span class="o">/</span><span class="n">Project</span><span class="o">/</span><span class="n">JobObject2</span><span class="o">/</span><span class="n">preProcess</span><span class="o">.</span><span class="n">sh</span>
+        <span class="o">/</span><span class="n">Project</span><span class="o">/</span><span class="n">JobObject2</span><span class="o">/</span><span class="n">submitScript</span><span class="o">.</span><span class="n">sh</span>
+        <span class="p">]</span>
+</pre></div>
+</div>
+<p>Along with the <code class="docutils literal notranslate"><span class="pre">job.submit</span></code> script, <code class="docutils literal notranslate"><span class="pre">job.input</span></code> and <code class="docutils literal notranslate"><span class="pre">job.target</span></code>
+files are also created in <code class="docutils literal notranslate"><span class="pre">&lt;JobWorkDir&gt;</span></code> and created using values
+defined in Jobfiles.</p>
+</div>
+<div class="section" id="archive">
+<h3>Archive<a class="headerlink" href="#archive" title="Permalink to this headline"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">jobrunner</span> <span class="pre">archive</span> <span class="pre">--tag=&lt;tagID&gt;</span> <span class="pre">&lt;JobWorkDir&gt;</span></code> creates archives along
+the directory tree using the list of values defined <code class="docutils literal notranslate"><span class="pre">job.archive</span></code>. The
+archives are created under the sub-directory <code class="docutils literal notranslate"><span class="pre">jobnode.archive/&lt;tagID&gt;</span></code>
+and represent the state of the directory tree during the invocation.</p>
+</div>
+<div class="section" id="export">
+<h3>Export<a class="headerlink" href="#export" title="Permalink to this headline"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">jobrunner</span> <span class="pre">export</span> <span class="pre">--tag=&lt;pathToArchive&gt;</span> <span class="pre">&lt;JobWorkDir&gt;</span></code> exports
+directory tree and archives objects to an external directory
+<code class="docutils literal notranslate"><span class="pre">&lt;pathToArchive&gt;</span></code> to preserve state and curate execution environment.</p>
+</div>
+<div class="section" id="clean">
+<h3>Clean<a class="headerlink" href="#clean" title="Permalink to this headline"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">jobrunner</span> <span class="pre">clean</span> <span class="pre">&lt;JobWorkDir&gt;</span></code> removes Jobrunner artifacts from the
+working directory</p>
+</div>
+</div>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline"></a></h2>
+<p>Functionality of Jobrunner is best understood through example projects
+which can be found in following repositories:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://github.com/akashdhruv/Multiphase-Simulations">akashdhruv/Multiphase-Simulations</a>: A
+collection of high-fidelity flow/pool boiling simulations</p></li>
+</ul>
+</div>
+<div class="section" id="citation">
+<h2>Citation<a class="headerlink" href="#citation" title="Permalink to this headline"></a></h2>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@software</span><span class="p">{</span><span class="n">akash_dhruv_2022_7255620</span><span class="p">,</span>
+   <span class="n">author</span>       <span class="o">=</span> <span class="p">{</span><span class="n">Akash</span> <span class="n">Dhruv</span><span class="p">},</span>
+   <span class="n">title</span>        <span class="o">=</span> <span class="p">{</span><span class="n">akashdhruv</span><span class="o">/</span><span class="n">Jobrunner</span><span class="p">:</span> <span class="n">October</span> <span class="mi">2022</span><span class="p">},</span>
+   <span class="n">month</span>        <span class="o">=</span> <span class="nb">oct</span><span class="p">,</span>
+   <span class="n">year</span>         <span class="o">=</span> <span class="mi">2022</span><span class="p">,</span>
+   <span class="n">publisher</span>    <span class="o">=</span> <span class="p">{</span><span class="n">Zenodo</span><span class="p">},</span>
+   <span class="n">version</span>      <span class="o">=</span> <span class="p">{</span><span class="mf">22.10</span><span class="p">},</span>
+   <span class="n">doi</span>          <span class="o">=</span> <span class="p">{</span><span class="mf">10.5281</span><span class="o">/</span><span class="n">zenodo</span><span class="mf">.7255620</span><span class="p">},</span>
+   <span class="n">url</span>          <span class="o">=</span> <span class="p">{</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">doi</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="mf">10.5281</span><span class="o">/</span><span class="n">zenodo</span><span class="mf">.7255620</span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to Jobrunner’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="jobrunner.html" class="btn btn-neutral float-right" title="jobrunner package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Akash Dhruv.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,1 +1,16 @@
-sphinx-apidoc -f -P -o source ../../Jobrunner/jobrunner
+# Excluding __meta__.py and scripts
+# from current documentation. If the need arises
+# to include them in future releases, please
+# remove them from excluded paths in sphinx-apidoc
+# command
+
+echo Removing artifacts
+rm -rf source/README.rst source/media module.rst jobrunner.*
+
+sphinx-apidoc -fPeM --implicit-namespaces -o source ../../Jobrunner/jobrunner \
+	../../Jobrunner/jobrunner/__meta__.py \
+	../../Jobrunner/jobrunner/scripts
+
+echo Copying README.rst
+cp ../../Jobrunner/README.rst source/.
+cp -r ../../Jobrunner/media source/.

@@ -1,0 +1,8 @@
+jobrunner.lib.\_filetools module
+================================
+
+.. automodule:: jobrunner.lib._filetools
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :private-members:

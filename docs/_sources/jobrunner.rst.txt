@@ -1,0 +1,17 @@
+jobrunner package
+=================
+
+.. automodule:: jobrunner
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :private-members:
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   jobrunner.cli
+   jobrunner.lib

@@ -1,0 +1,8 @@
+jobrunner.cli.\_jobrunner module
+================================
+
+.. automodule:: jobrunner.cli._jobrunner
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :private-members:
