@@ -64,7 +64,9 @@ dynamics studies using Flash-X [@DHRUV2023; @multiphase-simulations].
 
 Application of Jobrunner can be understood better with an example
 design of a computational experiment. Consider an experiment named
-`Project` with the following directory tree,
+`Project` with a directory tree representative of a publicly 
+available dataset [@outflow-forcing] for the work presented in 
+[@DHRUV2023].
 
 ```console
 $ tree Project
@@ -76,11 +78,9 @@ $ tree Project
 ├── simulation/
 ```
 
-This directory structure represents a publicly available dataset
-[@outflow-forcing] for the work presented in [@DHRUV2023]. Each node
-in this tree is organized to capture information related to different
-aspects of the experiments. The node `sites/` for example stores
-platform specific information related to compilers and modules
+Each node in the tree is organized to capture information related to 
+different aspects of the experiments. The node `sites/` for example 
+stores platform specific information related to compilers and modules
 required to build the software stack described in the  node `software/`.
 Information provided in these nodes capture the execution environment
 of the computational experiment.
@@ -101,7 +101,7 @@ experiments.
 
 ```bash
 # file: Project/sites/sedona/modules.sh
-
+#
 # Load Message Passing Interface (MPI) and 
 # Hierarchical Data Format (HDF5) libraries
 module load openmpi hdf5
@@ -130,7 +130,7 @@ these files by assigning them to specific Jobrunner commands,
 
 ```YAML
 # file: Project/software/Jobfile
-
+#
 # Run these scripts during jobrunner setup command
 job:
   setup:
@@ -144,7 +144,7 @@ variables for compilation and execution.
 
 ```bash
 # file: Project/environment.sh
-
+#
 # Set project home using realpath of current directory
 export PROJECT_HOME=$(realpath .)
 
@@ -211,7 +211,7 @@ for the files and scripts at this level
 
 ```YAML
 # file: Project/simulation/PoolBoiling/Jobfile
-
+#
 job:
   # list of scripts that need to execute during setup
   setup:
@@ -242,7 +242,7 @@ configuration contains its respective `Jobfile`,
 
 ```YAML
 # file: Project/simulation/PoolBoiling/earth_gravity/Jobfile
-
+#
 job:
   # input for the target
   input:
@@ -266,7 +266,7 @@ directory,
 
 ```YAML
 # file: Project/Jobfile
-
+#
 # Scripts to include during jobrunner setup and submit commands
 job:
   setup:
@@ -289,7 +289,7 @@ archiving or cleaning by extending the `Jobfile` for each study,
 
 ```YAML
 # file: Project/simulation/PoolBoiling/earth_gravity/Jobfile
-
+#
 job:
   # input for the target
   input:
