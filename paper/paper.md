@@ -93,7 +93,7 @@ $ tree Project
 ├── analysis
 ```
 
-```bash
+```
 # Load MPI module available on local machine 
 module load openmpi-4.1.1
 ```
