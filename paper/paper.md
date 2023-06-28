@@ -34,14 +34,14 @@ Scientific processes continue to rely on software as an important tool
 for data acquisition, analysis, and discovery. This has allowed
 inclusion of sustainable software development practices as an integral
 component of research, enabling physics-based simulation instruments like
-Flash-X \[@DUBEY2022\] to model problems ranging from pool boiling to stellar
+Flash-X [@DUBEY2022] to model problems ranging from pool boiling to stellar
 explosions. However, design and management of software-based scientific
 studies is often left to individual researchers who design their
 computational experiments based on personal preferences and nature of the
 study.
 
 Although applications are available to create reproducible capsules for data
-generation \[@code-ocean\], they do not provide tools to manage research in a
+generation [@code-ocean], they do not provide tools to manage research in a
 structured way which can enhance knowledge related to decisions made by
 researchers to configure their software instruments. A well organized lab notebook
 and execution environment enables systematic curation of the research process and
@@ -55,7 +55,7 @@ computational experiments that rely on unix style interface for development and
 execution. Design and operation of the tool allows researchers to efficiently organize
 their workflows without compromising their design perferences and requirements. We have
 applied this tool to manage performance and computational fluid dynamics studies using
-Flash-X \[@DHRUV2023; @multiphase-simulations\].
+Flash-X [@DHRUV2023; @multiphase-simulations].
 
 # Example
 
@@ -99,7 +99,7 @@ module load openmpi-4.1.1
 ```
 
 Lets say that both `Study1` and `Study2` are based on some
-common environment options that can be defined in `environment.sh` \[@outflow-forcing\],
+common environment options that can be defined in `environment.sh` [@outflow-forcing],
 
 ```bash
 # Set project home using realpath of current directory
