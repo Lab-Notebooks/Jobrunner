@@ -20,42 +20,43 @@ bibliography: paper.bib
 # Summary
 
 Jobrunner is a command line tool to manage and deploy computing jobs, 
-organize complex workloads, and enforce a directory based hierarchy to 
+organize complex workloads and enforce a directory based hierarchy to 
 enable reuse of files and bash scripts within a project. Organization 
-details of a directory tree are encoded in Jobfiles which serve as an 
-index of files/scripts, and indicate their purpose when deploying or 
+details of a directory tree are encoded in ``Jobfiles`` which serve as 
+an index of files/scripts, and indicate their purpose when deploying or 
 setting up a job. It is a flexible tool that allows users to design their 
-own directory structure, perserve their design, and maintain consistency 
+own directory structure, perserve their design and maintain consistency 
 with increase in complexity of the project.
 
 
 # Statement of need
 
 Scientific processes continue to rely on software as an important tool 
-for data acquisition, analysis, and discovery. This has allowed inclusion 
-of sustainable software development practices as an integral component of 
-research, enabling physics-based simulation instruments like Flash-X 
-[@DUBEY2022] to model problems ranging from pool boiling to stellar explosions. 
-However, design and management of software-based scientific studies is often left to 
-individual researchers who design their computational experiments based on 
-personal preferences and nature of the study. 
+for data acquisition, analysis, and discovery. This has allowed 
+inclusion of sustainable software development practices as an integral 
+component of research, enabling physics-based simulation instruments like 
+Flash-X [@DUBEY2022] to model problems ranging from pool boiling to stellar 
+explosions. However, design and management of software-based scientific 
+studies is often left to individual researchers who design their 
+computational experiments based on personal preferences and nature of the 
+study. 
 
 Although applications are available to create reproducible capsules for data 
 generation [@code-ocean], they do not provide tools to manage research in a 
 structured way which can enhance knowledge related to decisions made by 
-researchers to configure their software instruments. 
-A well organized lab notebook and execution environment enables systematic curation 
-of the research process and provides implicit documentation for software configuration 
-and options used to perform specific studies. This in turn enhances reproducibility 
-by providing a roadmap towards data generation and contributing towards knowledge and 
+researchers to configure their software instruments. A well organized lab notebook 
+and execution environment enables systematic curation of the research process and 
+provides implicit documentation for software configuration and options used to 
+perform specific studies. This in turn enhances reproducibility by providing a 
+roadmap towards data generation and contributing towards knowledge and 
 understanding  of an experiment.
 
-Jobrunner is a lightweight tool that addresses this need by enabling management of
-software environments for computational experiments that rely on unix style interface
-for development and execution. Design and operation of the tool allows researchers
-to efficiently organize their workflows without compromising their design perferences
-and requirements. We have applied this tool to manage performance and 
-computational fluid dynamics studies using Flash-X [@DHRUV2023; @multiphase-simulations].
+Jobrunner addresses this need by enabling management of software environments for 
+computational experiments that rely on unix style interface for development and 
+execution. Design and operation of the tool allows researchers to efficiently organize 
+their workflows without compromising their design perferences and requirements. We have 
+applied this tool to manage performance and computational fluid dynamics studies using 
+Flash-X [@DHRUV2023; @multiphase-simulations].
 
 # Example
 
@@ -67,36 +68,62 @@ configurations, `Config1` and `Config2`. All of this can be organized
 using the following directory tree,
 
 ```
-   $ tree Project
+$ tree Project
 
-   ├── Jobfile
-   ├── environment.sh
-   ├── Study1
-   ├── Study2
-       ├── Jobfile
-       ├── application.input
-       ├── application.exe
-       ├── setupScript.sh
-       ├── submitScript.sh
-       ├── preProcess.sh
-       ├── Config1
-       ├── Config2
-           ├── Jobfile
-           ├── application.input
+├── Jobfile
+├── environment.sh
+├── sites
+    ├── sedona
+        ├── Makefile.h.FlashX
+        ├── modules.sh
+├── software
+    ├── Jobfile
+    ├── setupFlashX.sh
+    ├── setupAMReX.sh
+    ├── setupFlashKit.sh
+    ├── setupHDF5.sh
+├── simulation
+    ├── PoolBoiling
+        ├── Jobfile
+        ├── flashOptions.sh
+        ├── flashBuild.sh
+        ├── flashRun.sh
+        ├── flash.toml
+    ├── FlowBoiling
+    ├── EvaporatingBubble   
+├── analysis
+```
 
+```bash
+# Load MPI module available on local machine 
+module load openmpi-4.1.1
 ```
 
 Lets say that both `Study1` and `Study2` are based on some 
-common environment options that can be defined in `environment.sh`,
+common environment options that can be defined in `environment.sh` [@outflow-forcing],
 
 ```bash
+# Set project home using realpath of current directory
+export PROJECT_HOME=$(realpath .)
 
-   # module for OpenMPI
-   module load openmpi
+# Set SiteHome to realpath of SiteName
+SiteHome="$PROJECT_HOME/sites/$SiteName"
 
-   # environment variables common to different job objects
-   export COMMON_ENV_VARIABLE_1=/path/to/a/library
-   export COMMON_ENV_VARIABLE_2="value"
+# Load modules from the site directory
+source $SiteHome/modules.sh
+
+# Set MPI_HOME by quering path loaded by site module
+export MPI_HOME=$(which mpicc | sed s/'\/bin\/mpicc'//)
+
+# Path to parallel HDF5 installtion with fortran support
+export HDF5_HOME="$PROJECT_HOME/software/HDF5/install-$SiteName"
+
+# Store path to amrex as environment variable
+export AMREX2D_HOME="$PROJECT_HOME/software/AMReX/install-$SiteName/2D"
+export AMREX3D_HOME="$PROJECT_HOME/software/AMReX/install-$SiteName/3D"
+
+# Path to Flash-X
+export FLASHX_HOME="$PROJECT_HOME/software/Flash-X"
 ```
 
 It makes sense to places this file at the level of project home
