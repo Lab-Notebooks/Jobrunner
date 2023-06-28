@@ -67,7 +67,7 @@ two different studies tiled `Study1` and `Study2`. Lets assume that
 configurations, `Config1` and `Config2`. All of this can be organized
 using the following directory tree,
 
-\begin{lstlisting}[frame=single]
+```
 $ tree Project
 
 ├── Jobfile
@@ -92,7 +92,7 @@ $ tree Project
     ├── FlowBoiling
     ├── EvaporatingBubble   
 ├── analysis
-\end{lstlisting}
+```
 
 ```bash
 # Load MPI module available on local machine 
