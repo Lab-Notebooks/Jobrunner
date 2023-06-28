@@ -19,44 +19,43 @@ bibliography: paper.bib
 
 # Summary
 
-Jobrunner is a command line tool to manage and deploy computing jobs, 
-organize complex workloads and enforce a directory based hierarchy to 
-enable reuse of files and bash scripts within a project. Organization 
-details of a directory tree are encoded in ``Jobfiles`` which serve as 
-an index of files/scripts, and indicate their purpose when deploying or 
-setting up a job. It is a flexible tool that allows users to design their 
-own directory structure, perserve their design and maintain consistency 
+Jobrunner is a command line tool to manage and deploy computing jobs,
+organize complex workloads and enforce a directory based hierarchy to
+enable reuse of files and bash scripts within a project. Organization
+details of a directory tree are encoded in `Jobfiles` which serve as
+an index of files/scripts, and indicate their purpose when deploying or
+setting up a job. It is a flexible tool that allows users to design their
+own directory structure, perserve their design and maintain consistency
 with increase in complexity of the project.
-
 
 # Statement of need
 
-Scientific processes continue to rely on software as an important tool 
-for data acquisition, analysis, and discovery. This has allowed 
-inclusion of sustainable software development practices as an integral 
-component of research, enabling physics-based simulation instruments like 
-Flash-X [@DUBEY2022] to model problems ranging from pool boiling to stellar 
-explosions. However, design and management of software-based scientific 
-studies is often left to individual researchers who design their 
-computational experiments based on personal preferences and nature of the 
-study. 
+Scientific processes continue to rely on software as an important tool
+for data acquisition, analysis, and discovery. This has allowed
+inclusion of sustainable software development practices as an integral
+component of research, enabling physics-based simulation instruments like
+Flash-X \[@DUBEY2022\] to model problems ranging from pool boiling to stellar
+explosions. However, design and management of software-based scientific
+studies is often left to individual researchers who design their
+computational experiments based on personal preferences and nature of the
+study.
 
-Although applications are available to create reproducible capsules for data 
-generation [@code-ocean], they do not provide tools to manage research in a 
-structured way which can enhance knowledge related to decisions made by 
-researchers to configure their software instruments. A well organized lab notebook 
-and execution environment enables systematic curation of the research process and 
-provides implicit documentation for software configuration and options used to 
-perform specific studies. This in turn enhances reproducibility by providing a 
-roadmap towards data generation and contributing towards knowledge and 
+Although applications are available to create reproducible capsules for data
+generation \[@code-ocean\], they do not provide tools to manage research in a
+structured way which can enhance knowledge related to decisions made by
+researchers to configure their software instruments. A well organized lab notebook
+and execution environment enables systematic curation of the research process and
+provides implicit documentation for software configuration and options used to
+perform specific studies. This in turn enhances reproducibility by providing a
+roadmap towards data generation and contributing towards knowledge and
 understanding  of an experiment.
 
-Jobrunner addresses this need by enabling management of software environments for 
-computational experiments that rely on unix style interface for development and 
-execution. Design and operation of the tool allows researchers to efficiently organize 
-their workflows without compromising their design perferences and requirements. We have 
-applied this tool to manage performance and computational fluid dynamics studies using 
-Flash-X [@DHRUV2023; @multiphase-simulations].
+Jobrunner addresses this need by enabling management of software environments for
+computational experiments that rely on unix style interface for development and
+execution. Design and operation of the tool allows researchers to efficiently organize
+their workflows without compromising their design perferences and requirements. We have
+applied this tool to manage performance and computational fluid dynamics studies using
+Flash-X \[@DHRUV2023; @multiphase-simulations\].
 
 # Example
 
@@ -99,8 +98,8 @@ $ tree Project
 module load openmpi-4.1.1
 ```
 
-Lets say that both `Study1` and `Study2` are based on some 
-common environment options that can be defined in `environment.sh` [@outflow-forcing],
+Lets say that both `Study1` and `Study2` are based on some
+common environment options that can be defined in `environment.sh` \[@outflow-forcing\],
 
 ```bash
 # Set project home using realpath of current directory
@@ -127,7 +126,7 @@ export FLASHX_HOME="$PROJECT_HOME/software/Flash-X"
 ```
 
 It makes sense to places this file at the level of project home
-directory and define it in ``Jobfile`` as described below,
+directory and define it in `Jobfile` as described below,
 
 ```YAML
 
@@ -149,14 +148,14 @@ directory and define it in ``Jobfile`` as described below,
 
 A Jobfile provides details on functionality of each file in a directory
 tree along with schedular configuration to execute specific studies
-with desired configuration. The Jobfile above indicates that 
-``environment.sh`` should be included when setting up and executing 
+with desired configuration. The Jobfile above indicates that
+`environment.sh` should be included when setting up and executing
 experiments using Jobrunner. Details regarding the job
 schedular are also defined at this level. The schedular command,
-``slurm`` in this case, is used to dispatch
+`slurm` in this case, is used to dispatch
 the jobs with desired options.
 
-At the level of subdirectory ``/Project/Study2`` more files are
+At the level of subdirectory `/Project/Study2` more files are
 added and lead to a Jobfile that looks like,
 
 ```YAML
@@ -180,12 +179,12 @@ added and lead to a Jobfile that looks like,
        - submitScript.sh
 ```
 
-The field, ``input``, refers to the inputs required to run
-``target`` executable common for configurations
-``/Project/Study2/Config1`` and ``/Project/Study2/Config2``.
+The field, `input`, refers to the inputs required to run
+`target` executable common for configurations
+`/Project/Study2/Config1` and `/Project/Study2/Config2`.
 Each configuration contains additional input files with values that are
 appended to the ones provided at the current level. The Jobfile at
-``/Project/Study2/Config2`` becomes,
+`/Project/Study2/Config2` becomes,
 
 ```YAML
 
@@ -201,16 +200,16 @@ appended to the ones provided at the current level. The Jobfile at
        - "*.log"
 ```
 
-The field, ``archive``, provides a list of file/patterns that should
-be preserved as artifacts of an experiment. Jobrunner parses information provided 
-in these Jobfiles and stitches together computational experiments that can be 
+The field, `archive`, provides a list of file/patterns that should
+be preserved as artifacts of an experiment. Jobrunner parses information provided
+in these Jobfiles and stitches together computational experiments that can be
 efficiently scaled and managed using a directory-based hierarchy.
 
 # Acknowledgements
 
-This material is based upon work supported by Laboratory Directed Research 
-and Development (LDRD) funding from Argonne National Laboratory, provided by 
-the Director, Office of Science, of the U.S. Department of Energy under Contract 
+This material is based upon work supported by Laboratory Directed Research
+and Development (LDRD) funding from Argonne National Laboratory, provided by
+the Director, Office of Science, of the U.S. Department of Energy under Contract
 No. DE-AC02-06CH11357.
 
 # References
