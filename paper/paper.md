@@ -66,34 +66,56 @@ two different studies tiled `Study1` and `Study2`. Lets assume that
 configurations, `Config1` and `Config2`. All of this can be organized
 using the following directory tree,
 
-```
+```console
 $ tree Project
 
 ├── Jobfile
 ├── environment.sh
 ├── sites
+├── software
+├── simulation
+├── analysis
+```
+
+```console
+$ tree Project/sites
+
+├── sites
     ├── sedona
         ├── Makefile.h.FlashX
         ├── modules.sh
+```
+
+
+```console
+$ tree Project/software
+
 ├── software
     ├── Jobfile
     ├── setupFlashX.sh
     ├── setupAMReX.sh
     ├── setupFlashKit.sh
     ├── setupHDF5.sh
-├── simulation
-    ├── PoolBoiling
-        ├── Jobfile
-        ├── flashOptions.sh
-        ├── flashBuild.sh
-        ├── flashRun.sh
-        ├── flash.toml
-    ├── FlowBoiling
-    ├── EvaporatingBubble   
-├── analysis
 ```
 
+```console
+$ tree Project/simulation
+
+├── simulation
+    ├── FlowBoiling
+    ├── EvaporatingBubble 
+    ├── PoolBoiling
+        ├── Gravity-FC72-2D
+        ├── SingleBubble
+            ├── Jobfile
+            ├── flashOptions.sh
+            ├── flashBuild.sh
+            ├── flashRun.sh
+            ├── flash.toml
 ```
+
+
+```bash
 # Load MPI module available on local machine 
 module load openmpi-4.1.1
 ```
