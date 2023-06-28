@@ -64,9 +64,9 @@ dynamics studies using Flash-X [@DHRUV2023; @multiphase-simulations].
 
 Application of Jobrunner can be understood better with an example
 design of a computational experiment. Consider an experiment named
-`Project` with a directory tree representative of a publicly 
-available dataset [@outflow-forcing] for the work presented in 
-[@DHRUV2023].
+`Project` representative of a publicly available dataset 
+[@outflow-forcing] for the work presented in [@DHRUV2023]. The 
+directory tree as the following structure,
 
 ```console
 $ tree Project
