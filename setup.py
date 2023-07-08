@@ -43,7 +43,7 @@ setup(
     long_description=long_description,
     classifiers=[
         "Programming Language :: Python :: 3.8",
-        "License :: OSI Approved :: Apache License version 2.0",
+        "License :: OSI Approved :: Apache Software License",
     ],
     install_requires=DEPENDENCIES,
 )
