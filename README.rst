@@ -105,8 +105,8 @@ using Flash-X.
 
 Application of Jobrunner can be understood better with an example design
 of a computational experiment. Consider an experiment named `Project`
-representative of a publicly available dataset [@outflow-forcing] for
-the work presented in [@DHRUV2023]. The directory tree has the following
+representative of a publicly available dataset (https://github.com/Lab-Notebooks/Outflow-Forcing-BubbleML) for
+the work presented in (https://arxiv.org/pdf/2306.10174.pdf). The directory tree has the following
 structure,
 
 .. code:: console
@@ -137,7 +137,7 @@ Following is the design of the ``sites/`` node for the example above,
 
 The site-specific subnode ``sites/sedona/`` consists of commands to load
 platform specific compilers and libraries required to build Flash-X
-[@DUBEY2022] which is the instrument used to perform the experiments.
+which is the instrument used to perform the experiments.
 
 .. code:: bash
 
@@ -145,7 +145,8 @@ platform specific compilers and libraries required to build Flash-X
    #
    # Load Message Passing Interface (MPI) and
    # Hierarchical Data Format (HDF5) libraries
-   module load openmpi hdf5
+   module load openmpi 
+   module load hdf5
 
 There are situations where requirements for Flash-X are not available as
 modules and may have to be built from their respective source. This is
@@ -163,10 +164,10 @@ these,
        ├── setupAMReX.sh
 
 Here the script ``setupAMReX.sh`` provides commands to get the source
-code for AMReX[@AMReX_JOSS] and build it for desired version and
-configuration. The script ``setupFlashX.sh`` sets the version for
-Flash-X to perform the experiments. The ``Jobfile`` assigns the use of
-these files by assigning them to specific Jobrunner commands,
+code for AMReX(https://github.com/AMReX-Codes/amrex) and build it for
+desired version and configuration. The script ``setupFlashX.sh`` sets 
+the version for Flash-X to perform the experiments. The ``Jobfile`` 
+indicates the use of these files by assigning them to specific Jobrunner commands,
 
 .. code:: yaml
 
