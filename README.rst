@@ -7,14 +7,14 @@
 
 |Code style: black|
 
-Jobrunner is a command line tool to manage and deploy computing jobs,
-organize complex workloads, and enforce a directory based hierarchy to
-enable reuse of files and bash scripts within a project. Organization
-details of a directory tree are encoded in Jobfiles which serve as an
-index of files/scripts, and indicate their purpose when deploying or
-setting up a job. It is a flexible tool that allows users to design
-their own directory structure, perserve their design, and maintain
-consistency with increase in complexity of the project.
+Jobrunner is a command line tool to manage and deploy computational
+experiments, organize workflows, and enforce a directory-based hierarchy
+to enable reuse of files and bash scripts along a directory tree.
+Organization details of the tree are encoded in Jobfiles, which provide
+an index of files and scripts on each node and indicate their
+relationship with Jobrunner commands. It is a flexible tool that allows
+users to design their own directory structure and maintain consistency
+with the increase in complexity of their workflows and experiments.
 
 **************
  Installation
@@ -68,118 +68,99 @@ include this location for command line use.
 ``python3.8+`` ``click`` ``toml`` ``pyyaml``
 
 *******************
- Writing a Jobfile
+ Statement of Need
 *******************
 
-A Jobfile provides details on functionality of each file in a directory
-tree along with schedular configuration. Consider the following
-directory tree for a project,
+Use of software for data acquisition, analysis, and discovery in
+scientific studies has allowed integration of sustainable software
+development practices into the research process, enabling physics-based
+simulation instruments like Flash-X (https://flash-x.org) to model
+problems ranging from pool boiling to stellar explosions. However, the
+design and management of software-based scientific studies is often left
+to individual researchers who design their computational experiments
+based on personal preferences and the nature of the study.
 
-.. code::
+Although applications are available to create reproducible capsules for
+data generation (https://codeocean.com), they do not provide tools to
+manage research in a structured way which can enhance knowledge related
+to decisions made by researchers to configure their software
+instruments. A well-organized lab notebook and execution environment
+enables systematic curation of the research process and provides
+implicit documentation for software configuration and options used to
+perform specific studies. This in turn enhances reproducibility by
+providing a roadmap towards data generation and contributing towards
+knowledge and understanding of an experiment.
+
+Jobrunner addresses this need by enabling the management of software
+environments for computational experiments that rely on a Unix-style
+interface for development and execution. The design and operation of the
+tool allow researchers to efficiently organize their workflows without
+compromising their design preferences and requirements. We have applied
+this tool to manage performance and computational fluid dynamics studies
+using Flash-X.
+
+*********
+ Example
+*********
+
+Application of Jobrunner can be understood better with an example design
+of a computational experiment. Consider an experiment named `Project`
+representative of a publicly available dataset [@outflow-forcing] for
+the work presented in [@DHRUV2023]. The directory tree as the following
+structure,
+
+.. code:: console
 
    $ tree Project
 
    ├── Jobfile
    ├── environment.sh
-   ├── JobObject1
-   ├── JobObject2
-       ├── Jobfile
-       ├── application.input
-       ├── application.exe
-       ├── setupScript.sh
-       ├── submitScript.sh
-       ├── preProcess.sh
-       ├── Config1
-       ├── Config2
-           ├── Jobfile
-           ├── application.input
+   ├── sites/
+   ├── software/
+   ├── simulation/
 
-The base directory ``Project`` contains two different job object
-subdirectories ``/Project/JobObject1`` and ``/Project/JobObject2`` which
-share a common environment defined in ``environment.sh``,
+Each node in the tree is organized to capture information related to
+different aspects of the experiments. The node ``sites/`` for example
+stores platform specific information related to compilers and modules
+required to build the software stack described in the node
+``software/``. Information provided in these nodes capture the execution
+environment of the computational experiment.
+
+Following is the design of the ``sites/`` node for the example above,
+
+.. code:: console
+
+   $ tree Project/sites
+   ├── sites/
+       ├── sedona/
+           ├── modules.sh
+
+The site-specific subnode ``sites/sedona/`` consists of commands to load
+platform specific compilers and libraries required to build Flash-X
+[@DUBEY2022] which is the instrument used to perform the experiments.
 
 .. code:: bash
 
-   # module for OpenMPI
-   module load openmpi
+   # file: Project/sites/sedona/modules.sh
+   #
+   # Load Message Passing Interface (MPI) and
+   # Hierarchical Data Format (HDF5) libraries
+   module load openmpi hdf5
 
-   # environment variables common to different job objects
-   export COMMON_ENV_VARIABLE_1=/path/to/a/library
-   export COMMON_ENV_VARIABLE_2="value"
+There are situations where requirements for Flash-X are not available as
+modules and may have to be built from their respective source. This is
+usually the case when a specific version of the library or compiler is
+desired. The ``software/`` node provides configuration details for
+these,
 
-It makes sense to places this file at the level of project home
-directory and define it in ``Jobfile`` as given below, indicating that
-``environment.sh`` should be included when executing both ``jobrunner
-setup`` and ``jobrunner submit`` commands. Details regarding the job
-schedular are also defined at this level. The schedular command
-$\\textemdash$ ``slurm`` in this case $\\textemdash$ is used to dispatch
-the jobs with desired options.
+.. code:: console
 
-.. code:: YAML
+   $ tree Project/software
 
-   # scripts to include during jobrunner setup and submit commands
-   job:
-     setup:
-       - environment.sh
-     submit:
-       - environment.sh
-
-   # schedular command and options to dispatch jobs
-   schedular:
-     command: slurm
-     options:
-       - "#SBATCH -t 0-30:00"
-       - "#SBATCH --job-name=myjob"
-       - "#SBATCH --ntasks=5"
-
-At the level of subdirectory ``/Project/JobObject2`` more files are
-added and lead to a Jobfile that looks like,
-
-.. code:: yaml
-
-   job:
-
-     # list of scripts and input files that need to execute during setup command
-     setup:
-       - setupScript.sh
-
-     # input for the job
-     input:
-       - application.input
-
-     # target file/executable for the job
-     target: application.exe
-
-     # list of scripts that need to execute when running submit command
-     submit:
-       - preProcess.sh
-       - submitScript.sh
-
-The field, ``job:input``, refers to the inputs required to run
-``job:target`` executable common for configurations
-``/Project/JobObject2/Config1`` and ``/Project/JobObject2/Config2``.
-Each configuration contains additional input files with values that are
-appended to the ones provided at the current level. The Jobfile at
-``/Project/JobObject2/Config2`` becomes,
-
-.. code:: YAML
-
-   job:
-
-     # append to input file
-     input:
-       - application.input
-
-     # list of file/patterns to archive
-     archive:
-       - "*_hdf5_*"
-       - "*.log"
-
-The field, ``job.archive``, provides a list of file/patterns that are
-moved over to the
-``/Project/JobObject2/Config2/jobnode.archive/<tagID>`` directory when
-running ``jobrunner archive --tag=<tagID>``. This feature is provided to
-store results before cleaning up working directory for fresh runs
+   ├── software/
+       ├── Jobfile
+       ├── setupFlashX.sh
+       ├── setupAMReX.sh
 
 ********************
  Jobrunner commands
@@ -298,6 +279,15 @@ which can be found in following repositories:
       doi          = {10.5281/zenodo.7255620},
       url          = {https://doi.org/10.5281/zenodo.7255620}
    }
+
+******************
+ Acknowledgements
+******************
+
+This material is based upon work supported by Laboratory Directed
+Research and Development (LDRD) funding from Argonne National
+Laboratory, provided by the Director, Office of Science, of the U.S.
+Department of Energy under Contract No. DE-AC02-06CH11357.
 
 .. |Code style: black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
    :target: https://github.com/psf/black
