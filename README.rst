@@ -106,7 +106,7 @@ using Flash-X.
 Application of Jobrunner can be understood better with an example design
 of a computational experiment. Consider an experiment named `Project`
 representative of a publicly available dataset [@outflow-forcing] for
-the work presented in [@DHRUV2023]. The directory tree as the following
+the work presented in [@DHRUV2023]. The directory tree has the following
 structure,
 
 .. code:: console
@@ -161,6 +161,190 @@ these,
        ├── Jobfile
        ├── setupFlashX.sh
        ├── setupAMReX.sh
+
+Here the script ``setupAMReX.sh`` provides commands to get the source
+code for AMReX[@AMReX_JOSS] and build it for desired version and
+configuration. The script ``setupFlashX.sh`` sets the version for
+Flash-X to perform the experiments. The ``Jobfile`` assigns the use of
+these files by assigning them to specific Jobrunner commands,
+
+.. code:: yaml
+
+   # file: Project/software/Jobfile
+   #
+   # Run these scripts during jobrunner setup command
+   job:
+     setup:
+       - setupAMReX.sh
+       - setupFlashX.sh
+
+The ``environment.sh`` file at the root of the ``Project`` directory
+sources the site-specific ``modules.sh`` and sets environment variables
+for compilation and execution.
+
+.. code:: bash
+
+   # file: Project/environment.sh
+   #
+   # Set project home using realpath of current directory
+   export PROJECT_HOME=$(realpath .)
+
+   # Enter site information and source the modules
+   SiteName="sedona"
+   SiteHome="$PROJECT_HOME/sites/$SiteName"
+   source $SiteHome/modules.sh
+
+   # Set environment variables required for Makefile.h
+   export MPI_HOME=$(which mpicc | sed s/'\/bin\/mpicc'//)
+   export HDF5_HOME=$(which h5pfc | sed s/'\/bin\/h5pfc'//)
+
+   # Assign path for local AMReX installation
+   export AMREX2D_HOME="$PROJECT_HOME/software/AMReX/install-$SiteName/2D"
+   export AMREX3D_HOME="$PROJECT_HOME/software/AMReX/install-$SiteName/3D"
+
+   # Path to Flash-X
+   export FLASHX_HOME="$PROJECT_HOME/software/Flash-X"
+
+The ``Jobfile`` at this node assigns the use of ``environment.sh``,
+
+.. code:: yaml
+
+   # file: Project/Jobfile
+
+   # Scripts to include during jobrunner setup and submit commands
+   job:
+     setup:
+       - environment.sh
+     submit:
+       - environment.sh
+
+During the invocation of ``jobrunner setup software/`` command,
+``environment.sh``, ``setupAMReX.sh`` and ``setupFlashX.sh`` are
+combined using the information in Jobfiles and executed in sequence to
+build the software stack.
+
+The computational experiments are described in the node ``simulation/``
+and organized under different studies, ``FlowBoiling``,
+``EvaporatingBubble`` and ``PoolBoiling`` as shown below,
+
+.. code:: console
+
+   $ tree Project/simulation
+
+   ├── simulation/
+       ├── FlowBoiling/
+       ├── EvaporatingBubble/
+       ├── PoolBoiling/
+           ├── Jobfile
+           ├── flashSetup.sh
+           ├── flashRun.sh
+           ├── pool_boiling.par
+           ├── earth-gravity/
+               ├── Jobfile
+               ├── earth_gravity.par
+           ├── low-gravity/
+               ├── Jobfile
+               ├── low_gravity.par
+
+The ``Jobfile`` under subnode ``simulation/PoolBoiling`` provides
+details for the files and scripts at this level
+
+.. code:: yaml
+
+   # file: Project/simulation/PoolBoiling/Jobfile
+   #
+   job:
+     # list of scripts that need to execute during setup
+     setup:
+       - flashSetup.sh
+
+     # target executable created during setup
+     target: flashx
+
+     # input for the target
+     input:
+       - pool_boiling.par
+
+     # list of scripts that need to execute during submit
+     submit:
+       - flashRun.sh
+
+During the invocation of ``jobrunner setup simulation/PoolBoiling``
+command, ``environment.sh`` and ``flashSetup.sh`` are combined using the
+information in Jobfiles and executed in sequence to build the target
+executable ``flashx``. The software stack built in the previous step is
+available through the environment variables in ``environment.sh``.
+
+The subnode ``simulation/PoolBoiling`` contains two different
+configurations ``earth_gravity`` and ``low_gravity`` to represent a
+parametric study of the boiling phenomenon under different gravity
+conditions. Each configuration contains its respective ``Jobfile``,
+
+.. code:: yaml
+
+   # file: Project/simulation/PoolBoiling/earth_gravity/Jobfile
+   #
+   job:
+     # input for the target
+     input:
+       - earth_gravity.par
+
+Scientific instruments like Flash-X require input during execution which
+is supplied in the form of parfiles with a ``.par`` extension. The
+parfiles along a directory tree are combined to create a single input
+file when submitting the job. For example, invocation of ``jobrunner
+submit simulation/PoolBoiling/earth_gravity`` combines
+``pool_boiling.par`` and ``earth_gravity.par`` that is used to run the
+target executable ``flashx`` using the combination of ``environment.sh``
+and ``flashRun.sh``.
+
+Computational jobs are typically submitted using schedulars like
+``slurm`` to efficiently manage and allocate computational resources on
+large supercomputing systems. The details of the schedular with desired
+options is supplied by extending the ``Jobfile`` at root of the
+``Project`` directory,
+
+.. code:: yaml
+
+   # file: Project/Jobfile
+   #
+   # Scripts to include during jobrunner setup and submit commands
+   job:
+     setup:
+       - environment.sh
+     submit:
+       - environment.sh
+
+   # schedular command and options to dispatch jobs
+   schedular:
+     command: slurm
+     options:
+       - "#SBATCH -t 0-30:00"
+       - "#SBATCH --job-name=myjob"
+       - "#SBATCH --ntasks=5"
+
+Jobrunner also provides features to keep the directory structure clean.
+Results and artifacts from computational runs can be designated for
+archiving or cleaning by extending the ``Jobfile`` for each study,
+
+.. code:: yaml
+
+   # file: Project/simulation/PoolBoiling/earth_gravity/Jobfile
+   #
+   job:
+     # input for the target
+     input:
+       - earth_gravity.par
+
+     # clean slurm output and error files
+     clean:
+       - "*.out"
+       - "*.err"
+
+     # archive flashx log and output files
+     archive:
+       - "*_hdf5_*"
+       - "*.log"
 
 ********************
  Jobrunner commands
