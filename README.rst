@@ -292,8 +292,8 @@ conditions. Each configuration contains its respective ``Jobfile``,
 Scientific instruments like Flash-X require input during execution which
 is supplied in the form of parfiles with a ``.par`` extension. The
 parfiles along a directory tree are combined to create a single input
-file when submitting the job. For example, invocation of ``jobrunner
-submit simulation/PoolBoiling/earth_gravity`` combines
+file when submitting the job. For example, invocation of 
+``jobrunner submit simulation/PoolBoiling/earth_gravity`` combines
 ``pool_boiling.par`` and ``earth_gravity.par`` that is used to run the
 target executable ``flashx`` using the combination of ``environment.sh``
 and ``flashRun.sh``.
@@ -353,43 +353,43 @@ archiving or cleaning by extending the ``Jobfile`` for each study,
 Setup
 =====
 
-``jobrunner setup <JobWorkDir>`` creates a ``job.setup`` file in
-``<workdir>`` using ``job.setup`` scripts defined in Jobfiles along the
+``jobrunner setup <JobWorkDir>`` creates a ``job.setup`` file 
+using ``job.setup`` scripts defined in Jobfiles along the
 directory tree. Jobrunner executes each script serially by changing the
 working directory to the location of the script. A special environment
 variable ``JobWorkDir`` provides the value of ``<JobWorkDir>`` supplied
 during invocation of the command.
 
 The ``--show`` option can be used to check which bash scripts will be
-included during invocation. Following is the result of ``jobrunner setup
---show JobObject2`` for the example above,
+included during invocation. Following is the result of 
+``jobrunner setup --show simulation/PoolBoiling`` for the example above,
 
-.. code::
+.. code:: console
 
-   Working directory: /Project/JobObject2
+   Working directory: /Project/simulation/PoolBoiling
    Parsing Jobfiles in directory tree
 
    job.setup: [
            /Project/environment.sh
-           /Project/JobObject2/setupScript.sh
+           /Project/simulation/PoolBoiling/flashSetup.sh
            ]
 
 Submit
 ======
 
-``jobrunner submit <JobWorkDir>`` creates a ``job.submit`` file in
-``<JobWorkDir>`` using ``job.submit`` scripts and ``schedular.options``
+``jobrunner submit <JobWorkDir>`` creates a ``job.submit`` file 
+using ``job.submit`` scripts and ``schedular.options``
 values defined in Jobfiles along the directory tree.
-``schedular.command`` is used to dispatch the result script.
+``schedular.command`` is used to dispatch the resulting script.
 
 The ``--show`` option can be used to check schedular configuration and
 list of bash scripts that will be included during invocation. Following
-is the result of ``jobrunner submit --show JobObject2/Config2`` for the
-example above,
+is the result of ``jobrunner submit --show simulation/PoolBoiling/earth_gravity`` 
+for the example above,
 
-.. code::
+.. code:: console
 
-   Working directory: /Project/JobObject2/Config2
+   Working directory: /Project/simulation/PoolBoiling/earth_gravity
    Parsing Jobfiles in directory tree
 
    schedular.command:
@@ -400,20 +400,18 @@ example above,
            #SBATCH --ntasks=5
            ]
    job.input: [
-           /Project/JobObject2/flash.par
-           /Project/JobObject2/Config2/flash.par
+           /Project/simulation/PoolBoiling/pool_boiling.par
+           /Project/simulation/PoolBoiling/earth_gravity/earth_gravity.par
            ]
    job.target:
-           /Project/JobObject2/flashx
+           /Project/simulation/PoolBoiling/flashx
    job.submit: [
            /Project/environment.sh
-           /Project/JobObject2/preProcess.sh
-           /Project/JobObject2/submitScript.sh
+           /Project/simulation/PoolBoiling/flashRun.sh
            ]
 
 Along with the ``job.submit`` script, ``job.input`` and ``job.target``
-files are also created in ``<JobWorkDir>`` and created using values
-defined in Jobfiles.
+files are also created in ``<JobWorkDir>`` using values defined in Jobfiles.
 
 Archive
 =======
@@ -445,7 +443,16 @@ which can be found in following repositories:
 
 -  `akashdhruv/Multiphase-Simulations
    <https://github.com/akashdhruv/Multiphase-Simulations>`_: A
-   collection of high-fidelity flow/pool boiling simulations
+   lab notebook to manage development of Flash-X
+
+-  `Lab-Notebooks/Outflow-Forcing-BubbleML
+   <https://github.com/Lab-Notebooks/Outflow-Forcing-BubbleML>`_: Reproducibility
+   capsule for research papers (https://arxiv.org/pdf/2306.10174.pdf) (https://arxiv.org/pdf/2307.14623.pdf)
+
+-  `Lab-Notebooks/Flow-Boiling-3DL
+   <https://github.com/Lab-Notebooks/Flow-Boiling-3D>`_: Execution environment for
+   running three-dimensional flow boiling simulations on high performance computing
+   systems.
 
 **********
  Citation
