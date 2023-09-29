@@ -32,6 +32,7 @@ jobs:
     - name: Configure Site
       run: |
           ln -s tests/AMReX-Bittree-Performance/sites/test AMReX-Bittree-Performance/sites/test
+          cd AMReX-Bittree-Performance
           ./configure -s test
     - name: Setup Bittree
       run: |
