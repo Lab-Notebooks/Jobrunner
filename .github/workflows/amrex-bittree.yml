@@ -22,7 +22,6 @@ jobs:
           sudo apt-get install -y libhdf5-openmpi-dev openmpi-bin
           sudo apt-get install -y python3 python3-dev python3-pip
           sudo apt-get install -y python-is-python3
-          sudo apt-get install git-all
     - name: Install Jobrunner
       run: |
           python3 setup.py develop --user
