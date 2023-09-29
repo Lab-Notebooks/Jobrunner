@@ -31,7 +31,7 @@ jobs:
           git clone https://github.com/Lab-Notebooks/AMReX-Bittree-Performance
     - name: Configure Site
       run: |
-          ln -s tests/AMReX-Bittree-Performance/sites/test AMReX-Bittree-Performance/sites/test
+          ln -s $(realpath tests/AMReX-Bittree-Performance/sites/test) AMReX-Bittree-Performance/sites/test
           cd AMReX-Bittree-Performance
           ./configure -s test
     - name: Setup Bittree
