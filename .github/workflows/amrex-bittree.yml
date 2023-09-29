@@ -29,7 +29,10 @@ jobs:
     - name: Clone External Repo
       run: |
           git clone https://github.com/Lab-Notebooks/AMReX-Bittree-Performance
+    - name: Configure Site
+      run: |
+          ln -s tests/AMReX-Bittree-Performance/sites/test AMReX-Bittree-Performance/sites/test
+          ./configure -s test
     - name: Setup Bittree
       run: |
-          cd AMReX-Bittree-Performance
-          ./configure --help
+          ls -l
