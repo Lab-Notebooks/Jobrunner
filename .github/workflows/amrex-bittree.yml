@@ -32,9 +32,10 @@ jobs:
     - name: Configure Site
       run: |
           ln -s $(realpath tests/AMReX-Bittree-Performance/sites/test) AMReX-Bittree-Performance/sites/test
+          ln -sf $(realpath tests/AMReX-Bittree-Performance/Jobfile) AMReX-Bittree-Performance/Jobfile
           cd AMReX-Bittree-Performance
           ./configure -s test
     - name: Setup Bittree
       run: |
           cd AMReX-Bittree-Performance
-          jobrunner setup software/bittree
+          cat Jobfile

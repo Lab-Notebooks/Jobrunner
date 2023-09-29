@@ -1,0 +1,28 @@
+# YAML configuration file for jobrunner
+#
+# This file provides an organizational structure
+# for bash files spread all over the repository
+#
+# jobrunner should be called from the root of
+# a project directory to execute commands in a desired working directory.
+#
+# All Jobfiles present in a directory tree
+# are combined to a single dictionary when executing
+# jobrunner commands
+#
+# Defined scripts that need to be included
+# when either setting up or submitting a job
+#
+
+# schedular configuration
+schedular:
+  command: bash
+
+# job configuration
+job:
+  setup:
+    - config.sh
+    - environment.sh
+  submit:
+    - config.sh
+    - environment.sh
