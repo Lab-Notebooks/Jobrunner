@@ -28,7 +28,7 @@ jobs:
           export PATH=$PATH:$HOME/.local/bin
     - name: Clone External Repo
       run: |
-          gh repo clone Lab-Notebooks/AMReX-Bittree-Performance
+          git clone https://github.com/Lab-Notebooks/AMReX-Bittree-Performance
     - name: Setup Bittree
       run: |
           cd AMReX-Bittree-Performance
