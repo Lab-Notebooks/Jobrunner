@@ -16,6 +16,8 @@ relationship with Jobrunner commands. It is a flexible tool that allows
 users to design their own directory structure and maintain consistency
 with the increase in complexity of their workflows and experiments.
 
+Read our paper here: https://arxiv.org/pdf/2308.15637.pdf
+
 **************
  Installation
 **************
