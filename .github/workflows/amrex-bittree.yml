@@ -36,4 +36,6 @@ jobs:
           ./configure -s test
     - name: Setup Bittree
       run: |
-          ls -l
+          cd AMReX-Bittree-Performance
+          . config.sh
+          . environment.sh
