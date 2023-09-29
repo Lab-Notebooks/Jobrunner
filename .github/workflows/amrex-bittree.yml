@@ -37,5 +37,4 @@ jobs:
     - name: Setup Bittree
       run: |
           cd AMReX-Bittree-Performance
-          . config.sh
-          . environment.sh
+          jobrunner setup software/bittree
