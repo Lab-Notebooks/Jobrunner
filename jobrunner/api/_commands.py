@@ -97,7 +97,11 @@ def clean(workdir_list):
     """
     # Get base directory
     basedir = os.getcwd()
-    print(os.get_terminal_size().columns * "—")
+
+    try:
+        print(os.get_terminal_size().columns * "—")
+    except:
+        print(100 * "—")
 
     # run cleanup
     for workdir in workdir_list:
@@ -121,7 +125,11 @@ def archive(tag, workdir_list):
     """
     # Get base directory
     basedir = os.getcwd()
-    print(os.get_terminal_size().columns * "—")
+
+    try:
+        print(os.get_terminal_size().columns * "—")
+    except:
+        print(100 * "—")
 
     # loop over workdir_list
     for workdir in workdir_list:

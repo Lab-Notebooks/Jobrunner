@@ -13,7 +13,11 @@ def DisplayTree(basedir, workdir):
     """
     Display tree information on console
     """
-    print(os.get_terminal_size().columns * "—")
+    try:
+        print(os.get_terminal_size().columns * "—")
+    except:
+        print(100 * "—")
+
     print(f"{lib.Color.purple}ROOT:{lib.Color.end} {basedir}")
     print(f'{lib.Color.purple}NODE:{lib.Color.end} {workdir.replace(basedir,"<ROOT>")}')
 
