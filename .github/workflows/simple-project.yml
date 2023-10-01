@@ -26,8 +26,8 @@ jobs:
     - name: Run Tests
       run: |
           cd tests/Simple-Project
-          jobrunner setup JobObject
-          jobrunner submit JobObject
+          jobrunner setup JobObject -V
+          jobrunner submit JobObject -V
     - name: Verify Output
       run: |
           cd tests/Simple-Project/JobObject
