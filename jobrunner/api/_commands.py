@@ -20,7 +20,7 @@ def setup(workdir_list, verbose=False):
         # chdir to working directory and display tree
         os.chdir(workdir)
         workdir = os.getcwd()
-        lib.DisplayTree(workdir, basedir)
+        lib.DisplayTree(basedir, workdir)
 
         # parse main dictionary
         main_dict = lib.ParseJobConfig(basedir, workdir)
@@ -30,9 +30,7 @@ def setup(workdir_list, verbose=False):
         print(f"\n{lib.Color.purple}SCRIPTS: {lib.Color.end}")
         for value in main_dict["job"]["setup"]:
             if value:
-                print(
-                    f'- {lib.Color.blue}{value.replace(basedir,"ROOT")} {lib.Color.end}'
-                )
+                print(f'{" "*4}- {value.replace(basedir,"<ROOT>")}')
 
         # run a bash process
         lib.BashProcess(basedir, workdir, "job.setup", verbose)
@@ -54,7 +52,7 @@ def submit(workdir_list, verbose=False):
         # chdir to working directory and display tree
         os.chdir(workdir)
         workdir = os.getcwd()
-        lib.DisplayTree(workdir, basedir)
+        lib.DisplayTree(basedir, workdir)
 
         # parse main dictionary
         main_dict = lib.ParseJobConfig(basedir, workdir)
@@ -64,23 +62,21 @@ def submit(workdir_list, verbose=False):
         if main_dict["job"]["input"]:
             print(f"\n{lib.Color.purple}INPUT: {lib.Color.end}")
             for value in main_dict["job"]["input"]:
-                print(
-                    f'- {lib.Color.blue}{value.replace(basedir,"ROOT")} {lib.Color.end}'
-                )
+                print(f'{" "*4}- {value.replace(basedir,"<ROOT>")}')
 
         # Build targetfile
         lib.CreateTargetFile(main_dict)
         if main_dict["job"]["target"]:
             print(
-                f"\n{lib.Color.purple}TARGET: "
-                + f'{lib.Color.blue}{main_dict["job"]["target"].replace(basedir,"ROOT")} {lib.Color.end}'
+                f"\n{lib.Color.purple}TARGET:{lib.Color.end} "
+                + f'{main_dict["job"]["target"].replace(basedir,"<ROOT>")}'
             )
 
         # Build submitfile
         lib.CreateSubmitFile(main_dict)
         print(f"\n{lib.Color.purple}SCRIPTS: {lib.Color.end}")
         for value in main_dict["job"]["submit"]:
-            print(f'- {lib.Color.blue}{value.replace(basedir,"ROOT")} {lib.Color.end}')
+            print(f'{" "*4}- {value.replace(basedir,"<ROOT>")}')
 
         # Submit job
         if main_dict["schedular"]["command"] == "bash":
@@ -101,6 +97,7 @@ def clean(workdir_list):
     """
     # Get base directory
     basedir = os.getcwd()
+    print(os.get_terminal_size().columns * "—")
 
     # run cleanup
     for workdir in workdir_list:
@@ -108,12 +105,11 @@ def clean(workdir_list):
         # chdir to working directory and display tree
         os.chdir(workdir)
         workdir = os.getcwd()
-        lib.DisplayTree(workdir, basedir)
 
         # parse main dictionary
         main_dict = lib.ParseJobConfig(basedir, workdir)
 
-        print(f"\n{lib.Color.purple}CLEANING {lib.Color.end}")
+        print(f"{lib.Color.purple}CLEAN:{lib.Color.end} {workdir}")
         lib.RemoveNodeFiles(main_dict, workdir)
 
         os.chdir(basedir)
@@ -125,6 +121,7 @@ def archive(tag, workdir_list):
     """
     # Get base directory
     basedir = os.getcwd()
+    print(os.get_terminal_size().columns * "—")
 
     # loop over workdir_list
     for workdir in workdir_list:
@@ -132,14 +129,13 @@ def archive(tag, workdir_list):
         # chdir to working directory and display tree
         os.chdir(workdir)
         workdir = os.getcwd()
-        lib.DisplayTree(workdir, basedir)
 
         # parse main dictionary
         main_dict = lib.ParseJobConfig(basedir, workdir)
 
         # Create archive
         print(
-            f"\n➤ {lib.Color.purple}ARCHIVE: {lib.Color.blue}jobnode.archive/{tag} {lib.Color.end}"
+            f"{lib.Color.purple}ARCHIVE:{lib.Color.end} {workdir}/jobnode.archive/{tag}"
         )
 
         lib.CreateArchive(main_dict, tag)
@@ -163,13 +159,13 @@ def export(tag, workdir_list):
         # chdir to working directory and display tree
         os.chdir(workdir)
         workdir = os.getcwd()
-        lib.DisplayTree(workdir, basedir)
+        lib.DisplayTree(basedir, workdir)
 
         # parse main dictionary
         main_dict = lib.ParseJobConfig(basedir, workdir)
 
         # Create archive
-        print(f"\n➤ {lib.Color.purple}EXPORT: {lib.Color.blue}{tag} {lib.Color.end}")
+        print(f"{lib.Color.purple}EXPORT:{lib.Color.end} {tag}")
         lib.ExportTree(main_dict, tag)
 
         # Return to base directory

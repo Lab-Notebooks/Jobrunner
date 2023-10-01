@@ -1,4 +1,5 @@
 # Standard libraries
+import os
 import subprocess
 
 # Feature libraries
@@ -8,18 +9,13 @@ from alive_progress import alive_bar
 from jobrunner import lib
 
 
-def DisplayTree(workdir, basedir=None):
+def DisplayTree(basedir, workdir):
     """
     Display tree information on console
     """
-    print(
-        "#######################################################################################################"
-    )
-
-    print(f"{lib.Color.purple}NODE: {lib.Color.blue}{workdir} {lib.Color.end}")
-
-    if basedir:
-        print(f"{lib.Color.purple}ROOT: {lib.Color.blue}{basedir} {lib.Color.end}")
+    print(os.get_terminal_size().columns * "—")
+    print(f"{lib.Color.purple}ROOT:{lib.Color.end} {basedir}")
+    print(f'{lib.Color.purple}NODE:{lib.Color.end} {workdir.replace(basedir,"<ROOT>")}')
 
 
 def SchedularProcess(basedir, workdir, command, script):
@@ -27,7 +23,7 @@ def SchedularProcess(basedir, workdir, command, script):
     Submit job using a schedular
     """
     print(
-        f'\n➤ {lib.Color.purple}SUBMIT: {lib.Color.blue}{workdir.replace(basedir,"ROOT")}/{script} {lib.Color.end}'
+        f'\n{lib.Color.purple}SUBMIT:{lib.Color.end} {workdir.replace(basedir,"<ROOT>")}/{script}'
     )
 
     process = subprocess.run(
@@ -42,7 +38,7 @@ def BashProcess(basedir, workdir, script, verbose=False):
     Run a bash process based on input configuration
     """
     print(
-        f'\n➤ {lib.Color.purple}EXECUTE: {lib.Color.blue}{workdir.replace(basedir,"ROOT")}/{script} {lib.Color.end}'
+        f'\n{lib.Color.purple}EXECUTE:{lib.Color.end} {workdir.replace(basedir,"<ROOT>")}/{script}'
     )
 
     process = subprocess.Popen(
@@ -79,5 +75,5 @@ def BashProcess(basedir, workdir, script, verbose=False):
         print(f"{lib.Color.green}SUCCESS {lib.Color.end}")
 
     print(
-        f'\n{lib.Color.purple}OUTPUT: {lib.Color.blue}{workdir.replace(basedir,"ROOT")}/job.output {lib.Color.end}'
+        f'\n{lib.Color.purple}OUTPUT:{lib.Color.end} {workdir.replace(basedir,"<ROOT>")}/job.output'
     )
