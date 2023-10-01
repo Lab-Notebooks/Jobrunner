@@ -42,12 +42,10 @@ def ParseJobConfig(basedir, workdir):
     if basedir not in workdir:
         raise ValueError(f"[jobrunner] {workdir} not a sub-directory of {basedir}")
 
-    # build a list of all toml files in
-    # a directory tree between basedir and workdir
+    # build a list of all toml files in a directory tree between basedir and workdir
     jobfile_list = GetNodeList(basedir, workdir, node_object="Jobfile")
 
-    # create an empty dictionary to set default
-    # values for configuration variables
+    # create an empty dictionary to set default values for configuration variables
     main_dict = {
         "schedular": {
             "command": "",
@@ -68,14 +66,11 @@ def ParseJobConfig(basedir, workdir):
     # loop over individual files
     for jobfile in jobfile_list:
 
-        # load the job configuration
-        # both toml and yaml formats
-        # supported
-        #
+        # load the job configuration both toml and yaml formats supported
         # try toml load
         try:
             work_dict = toml.load(jobfile)
-        #
+
         # if error try yaml load
         except:
             with open(jobfile, "r") as stream:
@@ -84,23 +79,20 @@ def ParseJobConfig(basedir, workdir):
                 except yaml.YAMLError as exc:
                     print(exc)
 
-        # loop over keys in work_dict, parse
-        # configuration and handle exceptions
+        # loop over keys in work_dict, parse configuration and handle exceptions
         for key in work_dict:
 
             # loop over subkey and values
             for subkey, work_obj in work_dict[key].items():
 
-                # test combination of values here to get
-                # absolute path for setup and submit scripts
+                # test combination of values here to get absolute path for setup and submit scripts
                 if f"{key}.{subkey}" in [
                     "job.setup",
                     "job.submit",
                     "job.input",
                 ]:
 
-                    # convert to a list
-                    # if single entry
+                    # convert to a list if single entry
                     if not isinstance(work_obj, list):
                         raise ValueError(f"[jobrunner] {key}.{subkey} should be a list")
 
@@ -109,8 +101,7 @@ def ParseJobConfig(basedir, workdir):
                         os.path.dirname(jobfile) + os.sep + value for value in work_obj
                     ]
 
-                    # check paths and raise error as
-                    # appropriate
+                    # check paths and raise error as appropriate
                     # for value in work_obj:
                     #    if not os.path.exists(value):
                     #        raise ValueError(f"[jobrunner]: {value} does not exist")
@@ -119,15 +110,13 @@ def ParseJobConfig(basedir, workdir):
                 if f"{key}.{subkey}" in [
                     "job.target",
                 ]:
-                    # some checks to enforce design
-                    # consistency
+                    # some checks to enforce design consistency
                     if isinstance(work_obj, list):
                         raise ValueError(f"[jobrunner] {key}.{subkey} cannot be a list")
 
                     work_obj = os.path.dirname(jobfile) + os.sep + work_obj
 
-                    # check paths and raise error as
-                    # appropriate
+                    # check paths and raise error as appropriate
                     # if not os.path.exists(work_obj):
                     #    raise ValueError(f"[jobrunner]: {work_obj} does not exist")
 
@@ -151,36 +140,31 @@ def ParseJobConfig(basedir, workdir):
 
                     work_obj = [*set(temp_obj)]
 
-                # test combination of values
-                # here to handle exceptions
+                # test combination of values here to handle exceptions
                 if f"{key}.{subkey}" in [
                     "schedular.command",
                     "job.target",
                 ]:
 
-                    # some checks to enforce design
-                    # consistency
+                    # some checks to enforce design consistency
                     if isinstance(work_obj, list):
                         raise ValueError(f"[jobrunner] {key}.{subkey} cannot be a list")
 
-                    # check if main dictionary already contains
-                    # definitions for [key][subkey] and enforce
-                    # design requirements
+                    # check if main dictionary already contains definitions for [key][subkey]
+                    # and enforce design requirements
                     if main_dict[key][subkey]:
                         raise ValueError(
                             f"[jobrunner] Found duplicates for {key}.{subkey} in directory tree"
                         )
 
-                    # set values if [key][subkey]
-                    # not already set
+                    # set values if [key][subkey] not already set
                     main_dict[key][subkey] = work_obj
 
                 else:
                     # extend main dictionary
                     main_dict[key][subkey].extend(work_obj)
 
-    # perform checks to enforce design
-    # constraints for job.input and job.target
+    # perform checks to enforce design constraints for job.input and job.target
     if main_dict["job"]["input"] and main_dict["job"]["target"]:
 
         targetdir = os.path.dirname(main_dict["job"]["target"])
@@ -211,8 +195,7 @@ def GetNodeList(basedir, workdir, node_object=""):
     object_list :   A list of path containing the object
     """
 
-    # get a list of directory levels
-    # between `basedir` and `workdir`
+    # get a list of directory levels between `basedir` and `workdir`
     dir_levels = [
         os.sep + level
         for level in workdir.split(os.sep)
