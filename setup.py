@@ -23,7 +23,7 @@ with open("jobrunner/__meta__.py", mode="r") as source:
     }
 
 # core dependancies
-DEPENDENCIES = ["click", "toml", "pyyaml"]
+DEPENDENCIES = ["click", "toml", "pyyaml", "alive-progress==3.1.4"]
 
 setup(
     name=metadata["__pkgname__"],

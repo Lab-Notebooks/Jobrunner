@@ -67,7 +67,7 @@ include this location for command line use.
  Dependencies
 **************
 
-``python3.8+`` ``click`` ``toml`` ``pyyaml``
+``python3.8+`` ``click`` ``toml`` ``pyyaml`` ``alive-progress``
 
 *******************
  Statement of Need
@@ -363,10 +363,6 @@ working directory to the location of the script. A special environment
 variable ``JobWorkDir`` provides the value of ``<JobWorkDir>`` supplied
 during invocation of the command.
 
-The ``--show`` option can be used to check which bash scripts will be
-included during invocation. Following is the result of 
-``jobrunner setup --show simulation/PoolBoiling`` for the example above,
-
 .. code:: console
 
    Working directory: /Project/simulation/PoolBoiling
@@ -384,11 +380,6 @@ Submit
 using ``job.submit`` scripts and ``schedular.options``
 values defined in Jobfiles along the directory tree.
 ``schedular.command`` is used to dispatch the resulting script.
-
-The ``--show`` option can be used to check schedular configuration and
-list of bash scripts that will be included during invocation. Following
-is the result of ``jobrunner submit --show simulation/PoolBoiling/earth_gravity`` 
-for the example above,
 
 .. code:: console
 

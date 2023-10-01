@@ -2,20 +2,37 @@
 
 # Standard libraries
 import os
+import sys
 import subprocess
 from datetime import date
 
 # Feature libraries
 import click
+from alive_progress import alive_bar
 
 from jobrunner.cli import jobrunner
 from jobrunner import lib
 
 
+class Colors:
+    PURPLE = "\033[95m"
+    CYAN = "\033[96m"
+    DARKCYAN = "\033[36m"
+    BLUE = "\033[94m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    RED = "\033[91m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
+    END = "\033[0m"
+
+
 @jobrunner.command(name="setup")
 @click.argument("workdir_list", required=True, nargs=-1, type=str)
-@click.option("--show", is_flag=True, help="only show configuration details")
-def setup(workdir_list, show):
+@click.option(
+    "--verbose", "-V", is_flag=True, help="print execution output on the terminal"
+)
+def setup(workdir_list, verbose):
     """
     \b
     Run setup scripts in a directory
@@ -40,35 +57,74 @@ def setup(workdir_list, show):
 
         # chdir to working directory
         print(
-            "-----------------------------------"
-            + "---------------------------------"
-            + "---------------------------------"
+            "#######################################################################################################"
         )
-
         os.chdir(workdir)
         workdir = os.getcwd()
-        print(f"Working directory: {workdir}")
+        print("➜ " + Colors.PURPLE + "node: " + Colors.BLUE + f"{workdir}" + Colors.END)
 
         # Build main dictionary
-        print("Parsing Jobfiles in directory tree")
+        print("➜ " + Colors.PURPLE + "root: " + Colors.BLUE + f"{basedir}" + Colors.END)
         main_dict = lib.ParseJobConfig(basedir, workdir)
 
-        if show:
-            # Print configuration details
-            print("")
-            print("job.setup: [")
-            for value in main_dict["job"]["setup"]:
-                print(f"\t{value}")
-            print("\t]")
+        # Create setup file
+        lib.CreateSetupFile(main_dict)
 
+        # Print configuration details
+        print("\n" + Colors.PURPLE + "job.setup:" + Colors.END)
+        for value in main_dict["job"]["setup"]:
+            print("➜ " + Colors.BLUE + f"{value}" + Colors.END)
+
+        print(
+            "\n"
+            + "➜ "
+            + Colors.PURPLE
+            + "executing:"
+            + Colors.BLUE
+            + f"{workdir}/job.setup"
+            + Colors.END
+        )
+
+        process = subprocess.Popen(
+            "bash job.setup".split(),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+        )
+
+        with open("job.output", "w") as output:
+
+            if not verbose:
+                with alive_bar(
+                    spinner="waves", bar=None, stats=False, monitor=False
+                ) as bar:
+                    while process.poll() == None:
+                        bar()
+                        output.write(process.stdout.readline())
+            else:
+                while process.poll() == None:
+                    line = process.stdout.readline()
+                    print(line.strip("\n"))
+                    output.write(line)
+
+        if process.returncode != 0:
+            if not verbose:
+                with open("job.output", "r") as output:
+                    print("".join(output.readlines()[-8:]))
+
+            print(Colors.RED + "FAILURE" + Colors.END)
         else:
-            # Build setupfile
-            print("Creating setup file: job.setup")
-            lib.CreateSetupFile(main_dict)
+            print(Colors.GREEN + "SUCCESS" + Colors.END)
 
-            # Run setup
-            print("Running setup")
-            subprocess.run("bash job.setup", shell=True, check=True)
+        print(
+            "\n"
+            + "➜ "
+            + Colors.PURPLE
+            + "output:"
+            + Colors.BLUE
+            + f"{workdir}/job.output"
+            + Colors.END
+        )
 
         # Return to base directory
         os.chdir(basedir)
@@ -76,8 +132,7 @@ def setup(workdir_list, show):
 
 @jobrunner.command(name="submit")
 @click.argument("workdir_list", required=True, nargs=-1, type=str)
-@click.option("--show", is_flag=True, help="only show configuration details")
-def submit(workdir_list, show):
+def submit(workdir_list):
     """
     \b
     Submit a job from a directory
@@ -102,67 +157,47 @@ def submit(workdir_list, show):
 
         # chdir to working directory
         print(
-            "-----------------------------------"
-            + "---------------------------------"
-            + "---------------------------------"
+            "#######################################################################################################"
         )
-
         os.chdir(workdir)
         workdir = os.getcwd()
-        print(f"Working directory: {workdir}")
+        print("➜ " + Colors.PURPLE + "node: " + Colors.BLUE + f"{workdir}" + Colors.END)
 
         # Build main dictionary
-        print("Parsing Jobfiles in directory tree")
+        print("➜ " + Colors.PURPLE + "root: " + Colors.BLUE + f"{basedir}" + Colors.END)
         main_dict = lib.ParseJobConfig(basedir, workdir)
 
-        if show:
-            # Print configuration details
-            print("")
-            print("schedular.command:")
-            print(f'\t{main_dict["schedular"]["command"]}')
-            print("schedular.options: [")
-            for value in main_dict["schedular"]["options"]:
-                print(f"\t{value}")
-            print("\t]")
-            print("job.input: [")
-            for value in main_dict["job"]["input"]:
-                print(f"\t{value}")
-            print("\t]")
-            print("job.target:")
-            print(f'\t{main_dict["job"]["target"]}')
-            print("job.submit: [")
-            for value in main_dict["job"]["submit"]:
-                print(f"\t{value}")
-            print("\t]")
+        # Build inputfile
+        lib.CreateInputFile(main_dict)
+        print("\n" + Colors.PURPLE + "job.input:" + Colors.END)
+        for value in main_dict["job"]["input"]:
+            print("➜ " + Colors.BLUE + f"{value}" + Colors.END)
+
+        # Build targetfile
+        lib.CreateTargetFile(main_dict)
+        print("\n" + Colors.PURPLE + "job.target:" + Colors.END)
+        print("➜ " + Colors.BLUE + f'{main_dict["job"]["target"]}' + Colors.END)
+
+        # Build submitfile
+        lib.CreateSubmitFile(main_dict)
+        print("\n" + Colors.PURPLE + "job.submit:" + Colors.END)
+        for value in main_dict["job"]["submit"]:
+            print("➜ " + Colors.BLUE + f"{value}" + Colors.END)
+
+        # Submit job
+        if main_dict["schedular"]["command"] == "bash":
+            subprocess.run(
+                f'{main_dict["schedular"]["command"]} job.submit > job.output 2>&1',  # > /dev/null 2>&1 &',
+                shell=True,
+                check=True,
+            )
 
         else:
-            # Build inputfile
-            print("Creating input file: job.input")
-            lib.CreateInputFile(main_dict)
-
-            # Build targetfile
-            print("Creating target file: job.target")
-            lib.CreateTargetFile(main_dict)
-
-            # Build submitfile
-            print("Creating submit file: job.submit")
-            lib.CreateSubmitFile(main_dict)
-
-            # Submit job
-            print("Submitting job")
-            if main_dict["schedular"]["command"] == "bash":
-                subprocess.run(
-                    f'{main_dict["schedular"]["command"]} job.submit > job.output 2>&1',  # > /dev/null 2>&1 &',
-                    shell=True,
-                    check=True,
-                )
-
-            else:
-                subprocess.run(
-                    f'{main_dict["schedular"]["command"]} job.submit',
-                    shell=True,
-                    check=True,
-                )
+            subprocess.run(
+                f'{main_dict["schedular"]["command"]} job.submit',
+                shell=True,
+                check=True,
+            )
 
         # Return to base directory
         os.chdir(basedir)
@@ -188,22 +223,19 @@ def clean(workdir_list):
     # run cleanup
     for workdir in workdir_list:
 
-        print(
-            "-----------------------------------"
-            + "---------------------------------"
-            + "---------------------------------"
-        )
-
         # chdir to working directory
+        print(
+            "#######################################################################################################"
+        )
         os.chdir(workdir)
         workdir = os.getcwd()
-        print(f"Working directory: {workdir}")
+        print("➜ " + Colors.PURPLE + "node: " + Colors.BLUE + f"{workdir}" + Colors.END)
 
         # Build main dictionary
-        print("Parsing Jobfiles in directory tree")
+        print("➜ " + Colors.PURPLE + "root: " + Colors.BLUE + f"{basedir}" + Colors.END)
         main_dict = lib.ParseJobConfig(basedir, workdir)
 
-        print("Cleaning up working directory")
+        print("➜ " + Colors.PURPLE + "cleaning" + Colors.END)
         lib.RemoveNodeFiles(main_dict, workdir)
 
         os.chdir(basedir)
@@ -228,21 +260,25 @@ def archive(tag, workdir_list):
 
         # chdir to working directory
         print(
-            "-----------------------------------"
-            + "---------------------------------"
-            + "---------------------------------"
+            "#######################################################################################################"
         )
-
         os.chdir(workdir)
         workdir = os.getcwd()
-        print(f"Working directory: {workdir}")
+        print("➜ " + Colors.PURPLE + "node: " + Colors.BLUE + f"{workdir}" + Colors.END)
 
         # Build main dictionary
-        print("Parsing Jobfile configuration")
+        print("➜ " + Colors.PURPLE + "root: " + Colors.BLUE + f"{basedir}" + Colors.END)
         main_dict = lib.ParseJobConfig(basedir, workdir)
 
         # Create archive
-        print(f"Creating archive tag: {tag}")
+        print(
+            "➜ "
+            + Colors.PURPLE
+            + "archiving: "
+            + Colors.BLUE
+            + f"jobnode.archive/{tag}"
+            + Colors.END
+        )
         lib.CreateArchive(main_dict, tag)
 
         # Return to base directory
@@ -268,21 +304,20 @@ def export(tag, workdir_list):
 
         # chdir to working directory
         print(
-            "-----------------------------------"
-            + "---------------------------------"
-            + "---------------------------------"
+            "#######################################################################################################"
         )
-
         os.chdir(workdir)
         workdir = os.getcwd()
-        print(f"Working directory: {workdir}")
+        print("➜ " + Colors.PURPLE + "node: " + Colors.BLUE + f"{workdir}" + Colors.END)
 
         # Build main dictionary
-        print("Parsing Jobfile configuration")
+        print("➜ " + Colors.PURPLE + "root: " + Colors.BLUE + f"{basedir}" + Colors.END)
         main_dict = lib.ParseJobConfig(basedir, workdir)
 
         # Create archive
-        print(f"Exporting to: {tag}")
+        print(
+            "➜ " + Colors.PURPLE + "exporting: " + Colors.BLUE + f"{tag}" + Colors.END
+        )
         lib.ExportTree(main_dict, tag)
 
         # Return to base directory

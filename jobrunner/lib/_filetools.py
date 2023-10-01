@@ -1,7 +1,9 @@
 # Standard libraries
 import os
 import shutil
+import toml
 import subprocess
+from collections import OrderedDict
 
 # local imports
 from . import GetNodeList
@@ -24,6 +26,9 @@ def CreateSetupFile(main_dict):
 
         # write the header for bash script
         setupfile.write("#!/bin/bash\n")
+        
+        # set -e to return when error is detected
+        setupfile.write("set -e\n")
 
         # set environment variable for
         # working directory
@@ -63,22 +68,38 @@ def CreateInputFile(main_dict):
     # defined in the main dictionary
     if main_dict["job"]["input"]:
 
-        # open a job.input file in write mode
-        # and replace existing
+        # define main dictionary
+        jobtoml = {}
+
+        # loop through the list of
+        # source files from job.input
+        for nodefile in main_dict["job"]["input"]:
+
+            # Read toml configuration from the
+            # nodefile and iterator over groups
+            nodetoml = toml.load(nodefile)
+            for group in nodetoml.keys():
+
+                # update main dictionary with
+                # information from nodetoml
+                if group in jobtoml:
+                    jobtoml[group].update(nodetoml[group])
+                else:
+                    jobtoml[group] = nodetoml[group]
+
+        # start writing the job.input file
         with open(main_dict["job"]["workdir"] + os.sep + "job.input", "w") as inputfile:
 
-            # loop through the list of
-            # source file from job.input
-            for nodefile in main_dict["job"]["input"]:
-
-                # open nodefile in read mode
-                # write entries to inputfile
-                with open(nodefile, "r") as entry:
-                    for line in entry:
-                        inputfile.write(line)
-
-                # add two spaces for the next file
-                inputfile.write(f"\n")
+            # Iterate over groups and start looping over
+            # items and populate the main dictionary
+            for group in jobtoml.keys():
+                for variable, value in OrderedDict(
+                    sorted(jobtoml[group].items())
+                ).items():
+                    if type(value) == str:
+                        inputfile.write(f'{group}.{variable} = "{value}"\n')
+                    else:
+                        inputfile.write(f"{group}.{variable} = {value}\n")
 
 
 def CreateTargetFile(main_dict):
@@ -127,6 +148,9 @@ def CreateSubmitFile(main_dict):
 
         # write the header
         submitfile.write("#!/bin/bash\n")
+
+        # set -e to return when error is detected
+        #submitfile.write("set -e\n")
 
         # add commands from
         # schedular.options
@@ -224,6 +248,7 @@ def RemoveNodeFiles(main_dict, nodedir):
         nodedir + os.sep + "job.setup",
         nodedir + os.sep + "job.submit",
         nodedir + os.sep + "job.target",
+        nodedir + os.sep + "job.output",
     ]
 
     # loop over list of files in nodedir

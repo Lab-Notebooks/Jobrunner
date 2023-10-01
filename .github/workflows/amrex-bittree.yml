@@ -1,14 +1,15 @@
 name: amrex-bittree
 
 on:
-  push:
-    branches: 
-      - development
-    paths-ignore:
-      - '**.rst'
-      - '**.md'
-      - 'LICENSE'
-      - 'CITATION'
+  workflow_dispatch:
+  #push:
+  #  branches: 
+  #    - development
+  #  paths-ignore:
+  #    - '**.rst'
+  #    - '**.md'
+  #    - 'LICENSE'
+  #    - 'CITATION'
 
 jobs:
   setup-submit:
