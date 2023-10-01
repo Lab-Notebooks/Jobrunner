@@ -59,15 +59,15 @@ def submit(workdir_list, verbose=False):
 
         # Build inputfile
         lib.CreateInputFile(main_dict)
-        print(f"\n {lib.Color.purple}job.input: {lib.Color.end}")
-        for value in main_dict["job"]["input"]:
-            if value:
+        if main_dict["job"]["input"]:
+            print(f"\n {lib.Color.purple}job.input: {lib.Color.end}")
+            for value in main_dict["job"]["input"]:
                 print(f"➜ {lib.Color.blue}{value} {lib.Color.end}")
 
         # Build targetfile
         lib.CreateTargetFile(main_dict)
-        print(f"\n {lib.Color.purple}job.target: {lib.Color.end}")
         if main_dict["job"]["target"]:
+            print(f"\n {lib.Color.purple}job.target: {lib.Color.end}")
             print(f'➜ {lib.Color.blue}{main_dict["job"]["target"]} {lib.Color.end}')
 
         # Build submitfile
