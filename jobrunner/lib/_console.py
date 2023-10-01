@@ -16,18 +16,18 @@ def DisplayTree(workdir, basedir=None):
         "#######################################################################################################"
     )
 
-    print(f"➜ {lib.Color.purple}node: {lib.Color.blue}{workdir} {lib.Color.end}")
+    print(f"{lib.Color.purple}NODE: {lib.Color.blue}{workdir} {lib.Color.end}")
 
     if basedir:
-        print(f"➜ {lib.Color.purple}root: {lib.Color.blue}{basedir} {lib.Color.end}")
+        print(f"{lib.Color.purple}ROOT: {lib.Color.blue}{basedir} {lib.Color.end}")
 
 
-def SchedularProcess(workdir, command, script):
+def SchedularProcess(basedir, workdir, command, script):
     """
     Submit job using a schedular
     """
     print(
-        f"\n➜ {lib.Color.purple}scheduling: {lib.Color.blue}{workdir}/{script} {lib.Color.end}"
+        f'\n➤ {lib.Color.purple}SUBMIT: {lib.Color.blue}{workdir.replace(basedir,"ROOT")}/{script} {lib.Color.end}'
     )
 
     process = subprocess.run(
@@ -37,12 +37,12 @@ def SchedularProcess(workdir, command, script):
     )
 
 
-def BashProcess(workdir, script, verbose=False):
+def BashProcess(basedir, workdir, script, verbose=False):
     """
     Run a bash process based on input configuration
     """
     print(
-        f"\n➜ {lib.Color.purple}executing: {lib.Color.blue}{workdir}/{script} {lib.Color.end}"
+        f'\n➤ {lib.Color.purple}EXECUTE: {lib.Color.blue}{workdir.replace(basedir,"ROOT")}/{script} {lib.Color.end}'
     )
 
     process = subprocess.Popen(
@@ -60,6 +60,8 @@ def BashProcess(workdir, script, verbose=False):
             ) as bar:
                 while process.poll() == None:
                     bar()
+                    # FIXME: This fails on GitHub runners
+                    # see .github/workflows/simple-project.yml
                     output.write(process.stdout.readline())
         else:
             while process.poll() == None:
@@ -77,5 +79,5 @@ def BashProcess(workdir, script, verbose=False):
         print(f"{lib.Color.green}SUCCESS {lib.Color.end}")
 
     print(
-        f"\n➜ {lib.Color.purple}output: {lib.Color.blue}{workdir}/job.output {lib.Color.end}"
+        f'\n{lib.Color.purple}OUTPUT: {lib.Color.blue}{workdir.replace(basedir,"ROOT")}/job.output {lib.Color.end}'
     )
