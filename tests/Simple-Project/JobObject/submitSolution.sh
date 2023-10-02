@@ -3,7 +3,7 @@
 
 set -e
 
-JobWorkDir="/home/runner/work/Jobrunner/Jobrunner/tests/Simple-Project/JobObject"
+export JobWorkDir="/home/runner/work/Jobrunner/Jobrunner/tests/Simple-Project/JobObject"
 
 cd /home/runner/work/Jobrunner/Jobrunner/tests/Simple-Project
 
