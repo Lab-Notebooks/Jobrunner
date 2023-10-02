@@ -56,13 +56,11 @@ def BashProcess(basedir, workdir, script, verbose=False):
             text=True,
         )
 
-        stdout = []
-        while process.poll() == None:
-            stdout.append(process.stdout.readline())
-            print(stdout[-1].strip("\n"))
-
         with open("job.output", "w") as output:
-            output.write("".join(stdout))
+            while process.poll() == None:
+                line = process.stdout.readline()
+                print(line.strip("\n"))
+                output.write(line)
 
     else:
         with open("job.output", "w") as output:
