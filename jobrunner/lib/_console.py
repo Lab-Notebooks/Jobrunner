@@ -1,5 +1,6 @@
 # Standard libraries
 import os
+import sys
 import subprocess
 
 # Feature libraries
@@ -47,29 +48,34 @@ def BashProcess(basedir, workdir, script, verbose=False):
         f'\n{lib.Color.purple}EXECUTE:{lib.Color.end} {workdir.replace(basedir,"<ROOT>")}/{script}'
     )
 
-    process = subprocess.Popen(
-        f"bash {script}".split(),
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        text=True,
-    )
+    if verbose:
+        process = subprocess.Popen(
+            f"bash {script}".split(),
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+        )
 
-    with open("job.output", "w") as output:
+        stdout = []
+        while process.poll() == None:
+            stdout.append(process.stdout.readline())
+            print(stdout[-1].strip("\n"))
 
-        if not verbose:
-            with alive_bar(
-                spinner="waves", bar=None, stats=False, monitor=False
-            ) as bar:
-                while process.poll() == None:
-                    bar()
-                    # FIXME: This fails on GitHub runners
-                    # see .github/workflows/simple-project.yml
-                    output.write(process.stdout.readline())
-        else:
+        with open("job.output", "w") as output:
+            output.write("".join(stdout))
+
+    else:
+        with open("job.output", "w") as output:
+            process = subprocess.Popen(
+                f"bash {script}".split(),
+                stdout=output,
+                stderr=subprocess.STDOUT,
+                text=True,
+            )
+
+        with alive_bar(spinner="waves", bar=None, stats=False, monitor=False) as bar:
             while process.poll() == None:
-                line = process.stdout.readline()
-                print(line.strip("\n"))
-                output.write(line)
+                bar()
 
     if process.returncode != 0:
         if not verbose:
