@@ -29,7 +29,7 @@ def CreateSetupFile(config):
         setupfile.write("\nset -e\n")
 
         # set environment variable for working directory
-        setupfile.write(f'\nJobWorkDir="{config.job.workdir}"\n')
+        setupfile.write(f'\nexport JobWorkDir="{config.job.workdir}"\n')
 
         # add commands from job.setup script and place a command to chdir into the node directory
         for nodefile in config.job.setup:
@@ -80,15 +80,22 @@ def CreateInputFile(config):
         # start writing the job.input file
         with open(config.job.workdir + os.sep + "job.input", "w") as inputfile:
 
+            # write a comment to note how this file is being generated
+            inputfile.write("# job.input generated from config.job.input files\n")
+
             # Iterate over groups and start looping over items and populate the main dictionary
             for group in job_toml.keys():
+
+                # write group for toml file
+                inputfile.write(f"\n[{group}]\n")
+
                 for variable, value in OrderedDict(
                     sorted(job_toml[group].items())
                 ).items():
                     if type(value) == str:
-                        inputfile.write(f'{group}.{variable} = "{value}"\n')
+                        inputfile.write(f'{" "*2}{variable} = "{value}"\n')
                     else:
-                        inputfile.write(f"{group}.{variable} = {value}\n")
+                        inputfile.write(f'{" "*2}{variable} = {value}\n')
 
 
 def CreateTargetFile(config):
@@ -145,7 +152,7 @@ def CreateSubmitFile(config):
         submitfile.write("\nset -e\n")
 
         # set environment variable to working directory
-        submitfile.write(f'\nJobWorkDir="{config.job.workdir}"\n')
+        submitfile.write(f'\nexport JobWorkDir="{config.job.workdir}"\n')
 
         # add commands from job.submit script and chdir into node
         # directory given by the location of script
