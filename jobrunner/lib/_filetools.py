@@ -142,7 +142,7 @@ def CreateSubmitFile(config):
 
         # add commands from schedular.options
         submitfile.write(f"\n")
-        for entry in config["schedular"]["options"]:
+        for entry in config.schedular.options:
             submitfile.write(f"{entry}\n")
 
         # set environment variable to working directory

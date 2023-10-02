@@ -21,7 +21,7 @@ def DisplayTree(basedir, workdir):
     Display tree information on console
     """
     print(f"{lib.Color.purple}ROOT:{lib.Color.end} {basedir}")
-    print(f'{lib.Color.purple}LEAF:{lib.Color.end} {workdir.replace(basedir,"<ROOT>")}')
+    print(f'{lib.Color.purple}NODE:{lib.Color.end} {workdir.replace(basedir,"<ROOT>")}')
 
 
 def SchedularProcess(basedir, workdir, command, script):
