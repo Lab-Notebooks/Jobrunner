@@ -26,7 +26,7 @@ def CreateSetupFile(config):
         setupfile.write("#!/bin/bash\n")
 
         # set -e to return when error is detected
-        setupfile.write("set -e\n")
+        setupfile.write("\nset -e\n")
 
         # set environment variable for working directory
         setupfile.write(f'\nJobWorkDir="{config.job.workdir}"\n')
@@ -136,14 +136,13 @@ def CreateSubmitFile(config):
         # write the header
         submitfile.write("#!/bin/bash\n")
 
-        # set -e to return when error is detected
-        # FIXME: using this line creates issues with MPI+slurm
-        # submitfile.write("set -e\n")
-
         # add commands from schedular.options
         submitfile.write(f"\n")
         for entry in config.schedular.options:
             submitfile.write(f"{entry}\n")
+
+        # set -e to return when error is detected
+        submitfile.write("\nset -e\n")
 
         # set environment variable to working directory
         submitfile.write(f'\nJobWorkDir="{config.job.workdir}"\n')
