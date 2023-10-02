@@ -142,7 +142,7 @@ def CreateSubmitFile(config):
             submitfile.write(f"{entry}\n")
 
         # set -e to return when error is detected
-        submitfile.write("\nset -e\n")
+        #submitfile.write("\nset -e\n")
 
         # set environment variable to working directory
         submitfile.write(f'\nJobWorkDir="{config.job.workdir}"\n')
