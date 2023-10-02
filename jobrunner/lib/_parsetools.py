@@ -1,6 +1,7 @@
 # Standard libraries
 import os
 import glob
+from types import SimpleNamespace
 
 # Feature libraries
 import toml
@@ -46,7 +47,7 @@ def ParseJobConfig(basedir, workdir):
     jobfile_list = GetNodeList(basedir, workdir, node_object="Jobfile")
 
     # create an empty dictionary to set default values for configuration variables
-    main_dict = {
+    config = {
         "schedular": {
             "command": "",
             "options": [],
@@ -152,31 +153,36 @@ def ParseJobConfig(basedir, workdir):
 
                     # check if main dictionary already contains definitions for [key][subkey]
                     # and enforce design requirements
-                    if main_dict[key][subkey]:
+                    if config[key][subkey]:
                         raise ValueError(
                             f"[jobrunner] Found duplicates for {key}.{subkey} in directory tree"
                         )
 
                     # set values if [key][subkey] not already set
-                    main_dict[key][subkey] = work_obj
+                    config[key][subkey] = work_obj
 
                 else:
                     # extend main dictionary
-                    main_dict[key][subkey].extend(work_obj)
+                    config[key][subkey].extend(work_obj)
 
     # perform checks to enforce design constraints for job.input and job.target
-    if main_dict["job"]["input"] and main_dict["job"]["target"]:
+    if config["job"]["input"] and config["job"]["target"]:
 
-        targetdir = os.path.dirname(main_dict["job"]["target"])
-        inputdir = os.path.dirname(main_dict["job"]["input"][0])
+        targetdir = os.path.dirname(config["job"]["target"])
+        inputdir = os.path.dirname(config["job"]["input"][0])
 
         if len(targetdir) < len(inputdir):
             raise ValueError(
-                f'[jobrunner] job.target: {main_dict["job"]["target"]} should not exist'
+                f'[jobrunner] job.target: {config["job"]["target"]} should not exist'
                 + "before job.input is defined in Jobfile"
             )
 
-    return main_dict
+    for key in config.keys():
+        config[key] = SimpleNamespace(**config[key])
+
+    config = SimpleNamespace(**config)
+
+    return config
 
 
 def GetNodeList(basedir, workdir, node_object=""):

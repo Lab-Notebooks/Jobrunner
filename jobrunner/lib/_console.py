@@ -9,17 +9,19 @@ from alive_progress import alive_bar
 from jobrunner import lib
 
 
-def DisplayTree(basedir, workdir):
-    """
-    Display tree information on console
-    """
+def ConsoleSeparator():
     try:
         print(os.get_terminal_size().columns * "—")
     except:
         print(100 * "—")
 
+
+def DisplayTree(basedir, workdir):
+    """
+    Display tree information on console
+    """
     print(f"{lib.Color.purple}ROOT:{lib.Color.end} {basedir}")
-    print(f'{lib.Color.purple}NODE:{lib.Color.end} {workdir.replace(basedir,"<ROOT>")}')
+    print(f'{lib.Color.purple}LEAF:{lib.Color.end} {workdir.replace(basedir,"<ROOT>")}')
 
 
 def SchedularProcess(basedir, workdir, command, script):

@@ -6,14 +6,14 @@ import shutil
 from . import GetNodeList
 
 
-def CreateArchive(main_dict, archive_tag):
+def CreateArchive(config, archive_tag):
     """
     Create an archive of artifacts
     along a directory node
 
     Arguments
     ---------
-    main_dict : Dictionary containing details of the
+    config : Dictionary containing details of the
                 job configuration in directory node
 
     archive_tag :  Tag for the archive
@@ -22,7 +22,7 @@ def CreateArchive(main_dict, archive_tag):
     archive_tag = "jobnode.archive/" + archive_tag
 
     # get a list of directories along the node between basedir and workdir
-    node_list = GetNodeList(main_dict["job"]["basedir"], main_dict["job"]["workdir"])
+    node_list = GetNodeList(config.job.basedir, config.job.workdir)
 
     for nodedir in node_list:
 
@@ -45,7 +45,7 @@ def CreateArchive(main_dict, archive_tag):
             ]
 
             # create a reference file list to test which nodefile should be archived
-            ref_list = main_dict["job"]["archive"] + [
+            ref_list = config.job.archive + [
                 nodedir + os.sep + "job.input",
                 nodedir + os.sep + "job.setup",
                 nodedir + os.sep + "job.submit",
@@ -67,30 +67,30 @@ def CreateArchive(main_dict, archive_tag):
                     shutil.move(filename, nodedir + os.sep + archive_tag)
 
     # return back to working directory
-    os.chdir(main_dict["job"]["workdir"])
+    os.chdir(config.job.workdir)
 
 
-def ExportTree(main_dict, archive_tag):
+def ExportTree(config, archive_tag):
     """
     Export directory tree to archive
 
     Arguments
     ---------
-    main_dict : Dictionary containing details of the
+    config : Dictionary containing details of the
                 job configuration in directory node
 
     archive_tag :  Tag for the archive
     """
 
     # check if workdir already exists in the archive folder
-    workdir = main_dict["job"]["workdir"].replace(main_dict["job"]["basedir"], "")
+    workdir = config.job.workdir.replace(config.job.basedir, "")
 
     if os.path.exists(archive_tag + os.sep + workdir):
         print(f"[jobrunner] {workdir} already exists in {archive_tag} SKIPPING")
         return
 
     # get a list of directories along the node between basedir and workdir
-    node_list = GetNodeList(main_dict["job"]["basedir"], main_dict["job"]["workdir"])
+    node_list = GetNodeList(config.job.basedir, config.job.workdir)
 
     for nodedir in node_list:
 
@@ -108,7 +108,7 @@ def ExportTree(main_dict, archive_tag):
         ]
 
         # create a reference file list to test which nodefile should be archived
-        ref_list = main_dict["job"]["archive"] + [
+        ref_list = config.job.archive + [
             nodedir + os.sep + "job.input",
             nodedir + os.sep + "job.setup",
             nodedir + os.sep + "job.submit",
@@ -125,7 +125,7 @@ def ExportTree(main_dict, archive_tag):
 
         # create archive directory
         os.makedirs(
-            f"{archive_tag + os.sep + nodedir.replace(main_dict['job']['basedir'],'')}",
+            f"{archive_tag + os.sep + nodedir.replace(config.job.basedir,'')}",
             exist_ok=True,
         )
 
@@ -134,9 +134,7 @@ def ExportTree(main_dict, archive_tag):
             for filename in archive_list:
                 shutil.move(
                     filename,
-                    archive_tag
-                    + os.sep
-                    + nodedir.replace(main_dict["job"]["basedir"], ""),
+                    archive_tag + os.sep + nodedir.replace(config.job.basedir, ""),
                 )
 
         if copy_list:
@@ -145,28 +143,26 @@ def ExportTree(main_dict, archive_tag):
                 if os.path.exists(
                     archive_tag
                     + os.sep
-                    + nodedir.replace(main_dict["job"]["basedir"], "")
+                    + nodedir.replace(config.job.basedir, "")
                     + os.sep
                     + filename.replace(nodedir, "")
                 ):
                     ftrimmed = filename.replace(nodedir, "")
                     print(
-                        f"[jobrunner] {nodedir.replace(main_dict['job']['basedir'],'')+ ftrimmed} not copied"
+                        f"[jobrunner] {nodedir.replace(config.job.basedir,'')+ ftrimmed} not copied"
                     )
 
                 else:
                     shutil.copy(
                         filename,
-                        archive_tag
-                        + os.sep
-                        + nodedir.replace(main_dict["job"]["basedir"], ""),
+                        archive_tag + os.sep + nodedir.replace(config.job.basedir, ""),
                     )
 
         if os.path.exists(nodedir + os.sep + "jobnode.archive"):
             shutil.move(
                 nodedir + os.sep + "jobnode.archive",
-                archive_tag + os.sep + nodedir.replace(main_dict["job"]["basedir"], ""),
+                archive_tag + os.sep + nodedir.replace(config.job.basedir, ""),
             )
 
     # return back to working directory
-    os.chdir(main_dict["job"]["workdir"])
+    os.chdir(config.job.workdir)

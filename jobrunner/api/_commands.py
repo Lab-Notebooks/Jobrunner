@@ -7,15 +7,22 @@ from datetime import date
 from jobrunner import lib
 
 
-def setup(workdir_list, verbose=False):
+def setup(dirlist, verbose=False):
     """
     Run setup scripts in a directory
     """
-    # Get base directory
+    # get base directory
     basedir = os.getcwd()
 
-    # loop over workdir_list
-    for workdir in workdir_list:
+    # set variable to determine console separator
+    separator = False
+
+    # loop over dirlist
+    for workdir in dirlist:
+
+        # add separator to improve output readiblity
+        if separator:
+            lib.ConsoleSeparator()
 
         # chdir to working directory and display tree
         os.chdir(workdir)
@@ -23,31 +30,41 @@ def setup(workdir_list, verbose=False):
         lib.DisplayTree(basedir, workdir)
 
         # parse main dictionary
-        main_dict = lib.ParseJobConfig(basedir, workdir)
+        config = lib.ParseJobConfig(basedir, workdir)
 
         # create setup file and display configuration
-        lib.CreateSetupFile(main_dict)
+        lib.CreateSetupFile(config)
         print(f"\n{lib.Color.purple}SCRIPTS: {lib.Color.end}")
-        for value in main_dict["job"]["setup"]:
+        for value in config.job.setup:
             if value:
                 print(f'{" "*4}- {value.replace(basedir,"<ROOT>")}')
 
         # run a bash process
         lib.BashProcess(basedir, workdir, "job.setup", verbose)
 
+        # set separator value
+        separator = True
+
         # Return to base directory
         os.chdir(basedir)
 
 
-def submit(workdir_list, verbose=False):
+def submit(dirlist, verbose=False):
     """
     Submit a job from a directory
     """
-    # Get base directory
+    # get base directory
     basedir = os.getcwd()
 
-    # loop over workdir_list
-    for workdir in workdir_list:
+    # set variable to determine console separator
+    separator = False
+
+    # loop over dirlist
+    for workdir in dirlist:
+
+        # add separator to improve output readiblity
+        if separator:
+            lib.ConsoleSeparator()
 
         # chdir to working directory and display tree
         os.chdir(workdir)
@@ -55,126 +72,159 @@ def submit(workdir_list, verbose=False):
         lib.DisplayTree(basedir, workdir)
 
         # parse main dictionary
-        main_dict = lib.ParseJobConfig(basedir, workdir)
+        config = lib.ParseJobConfig(basedir, workdir)
 
         # Build inputfile
-        lib.CreateInputFile(main_dict)
-        if main_dict["job"]["input"]:
+        lib.CreateInputFile(config)
+        if config.job.input:
             print(f"\n{lib.Color.purple}INPUT: {lib.Color.end}")
-            for value in main_dict["job"]["input"]:
+            for value in config.job.input:
                 print(f'{" "*4}- {value.replace(basedir,"<ROOT>")}')
 
         # Build targetfile
-        lib.CreateTargetFile(main_dict)
-        if main_dict["job"]["target"]:
+        lib.CreateTargetFile(config)
+        if config.job.target:
             print(
                 f"\n{lib.Color.purple}TARGET:{lib.Color.end} "
-                + f'{main_dict["job"]["target"].replace(basedir,"<ROOT>")}'
+                + f'{config.job.target.replace(basedir,"<ROOT>")}'
             )
 
         # Build submitfile
-        lib.CreateSubmitFile(main_dict)
+        lib.CreateSubmitFile(config)
         print(f"\n{lib.Color.purple}SCRIPTS: {lib.Color.end}")
-        for value in main_dict["job"]["submit"]:
+        for value in config.job.submit:
             print(f'{" "*4}- {value.replace(basedir,"<ROOT>")}')
 
         # Submit job
-        if main_dict["schedular"]["command"] == "bash":
+        if config.schedular.command == "bash":
             lib.BashProcess(basedir, workdir, "job.submit", verbose)
 
         else:
             lib.SchedularProcess(
-                basedir, workdir, main_dict["schedular"]["command"], "job.submit"
+                basedir, workdir, config.schedular.command, "job.submit"
             )
+
+        # set separator value
+        separator = True
 
         # Return to base directory
         os.chdir(basedir)
 
 
-def clean(workdir_list):
+def clean(dirlist):
     """
     Remove artifacts from a directory
     """
-    # Get base directory
+    # get base directory
     basedir = os.getcwd()
 
-    try:
-        print(os.get_terminal_size().columns * "—")
-    except:
-        print(100 * "—")
+    # print root directory
+    print(f"{lib.Color.purple}ROOT:{lib.Color.end} {basedir}")
+    print(f"\n{lib.Color.purple}CLEAN:{lib.Color.end}")
 
     # run cleanup
-    for workdir in workdir_list:
+    for workdir in dirlist:
 
         # chdir to working directory and display tree
         os.chdir(workdir)
         workdir = os.getcwd()
 
         # parse main dictionary
-        main_dict = lib.ParseJobConfig(basedir, workdir)
+        config = lib.ParseJobConfig(basedir, workdir)
 
-        print(f"{lib.Color.purple}CLEAN:{lib.Color.end} {workdir}")
-        lib.RemoveNodeFiles(main_dict, workdir)
+        # clean the directory
+        print(f'{" "*4}- {workdir.replace(basedir,"<ROOT>")}')
+        lib.RemoveNodeFiles(config, workdir)
 
         os.chdir(basedir)
 
 
-def archive(tag, workdir_list):
+def archive(tag, dirlist):
     """
     Create an archive along a directory tree
     """
-    # Get base directory
+    # get base directory
     basedir = os.getcwd()
 
-    try:
-        print(os.get_terminal_size().columns * "—")
-    except:
-        print(100 * "—")
+    # print root directory
+    print(f"{lib.Color.purple}ROOT:{lib.Color.end} {basedir}")
+    print(f"\n{lib.Color.purple}ARCHIVE:{lib.Color.end}")
 
-    # loop over workdir_list
-    for workdir in workdir_list:
+    archive_list = []
+
+    # loop over dirlist
+    for workdir in dirlist:
 
         # chdir to working directory and display tree
         os.chdir(workdir)
         workdir = os.getcwd()
 
         # parse main dictionary
-        main_dict = lib.ParseJobConfig(basedir, workdir)
+        config = lib.ParseJobConfig(basedir, workdir)
 
-        # Create archive
-        print(
-            f"{lib.Color.purple}ARCHIVE:{lib.Color.end} {workdir}/jobnode.archive/{tag}"
-        )
+        # create directory tree for archive
+        dirtree = workdir.replace(basedir, "<ROOT>").split(os.sep)
 
-        lib.CreateArchive(main_dict, tag)
+        # print directories that will be archived
+        pathdir = ""
+        for nodedir in dirtree:
+            pathdir = pathdir + nodedir
+
+            if pathdir not in archive_list:
+                print(f'{" "*4}- {pathdir}/jobnode.archive/{tag}')
+                archive_list.append(pathdir)
+
+            pathdir = pathdir + os.sep
+
+        lib.CreateArchive(config, tag)
 
         # Return to base directory
         os.chdir(basedir)
 
 
-def export(tag, workdir_list):
+def export(dest, dirlist):
     """
     \b
     Export directory tree to an external folder
     \b
     """
-    # Get base directory
+    # get base directory
     basedir = os.getcwd()
 
-    # loop over workdir_list
-    for workdir in workdir_list:
+    # print root directory
+    print(f"{lib.Color.purple}ROOT:{lib.Color.end} {basedir}")
+    print(f"\n{lib.Color.purple}EXPORT:{lib.Color.end}")
+
+    export_list = []
+
+    # loop over dirlist
+    for workdir in dirlist:
 
         # chdir to working directory and display tree
         os.chdir(workdir)
         workdir = os.getcwd()
-        lib.DisplayTree(basedir, workdir)
 
         # parse main dictionary
-        main_dict = lib.ParseJobConfig(basedir, workdir)
+        config = lib.ParseJobConfig(basedir, workdir)
 
-        # Create archive
-        print(f"{lib.Color.purple}EXPORT:{lib.Color.end} {tag}")
-        lib.ExportTree(main_dict, tag)
+        # create directory tree for archive
+        dirtree = workdir.replace(basedir, "<ROOT>").split(os.sep)
+
+        # print directories that will be archived
+        pathdir = ""
+        for nodedir in dirtree:
+            pathdir = pathdir + nodedir
+
+            if pathdir not in export_list:
+                print(f'{" "*4}- {pathdir}')
+                export_list.append(pathdir)
+
+            pathdir = pathdir + os.sep
+
+        # create archive
+        lib.ExportTree(config, dest)
 
         # Return to base directory
         os.chdir(basedir)
+
+    print(f"\n{lib.Color.purple}DEST:{lib.Color.end} {dest}")

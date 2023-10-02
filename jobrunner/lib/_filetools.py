@@ -9,18 +9,18 @@ from collections import OrderedDict
 from . import GetNodeList
 
 
-def CreateSetupFile(main_dict):
+def CreateSetupFile(config):
     """
     Create a job.setup file using the list of
     job.setup scripts from main dictionary
 
     Arguments
     ---------
-    main_dict : Dictionary containing details of the
+    config : Dictionary containing details of the
                 job configuration in directory tree
     """
     # open job.setup in write mode this will replace existing job.setup in the working directory
-    with open(main_dict["job"]["workdir"] + os.sep + "job.setup", "w") as setupfile:
+    with open(config.job.workdir + os.sep + "job.setup", "w") as setupfile:
 
         # write the header for bash script
         setupfile.write("#!/bin/bash\n")
@@ -29,10 +29,10 @@ def CreateSetupFile(main_dict):
         setupfile.write("set -e\n")
 
         # set environment variable for working directory
-        setupfile.write(f'\nJobWorkDir="{main_dict["job"]["workdir"]}"\n')
+        setupfile.write(f'\nJobWorkDir="{config.job.workdir}"\n')
 
         # add commands from job.setup script and place a command to chdir into the node directory
-        for nodefile in main_dict["job"]["setup"]:
+        for nodefile in config.job.setup:
 
             # get node directory from nodefile
             nodedir = os.path.dirname(nodefile)
@@ -49,23 +49,23 @@ def CreateSetupFile(main_dict):
                     setupfile.write(line)
 
 
-def CreateInputFile(main_dict):
+def CreateInputFile(config):
     """
     Create an input file for a given simulation
     recursively using job.input between basedir
-    and workdir defined in main_dict
+    and workdir defined in config
 
-    main_dict : Dictionary containing details of the
+    config : Dictionary containing details of the
                 job configuration in directory tree
     """
     # check to see if input files are defined in the main dictionary
-    if main_dict["job"]["input"]:
+    if config.job.input:
 
         # define main dictionary
         job_toml = {}
 
         # loop through the list of source files from job.input
-        for nodefile in main_dict["job"]["input"]:
+        for nodefile in config.job.input:
 
             # Read toml configuration from the nodefile and iterator over groups
             node_toml = toml.load(nodefile)
@@ -78,7 +78,7 @@ def CreateInputFile(main_dict):
                     job_toml[group] = node_toml[group]
 
         # start writing the job.input file
-        with open(main_dict["job"]["workdir"] + os.sep + "job.input", "w") as inputfile:
+        with open(config.job.workdir + os.sep + "job.input", "w") as inputfile:
 
             # Iterate over groups and start looping over items and populate the main dictionary
             for group in job_toml.keys():
@@ -91,18 +91,18 @@ def CreateInputFile(main_dict):
                         inputfile.write(f"{group}.{variable} = {value}\n")
 
 
-def CreateTargetFile(main_dict):
+def CreateTargetFile(config):
     """
     Create a job.target for a given simulation
-    using values from job.target in main_dict
+    using values from job.target in config
 
     Arguments
     ---------
-    main_dict : Dictionary containing details of the
+    config : Dictionary containing details of the
                 job configuration in directory tree
     """
     # set target file from job.target
-    targetfile = main_dict["job"]["target"]
+    targetfile = config.job.target
 
     # check if path to targetfile exists and handle execptions
     if targetfile:
@@ -120,18 +120,18 @@ def CreateTargetFile(main_dict):
             raise ValueError(f"[jobrunner] {targetfile} not present in path")
 
 
-def CreateSubmitFile(main_dict):
+def CreateSubmitFile(config):
     """
     Create a job.submit file for using values
-    from job.submit list define in main_dict
+    from job.submit list define in config
 
     Arguments
     ---------
-    main_dict : Dictionary containing details of the
+    config : Dictionary containing details of the
                 job configuration in directory tree
     """
     # open job.submit in write mode and start populating
-    with open(main_dict["job"]["workdir"] + os.sep + "job.submit", "w") as submitfile:
+    with open(config.job.workdir + os.sep + "job.submit", "w") as submitfile:
 
         # write the header
         submitfile.write("#!/bin/bash\n")
@@ -142,15 +142,15 @@ def CreateSubmitFile(main_dict):
 
         # add commands from schedular.options
         submitfile.write(f"\n")
-        for entry in main_dict["schedular"]["options"]:
+        for entry in config["schedular"]["options"]:
             submitfile.write(f"{entry}\n")
 
         # set environment variable to working directory
-        submitfile.write(f'\nJobWorkDir="{main_dict["job"]["workdir"]}"\n')
+        submitfile.write(f'\nJobWorkDir="{config.job.workdir}"\n')
 
         # add commands from job.submit script and chdir into node
         # directory given by the location of script
-        for nodefile in main_dict["job"]["submit"]:
+        for nodefile in config.job.submit:
 
             # get node directory from nodefile
             nodedir = os.path.dirname(nodefile)
@@ -169,18 +169,12 @@ def CreateSubmitFile(main_dict):
 
                     # if job.input and job.target used in nodefile.
                     # Make sure they are defined in the directory tree
-                    if (
-                        "job.target" in line.split("#")[0]
-                        and not main_dict["job"]["target"]
-                    ):
+                    if "job.target" in line.split("#")[0] and not config.job.target:
                         raise ValueError(
                             f"[jobrunner]: job.target used in {nodefile} but not defined in Jobfile"
                         )
 
-                    if (
-                        "job.input" in line.split("#")[0]
-                        and not main_dict["job"]["input"]
-                    ):
+                    if "job.input" in line.split("#")[0] and not config.job.input:
                         raise ValueError(
                             f"[jobrunner]: job.input used in {nodefile} but not defined in Jobfile"
                         )
@@ -189,20 +183,17 @@ def CreateSubmitFile(main_dict):
                     submitfile.write(line)
 
 
-def RemoveNodeFiles(main_dict, nodedir):
+def RemoveNodeFiles(config, nodedir):
     """
-    Create an archive of artifacts
-    along a directory node
-
     Arguments
     ---------
-    main_dict : Dictionary containing details of the
+    config : Dictionary containing details of the
                 job configuration in directory node
 
     nodedir : path to node directory
     """
     # get a list of directories along the node between basedir and workdir
-    node_list = GetNodeList(main_dict["job"]["basedir"], main_dict["job"]["workdir"])
+    node_list = GetNodeList(config.job.basedir, config.job.workdir)
 
     # perform checks
     if nodedir not in node_list:
@@ -221,7 +212,7 @@ def RemoveNodeFiles(main_dict, nodedir):
     ]
 
     # create a reference file list to test which nodefile should be archived
-    ref_list = main_dict["job"]["clean"] + [
+    ref_list = config.job.clean + [
         nodedir + os.sep + "job.input",
         nodedir + os.sep + "job.setup",
         nodedir + os.sep + "job.submit",
@@ -242,4 +233,4 @@ def RemoveNodeFiles(main_dict, nodedir):
             os.remove(filename)
 
     # return back to working directory
-    os.chdir(main_dict["job"]["workdir"])
+    os.chdir(config.job.workdir)

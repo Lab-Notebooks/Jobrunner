@@ -11,11 +11,11 @@ from jobrunner import api
 
 
 @jobrunner.command(name="setup")
-@click.argument("workdir_list", required=True, nargs=-1, type=str)
+@click.argument("dirlist", required=True, nargs=-1, type=str)
 @click.option(
     "--verbose", "-V", is_flag=True, help="print execution output on the terminal"
 )
-def setup(workdir_list, verbose):
+def setup(dirlist, verbose):
     """
     \b
     Run setup scripts in a directory
@@ -32,15 +32,15 @@ def setup(workdir_list, verbose):
     --------------
     JobWorkDir - Path to working directory of the job
     """
-    api.setup(workdir_list, verbose)
+    api.setup(dirlist, verbose)
 
 
 @jobrunner.command(name="submit")
-@click.argument("workdir_list", required=True, nargs=-1, type=str)
+@click.argument("dirlist", required=True, nargs=-1, type=str)
 @click.option(
     "--verbose", "-V", is_flag=True, help="print execution output on the terminal"
 )
-def submit(workdir_list, verbose):
+def submit(dirlist, verbose):
     """
     \b
     Submit a job from a directory
@@ -57,12 +57,12 @@ def submit(workdir_list, verbose):
     --------------
     JobWorkDir - Path to working directory of the job
     """
-    api.submit(workdir_list, verbose)
+    api.submit(dirlist, verbose)
 
 
 @jobrunner.command(name="clean")
-@click.argument("workdir_list", required=True, nargs=-1, type=str)
-def clean(workdir_list):
+@click.argument("dirlist", required=True, nargs=-1, type=str)
+def clean(dirlist):
     """
     \b
     Remove artifacts from a directory
@@ -74,35 +74,39 @@ def clean(workdir_list):
     working directory
     \b
     """
-    api.clean(workdir_list)
+    api.clean(dirlist)
 
 
 @jobrunner.command(name="archive")
 @click.option(
     "--tag", "-t", help="name of the archive", default=str(date.today()), type=str
 )
-@click.argument("workdir_list", required=True, nargs=-1, type=str)
-def archive(tag, workdir_list):
+@click.argument("dirlist", required=True, nargs=-1, type=str)
+def archive(tag, dirlist):
     """
     \b
     Create an archive along a directory tree
     \b
     """
-    api.archive(tag, workdir_list)
+    api.archive(tag, dirlist)
 
 
 @jobrunner.command(name="export")
 @click.option(
-    "--tag", "-t", help="name of the archive", default=str(date.today()), type=str
+    "--dest",
+    "-d",
+    help="path to destination archive",
+    default=str(date.today()),
+    type=str,
 )
-@click.argument("workdir_list", required=True, nargs=-1, type=str)
-def export(tag, workdir_list):
+@click.argument("dirlist", required=True, nargs=-1, type=str)
+def export(dest, dirlist):
     """
     \b
     Export directory tree to an external folder
     \b
     """
-    api.export(tag, workdir_list)
+    api.export(dest, dirlist)
 
 
 @jobrunner.command(name="diff")
