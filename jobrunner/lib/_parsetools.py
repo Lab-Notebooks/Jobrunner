@@ -48,6 +48,7 @@ def ParseJobConfig(basedir, workdir):
 
     # create an empty dictionary to set default values for configuration variables
     config = {
+        "instrument": "",
         "schedular": {
             "command": "",
             "options": [],
@@ -82,6 +83,22 @@ def ParseJobConfig(basedir, workdir):
 
         # loop over keys in work_dict, parse configuration and handle exceptions
         for key in work_dict:
+
+            if key == "instrument":
+                # some checks to enforce design consistency
+                if isinstance(work_dict[key], list):
+                    raise ValueError(f"[jobrunner] {key} cannot be a list")
+
+                # check if main dictionary already contains definitions for instrument
+                if config[key]:
+                    raise ValueError(
+                        f"[jobrunner] Found duplicates for {key} in directory tree"
+                    )
+
+                # set values if instrument not already set
+                config[key] = work_dict[key]
+
+                continue
 
             # loop over subkey and values
             for subkey, work_obj in work_dict[key].items():
@@ -178,7 +195,8 @@ def ParseJobConfig(basedir, workdir):
             )
 
     for key in config.keys():
-        config[key] = SimpleNamespace(**config[key])
+        if key != "instrument":
+            config[key] = SimpleNamespace(**config[key])
 
     config = SimpleNamespace(**config)
 

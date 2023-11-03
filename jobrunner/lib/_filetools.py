@@ -6,7 +6,8 @@ import subprocess
 from collections import OrderedDict
 
 # local imports
-from . import GetNodeList
+from jobrunner import lib
+from jobrunner import resources
 
 
 def CreateSetupFile(config):
@@ -83,19 +84,30 @@ def CreateInputFile(config):
             # write a comment to note how this file is being generated
             inputfile.write("# job.input generated from config.job.input files\n")
 
+            # DEVNOTE (11/03/2023): This replaces the legacy code below.
+            toml.dump(job_toml, inputfile)
+
+            # DEVNOTE (11/03/2023): This is loop below was written to sort and indent
+            #                       job.input file but was not useful with dealing with
+            #                       nested toml configurations. Commenting it and leaving
+            #                       it here for legacy.
+            #
             # Iterate over groups and start looping over items and populate the main dictionary
-            for group in job_toml.keys():
+            # for group in job_toml.keys():
+            #
+            #    # write group for toml file
+            #    inputfile.write(f"\n[{group}]\n")
+            #
+            #    for variable, value in OrderedDict(
+            #        sorted(job_toml[group].items())
+            #    ).items():
+            #        if type(value) == str:
+            #            inputfile.write(f'{" "*2}{variable} = "{value}"\n')
+            #        else:
+            #            inputfile.write(f'{" "*2}{variable} = {value}\n')
 
-                # write group for toml file
-                inputfile.write(f"\n[{group}]\n")
-
-                for variable, value in OrderedDict(
-                    sorted(job_toml[group].items())
-                ).items():
-                    if type(value) == str:
-                        inputfile.write(f'{" "*2}{variable} = "{value}"\n')
-                    else:
-                        inputfile.write(f'{" "*2}{variable} = {value}\n')
+        if config.instrument == "flashx":
+            resources.flashx.CreateParfile(config.job.workdir)
 
 
 def CreateTargetFile(config):
@@ -199,7 +211,7 @@ def RemoveNodeFiles(config, nodedir):
     nodedir : path to node directory
     """
     # get a list of directories along the node between basedir and workdir
-    node_list = GetNodeList(config.job.basedir, config.job.workdir)
+    node_list = lib.GetNodeList(config.job.basedir, config.job.workdir)
 
     # perform checks
     if nodedir not in node_list:

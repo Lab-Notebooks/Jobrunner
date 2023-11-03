@@ -3,7 +3,7 @@ import os
 import shutil
 
 # local imports
-from . import GetNodeList
+from jobrunner import lib
 
 
 def CreateArchive(config, archive_tag):
@@ -22,7 +22,7 @@ def CreateArchive(config, archive_tag):
     archive_tag = "jobnode.archive/" + archive_tag
 
     # get a list of directories along the node between basedir and workdir
-    node_list = GetNodeList(config.job.basedir, config.job.workdir)
+    node_list = lib.GetNodeList(config.job.basedir, config.job.workdir)
 
     for nodedir in node_list:
 
@@ -90,7 +90,7 @@ def ExportTree(config, archive_tag):
         return
 
     # get a list of directories along the node between basedir and workdir
-    node_list = GetNodeList(config.job.basedir, config.job.workdir)
+    node_list = lib.GetNodeList(config.job.basedir, config.job.workdir)
 
     for nodedir in node_list:
 
