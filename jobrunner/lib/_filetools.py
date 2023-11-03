@@ -108,8 +108,9 @@ def CreateInputFile(config):
             #        else:
             #            inputfile.write(f'{" "*2}{variable} = {value}\n')
 
-        if config.instrument == "flashx" and options.INSTRUMENTS == 1:
+        if config.instrument == "Flash-X" and options.INSTRUMENTS == 1:
             instruments.flashx.CreateParfile(config.job.workdir)
+            instruments.flashx.CreateHeater(config.job.workdir)
 
 
 def CreateTargetFile(config):

@@ -75,11 +75,11 @@ def submit(dirlist, verbose=False):
         config = lib.ParseJobConfig(basedir, workdir)
 
         # Build inputfile
-        lib.CreateInputFile(config)
         if config.job.input:
             print(f"\n{lib.Color.purple}INPUT: {lib.Color.end}")
             for value in config.job.input:
                 print(f'{" "*4}- {value.replace(basedir,"<ROOT>")}')
+        lib.CreateInputFile(config)
 
         # Build targetfile
         lib.CreateTargetFile(config)

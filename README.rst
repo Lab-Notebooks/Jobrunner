@@ -48,7 +48,7 @@ customization specific to instruments.
 
    pip install PyJobruner --user --install-option="--with-instruments"
 
-This allow for the use of the ``instrument:`` field in the Jobfile
+This allow for the use of the ``instrument`` field in the Jobfile
 
 There maybe situations where users may want to install Jobrunner in
 development mode $\\textemdash$ to design new features, debug, or
@@ -225,7 +225,7 @@ The ``Jobfile`` at this node assigns the use of ``environment.sh``,
 
    # file: Project/Jobfile
 
-   instrument: flashx
+   instrument: Flash-X
 
    # Scripts to include during jobrunner setup and submit commands
    job:
