@@ -7,7 +7,10 @@ from collections import OrderedDict
 
 # local imports
 from jobrunner import lib
-from jobrunner import resources
+from jobrunner import options
+
+if options.INSTRUMENTS == 1:
+    from jobrunner import instruments
 
 
 def CreateSetupFile(config):
@@ -77,7 +80,6 @@ def CreateInputFile(config):
                     job_toml[group].update(node_toml[group])
                 else:
                     job_toml[group] = node_toml[group]
-
         # start writing the job.input file
         with open(config.job.workdir + os.sep + "job.input", "w") as inputfile:
 
@@ -106,8 +108,8 @@ def CreateInputFile(config):
             #        else:
             #            inputfile.write(f'{" "*2}{variable} = {value}\n')
 
-        if config.instrument == "flashx":
-            resources.flashx.CreateParfile(config.job.workdir)
+        if config.instrument == "flashx" and options.INSTRUMENTS == 1:
+            instruments.flashx.CreateParfile(config.job.workdir)
 
 
 def CreateTargetFile(config):

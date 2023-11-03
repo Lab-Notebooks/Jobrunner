@@ -7,6 +7,8 @@ from types import SimpleNamespace
 import toml
 import yaml
 
+from jobrunner import options
+
 
 class __YamlLoader(yaml.SafeLoader):
     """
@@ -96,7 +98,13 @@ def ParseJobConfig(basedir, workdir):
                     )
 
                 # set values if instrument not already set
-                config[key] = work_dict[key]
+                if options.INSTRUMENTS == 1:
+                    config[key] = work_dict[key]
+
+                else:
+                    raise NotImplementedError(
+                        "[jobrunner] Not configured with instruments. Please reinstall with releveant options"
+                    )
 
                 continue
 

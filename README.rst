@@ -41,6 +41,15 @@ using,
    pip install --upgrade PyJobrunner
    pip uninstall PyJobRunner
 
+The following installation option can be used to allow for using
+customization specific to instruments.
+
+.. code::
+
+   pip install PyJobruner --user --install-option="--with-instruments"
+
+This allow for the use of the ``instrument:`` field in the Jobfile
+
 There maybe situations where users may want to install Jobrunner in
 development mode $\\textemdash$ to design new features, debug, or
 customize options/commands to their needs. This can be easily
@@ -49,7 +58,7 @@ directory and executing,
 
 .. code::
 
-   ./setup develop
+   ./setup develop --with-instruments
 
 Development mode enables testing of features/updates directly from the
 source code and is an effective method for debugging. Note that the
@@ -107,9 +116,10 @@ using Flash-X.
 
 Application of Jobrunner can be understood better with an example design
 of a computational experiment. Consider an experiment named `Project`
-representative of a publicly available dataset (https://github.com/Lab-Notebooks/Outflow-Forcing-BubbleML) for
-the work presented in (https://arxiv.org/pdf/2306.10174.pdf). The directory tree has the following
-structure,
+representative of a publicly available dataset
+(https://github.com/Lab-Notebooks/Outflow-Forcing-BubbleML) for the work
+presented in (https://arxiv.org/pdf/2306.10174.pdf). The directory tree
+has the following structure,
 
 .. code:: console
 
@@ -147,7 +157,7 @@ which is the instrument used to perform the experiments.
    #
    # Load Message Passing Interface (MPI) and
    # Hierarchical Data Format (HDF5) libraries
-   module load openmpi 
+   module load openmpi
    module load hdf5
 
 There are situations where requirements for Flash-X are not available as
@@ -167,9 +177,10 @@ these,
 
 Here the script ``setupAMReX.sh`` provides commands to get the source
 code for AMReX(https://github.com/AMReX-Codes/amrex) and build it for
-desired version and configuration. The script ``setupFlashX.sh`` sets 
-the version for Flash-X to perform the experiments. The ``Jobfile`` 
-indicates the use of these files by assigning them to specific Jobrunner commands,
+desired version and configuration. The script ``setupFlashX.sh`` sets
+the version for Flash-X to perform the experiments. The ``Jobfile``
+indicates the use of these files by assigning them to specific Jobrunner
+commands,
 
 .. code:: yaml
 
@@ -213,6 +224,8 @@ The ``Jobfile`` at this node assigns the use of ``environment.sh``,
 .. code:: yaml
 
    # file: Project/Jobfile
+
+   instrument: flashx
 
    # Scripts to include during jobrunner setup and submit commands
    job:
@@ -295,8 +308,8 @@ conditions. Each configuration contains its respective ``Jobfile``,
 Scientific instruments like Flash-X require input during execution which
 is supplied in the form of parfiles with a ``.par`` extension. The
 parfiles along a directory tree are combined to create a single input
-file when submitting the job. For example, invocation of 
-``jobrunner submit simulation/PoolBoiling/earth_gravity`` combines
+file when submitting the job. For example, invocation of ``jobrunner
+submit simulation/PoolBoiling/earth_gravity`` combines
 ``pool_boiling.par`` and ``earth_gravity.par`` that is used to run the
 target executable ``flashx`` using the combination of ``environment.sh``
 and ``flashRun.sh``.
@@ -356,12 +369,12 @@ archiving or cleaning by extending the ``Jobfile`` for each study,
 Setup
 =====
 
-``jobrunner setup <JobWorkDir>`` creates a ``job.setup`` file 
-using ``job.setup`` scripts defined in Jobfiles along the
-directory tree. Jobrunner executes each script serially by changing the
-working directory to the location of the script. A special environment
-variable ``JobWorkDir`` provides the value of ``<JobWorkDir>`` supplied
-during invocation of the command.
+``jobrunner setup <JobWorkDir>`` creates a ``job.setup`` file using
+``job.setup`` scripts defined in Jobfiles along the directory tree.
+Jobrunner executes each script serially by changing the working
+directory to the location of the script. A special environment variable
+``JobWorkDir`` provides the value of ``<JobWorkDir>`` supplied during
+invocation of the command.
 
 .. code:: console
 
@@ -376,10 +389,10 @@ during invocation of the command.
 Submit
 ======
 
-``jobrunner submit <JobWorkDir>`` creates a ``job.submit`` file 
-using ``job.submit`` scripts and ``schedular.options``
-values defined in Jobfiles along the directory tree.
-``schedular.command`` is used to dispatch the resulting script.
+``jobrunner submit <JobWorkDir>`` creates a ``job.submit`` file using
+``job.submit`` scripts and ``schedular.options`` values defined in
+Jobfiles along the directory tree. ``schedular.command`` is used to
+dispatch the resulting script.
 
 .. code:: console
 
@@ -405,7 +418,8 @@ values defined in Jobfiles along the directory tree.
            ]
 
 Along with the ``job.submit`` script, ``job.input`` and ``job.target``
-files are also created in ``<JobWorkDir>`` using values defined in Jobfiles.
+files are also created in ``<JobWorkDir>`` using values defined in
+Jobfiles.
 
 Archive
 =======
@@ -436,17 +450,19 @@ Functionality of Jobrunner is best understood through example projects
 which can be found in following repositories:
 
 -  `akashdhruv/Multiphase-Simulations
-   <https://github.com/akashdhruv/Multiphase-Simulations>`_: A
-   lab notebook to manage development of Flash-X
+   <https://github.com/akashdhruv/Multiphase-Simulations>`_: A lab
+   notebook to manage development of Flash-X
 
 -  `Lab-Notebooks/Outflow-Forcing-BubbleML
-   <https://github.com/Lab-Notebooks/Outflow-Forcing-BubbleML>`_: Reproducibility
-   capsule for research papers (https://arxiv.org/pdf/2306.10174.pdf) (https://arxiv.org/pdf/2307.14623.pdf)
+   <https://github.com/Lab-Notebooks/Outflow-Forcing-BubbleML>`_:
+   Reproducibility capsule for research papers
+   (https://arxiv.org/pdf/2306.10174.pdf)
+   (https://arxiv.org/pdf/2307.14623.pdf)
 
 -  `Lab-Notebooks/Flow-Boiling-3DL
-   <https://github.com/Lab-Notebooks/Flow-Boiling-3D>`_: Execution environment for
-   running three-dimensional flow boiling simulations on high performance computing
-   systems.
+   <https://github.com/Lab-Notebooks/Flow-Boiling-3D>`_: Execution
+   environment for running three-dimensional flow boiling simulations on
+   high performance computing systems.
 
 **********
  Citation

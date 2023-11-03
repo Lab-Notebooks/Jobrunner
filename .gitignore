@@ -3,5 +3,6 @@ __pycache__
 *.rst
 .sphinx/build/*
 .sphinx/source/media/*
+jobrunner/options.py
 !.sphinx/source/index.rst
 !./README.rst

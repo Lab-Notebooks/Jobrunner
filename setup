@@ -6,23 +6,48 @@ import subprocess
 import click
 
 
+def get_options(with_instruments):
+    options = ""
+
+    if with_instruments:
+        options = options + "--with-instruments "
+
+    return options
+
+
 @click.group(name="setup")
 def setup():
     """Setup toolkit for Jobrunner"""
 
 
 @setup.command(name="develop")
-def develop():
+@click.option(
+    "--with-instruments",
+    is_flag=True,
+    help="Install additional modules for instruments",
+)
+def develop(with_instruments):
     """Development mode"""
-    subprocess.run("python3 setup.py develop --user", shell=True, check=True)
-    subprocess.run("cp jobrunner/scripts/jobrunner $HOME/.local/bin", shell=True, check=True)
+    options = get_options(with_instruments)
+    subprocess.run(f"python3 setup.py develop --user {options}", shell=True, check=True)
+    subprocess.run(
+        "cp jobrunner/scripts/jobrunner $HOME/.local/bin", shell=True, check=True
+    )
+
 
 @setup.command(name="install")
-def install():
+@click.option(
+    "--with-instruments",
+    is_flag=True,
+    help="Install additional modules for instruments",
+)
+def install(with_instruments):
     """Installation command"""
+    options = get_options(with_instruments)
     subprocess.run("python3 setup.py develop --user", shell=True, check=True)
     subprocess.run("python3 setup.py build", shell=True, check=True)
-    subprocess.run("python3 setup.py install --user", shell=True, check=True)
+    subprocess.run(f"python3 setup.py install --user {options}", shell=True, check=True)
+
 
 @setup.command(name="publish")
 def publish():

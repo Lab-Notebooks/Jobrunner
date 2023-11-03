@@ -1,4 +1,6 @@
 include README.rst
 include NOTICE
 include LICENSE
+include bin/*
+include requirements/*
 include media/*
