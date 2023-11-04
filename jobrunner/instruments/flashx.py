@@ -18,6 +18,10 @@ def CreateParfile(workdir):
     # reserved environment variable for
     input_dict = toml.load(workdir + os.sep + "job.input")
 
+    # Create an empty list to track keys that are being
+    # entered into the parfile
+    key_list = []
+
     # Open flash.par in write mode in JobWorkDir, reserved environment
     # variable for working node along the directory tree.
     with open(workdir + os.sep + "flash.par", "w") as parfile:
@@ -49,6 +53,13 @@ def CreateParfile(workdir):
                         + "during Flash-X parfile generation"
                     )
 
+                elif key in key_list:
+                    raise ValueError(
+                        f'[jobrunner] parameter "{key}" associated with "{group}" is already '
+                        + "entered into the parfile using a different group. Please fix your toml "
+                        + "files along the directory tree."
+                    )
+
                 else:
                     # Deal with True/False values
                     if isinstance(value, bool):
@@ -61,6 +72,8 @@ def CreateParfile(workdir):
                     # Deal with rest
                     else:
                         parfile.write(f"{key} = {value}\n")
+
+                    key_list.append(key)
 
 
 def CreateHeater(workdir):

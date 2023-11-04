@@ -80,6 +80,7 @@ def CreateInputFile(config):
                     job_toml[group].update(node_toml[group])
                 else:
                     job_toml[group] = node_toml[group]
+
         # start writing the job.input file
         with open(config.job.workdir + os.sep + "job.input", "w") as inputfile:
 
