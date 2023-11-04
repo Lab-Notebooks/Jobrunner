@@ -93,6 +93,13 @@ def CreateHeater(workdir):
             # Increase heater counter to track number of heaters
             num_heaters = num_heaters + 1
 
+            # Raise error if the heater key does not match
+            # expected naming convention
+            if str(num_heaters).zfill(4) != key:
+                raise ValueError(
+                    f'[jobrunner] Heater "{key}" does not match "{str(num_heaters).zfill(4)}"'
+                )
+
             # Set filename and open the hdf5 file in write mode
             filename = (
                 workdir + os.sep + heater_dict["sim_heaterName"] + "_hdf5_htr_" + key
