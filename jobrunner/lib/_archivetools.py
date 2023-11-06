@@ -30,7 +30,9 @@ def CreateArchive(config, archive_tag):
 
         # check if archive directory already exists and handle exceptions
         if os.path.exists(nodedir + os.sep + archive_tag):
-            print(f"[jobrunner] {archive_tag} already exists in {nodedir} SKIPPING")
+            print(
+                f'{" "*4}[jobrunner] {archive_tag} already exists in {nodedir} SKIPPING'
+            )
 
         # create the archive directory and store results
         else:
@@ -86,7 +88,7 @@ def ExportTree(config, archive_tag):
     workdir = config.job.workdir.replace(config.job.basedir, "")
 
     if os.path.exists(archive_tag + os.sep + workdir):
-        print(f"[jobrunner] {workdir} already exists in {archive_tag} SKIPPING")
+        print(f'{" "*4}[jobrunner] {workdir} already exists in {archive_tag} SKIPPING')
         return
 
     # get a list of directories along the node between basedir and workdir

@@ -6,6 +6,27 @@ import numpy
 import h5py
 from scipy.stats import qmc
 
+UNIT_KEYWORDS = [
+    "Simulation",
+    "Grid",
+    "Heater",
+    "Driver",
+    "IncompNS",
+    "HeatAD",
+    "Multiphase",
+    "MoL",
+    "Hydro",
+    "Eos",
+    "SolidMechanics",
+    "ImBound",
+    "Gravity",
+    "RadTrans",
+    "Spacetime",
+    "TimeAdvance",
+    "IO",
+    "Particles",
+]
+
 
 def CreateParfile(workdir):
     """
@@ -36,8 +57,11 @@ def CreateParfile(workdir):
         # Loop over keys in the input dictionary to and start building the parfile
         for group in input_dict:
 
-            if not group.isupper():
-                raise ValueError(f'[jobrunner] Group "{group}" should be uppercase')
+            if group not in UNIT_KEYWORDS:
+                raise ValueError(
+                    f'[jobrunner] Group "{group}" does not belong to Flash-X unit keywords\n'
+                    + f"{UNIT_KEYWORDS}"
+                )
 
             # Indicate which key the following runtime parameters belong to
             parfile.write(f"\n# Runtime parameters for {group}\n")
@@ -86,13 +110,35 @@ def CreateHeater(workdir):
     # reserved environment variable for
     input_dict = toml.load(workdir + os.sep + "job.input")
 
-    # Return immediately if HEATER not present in input dictionary
-    if "HEATER" not in input_dict.keys():
+    # Loop over keys in the input dictionary and handle errors based
+    # on case sensitivity and group definitions. Set an exit flag to
+    # determin if we need to safely exit out of this subroutine
+    exit_flag = False
+    for group in input_dict:
+
+        # Check case sensitivity first and raise value error
+        if group.upper() == "HEATER" and group != "Heater":
+            raise ValueError(f'[jobrunner] Group "{group}" should be "Heater"')
+
+        # If group exactly matches heater then set exit flag to false
+        # and break the loop and continue with rest of the computations
+        elif group == "Heater":
+            exit_flag = False
+            break
+
+        # If above conditions do not meet then set exit flag to true
+        # and continue the loop to check for rest of the groups
+        else:
+            exit_flag = True
+            continue
+
+    # Return immediately if exit flag is true
+    if exit_flag:
         return
 
-    # If we are here then HEATER is present in the input dictionary
+    # If we are here then Heater is present in the input dictionary
     # and we can safely load the corresponding heater dictionary
-    heater_dict = input_dict["HEATER"]
+    heater_dict = input_dict["Heater"]
 
     # Set a counter to track how many heater files are being written
     # and then loop over items in heater dictionary
@@ -216,7 +262,7 @@ def CreateHeater(workdir):
             hfile.close()
 
             print(
-                f'{" "*4}[jobrunner] Wrote heater information to file {filename.replace(workdir + os.sep,"")}'
+                f'{" "*4}[jobrunner] Wrote Heater information to file {filename.replace(workdir + os.sep,"")}'
             )
 
     if num_heaters != heater_dict["sim_numHeaters"]:
