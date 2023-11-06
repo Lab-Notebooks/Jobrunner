@@ -7,10 +7,6 @@ from collections import OrderedDict
 
 # local imports
 from jobrunner import lib
-from jobrunner import options
-
-if options.INSTRUMENTS == 1:
-    from jobrunner import instruments
 
 
 def CreateSetupFile(config):
@@ -109,10 +105,6 @@ def CreateInputFile(config):
             #        else:
             #            inputfile.write(f'{" "*2}{variable} = {value}\n')
 
-        if config.instrument == "Flash-X" and options.INSTRUMENTS == 1:
-            instruments.flashx.CreateParfile(config.job.workdir)
-            instruments.flashx.CreateHeater(config.job.workdir)
-
 
 def CreateTargetFile(config):
     """
@@ -140,7 +132,7 @@ def CreateTargetFile(config):
         else:
 
             # else raise exception
-            raise ValueError(f"[jobrunner] {targetfile} not present in path")
+            raise FileNotFoundError(f"[jobrunner] {targetfile} not present in path")
 
 
 def CreateSubmitFile(config):
