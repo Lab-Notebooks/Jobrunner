@@ -14,7 +14,6 @@ UNIT_KEYWORDS = [
     "IncompNS",
     "HeatAD",
     "Multiphase",
-    "MoL",
     "Hydro",
     "Eos",
     "SolidMechanics",
