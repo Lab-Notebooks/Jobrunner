@@ -6,7 +6,9 @@ import numpy
 import h5py
 from scipy.stats import qmc
 
-PREFERRED_KEYWORDS = ["Heater"]
+PREFERRED_KEYWORDS = [
+    "Heater",
+]
 
 UNIT_KEYWORDS = [
     "Simulation",
@@ -168,12 +170,23 @@ def __CreateParfile(config, params_dict):
                     + f"{UNIT_KEYWORDS + PREFERED_KEYWORDS}"
                 )
 
-            # Indicate which key the following runtime parameters belong to
+            # Create a group section for runtime parameters that will follow
             parfile.write(f"\n# Runtime parameters for {group}\n")
 
             # Loop over values in the corresponding keys and start populating
             for key, value in input_dict[group].items():
 
+                # Check if value is a dictionary or not. Dictionaries represent
+                # more complex configuration which will not be handled.
+                if type(value) == dict:
+                    print(
+                        f'{" "*4}[jobrunner] {group}.{key} is a dictionary and will not be handled '
+                        + "during Flash-X parfile generation"
+                    )
+                    continue
+
+                # Check consistency between input and parameter dictionary and handle exceptions
+                ref_group = None
                 for param_group in params_dict:
                     for param_key in params_dict[param_group]:
                         if key == param_key:
@@ -184,14 +197,6 @@ def __CreateParfile(config, params_dict):
                         f'[jobrunner] Cannot match "{group}.{key}" to setup_params'
                     )
 
-                # Check if value is a dictionary or not. Dictionaries represent
-                # more complex configuration which will not be handled.
-                if type(value) == dict:
-                    print(
-                        f'{" "*4}[jobrunner] {group}.{key} is a dictionary and will not be handled '
-                        + "during Flash-X parfile generation"
-                    )
-
                 elif group != ref_group:
                     raise ValueError(
                         f'[jobrunner] parameter "{key}" associated with "{group}" belongs '
@@ -199,6 +204,7 @@ def __CreateParfile(config, params_dict):
                     )
 
                 else:
+
                     # Deal with True/False values
                     if isinstance(value, bool):
                         parfile.write(f"{key} = .{str(value).upper()}.\n")
