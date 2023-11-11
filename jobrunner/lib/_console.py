@@ -40,7 +40,7 @@ def SchedularProcess(basedir, workdir, command, script):
     )
 
 
-def BashProcess(basedir, workdir, script, verbose=False):
+def BashProcess(basedir, workdir, script, verbose=False, exit_on_failure=False):
     """
     Run a bash process based on input configuration
     """
@@ -80,7 +80,11 @@ def BashProcess(basedir, workdir, script, verbose=False):
             with open("job.output", "r") as output:
                 print("".join(output.readlines()[-8:]))
 
-        print(f"{lib.Color.red}FAILURE {lib.Color.end}")
+        if exit_on_failure:
+            raise ValueError(f"{lib.Color.red}FAILURE {lib.Color.end}")
+        else:
+            print(f"{lib.Color.red}FAILURE {lib.Color.end}")
+
     else:
         print(f"{lib.Color.green}SUCCESS {lib.Color.end}")
 

@@ -15,7 +15,8 @@ from jobrunner import api
 @click.option(
     "--verbose", "-V", is_flag=True, help="print execution output on the terminal"
 )
-def setup(dirlist, verbose):
+@click.option("--exit-on-failure", "-E", is_flag=True, help="exit if failure occurs")
+def setup(dirlist, verbose, exit_on_failure):
     """
     \b
     Run setup scripts in a directory
@@ -32,7 +33,7 @@ def setup(dirlist, verbose):
     --------------
     JobWorkDir - Path to working directory of the job
     """
-    api.setup(dirlist, verbose)
+    api.setup(dirlist, verbose, exit_on_failure)
 
 
 @jobrunner.command(name="submit")
@@ -40,7 +41,8 @@ def setup(dirlist, verbose):
 @click.option(
     "--verbose", "-V", is_flag=True, help="print execution output on the terminal"
 )
-def submit(dirlist, verbose):
+@click.option("--exit-on-failure", "-E", is_flag=True, help="exit if failure occurs")
+def submit(dirlist, verbose, exit_on_failure):
     """
     \b
     Submit a job from a directory
@@ -57,7 +59,7 @@ def submit(dirlist, verbose):
     --------------
     JobWorkDir - Path to working directory of the job
     """
-    api.submit(dirlist, verbose)
+    api.submit(dirlist, verbose, exit_on_failure)
 
 
 @jobrunner.command(name="clean")

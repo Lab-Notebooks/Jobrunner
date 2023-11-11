@@ -11,7 +11,7 @@ if options.INSTRUMENTS == 1:
     from jobrunner import instruments
 
 
-def setup(dirlist, verbose=False):
+def setup(dirlist, verbose=False, exit_on_failure=False):
     """
     Run setup scripts in a directory
     """
@@ -44,7 +44,7 @@ def setup(dirlist, verbose=False):
                 print(f'{" "*4}- {value.replace(basedir,"<ROOT>")}')
 
         # run a bash process
-        lib.BashProcess(basedir, workdir, "job.setup", verbose)
+        lib.BashProcess(basedir, workdir, "job.setup", verbose, exit_on_failure)
 
         # set separator value
         separator = True
@@ -53,7 +53,7 @@ def setup(dirlist, verbose=False):
         os.chdir(basedir)
 
 
-def submit(dirlist, verbose=False):
+def submit(dirlist, verbose=False, exit_on_failure=False):
     """
     Submit a job from a directory
     """
@@ -116,7 +116,7 @@ def submit(dirlist, verbose=False):
 
         # Submit job
         if config.schedular.command == "bash":
-            lib.BashProcess(basedir, workdir, "job.submit", verbose)
+            lib.BashProcess(basedir, workdir, "job.submit", verbose, exit_on_failure)
 
         else:
             lib.SchedularProcess(
