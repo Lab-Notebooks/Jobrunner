@@ -468,9 +468,11 @@ which can be found in following repositories:
  Citation
 **********
 
+Source code citation
+
 .. code::
 
-   @software{akash_dhruv_2022_7255620,
+  @software{akash_dhruv_2022_7255620,
       author       = {Akash Dhruv},
       title        = {akashdhruv/Jobrunner: October 2022},
       month        = oct,
@@ -480,6 +482,21 @@ which can be found in following repositories:
       doi          = {10.5281/zenodo.7255620},
       url          = {https://doi.org/10.5281/zenodo.7255620}
    }
+
+Paper citation
+
+.. code::
+
+  @article{dhruv_dubey_2023,
+    author  = {Dhruv, Akash and Dubey, Anshu},
+    journal = {Computing in Science & Engineering}, 
+    title   = {Managing Software Provenance to Enhance Reproducibility in Computational Research}, 
+    year    = {2023},
+    volume  = {25},
+    number  = {3},
+    pages   = {60-65},
+    doi     = {10.1109/MCSE.2023.3314288}
+  }
 
 ******************
  Acknowledgements
