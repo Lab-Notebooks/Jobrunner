@@ -11,6 +11,8 @@ PREFERRED_KEYWORDS = [
 ]
 
 UNIT_KEYWORDS = [
+    "Inlet",
+    "Outlet",
     "Simulation",
     "Grid",
     "Driver",
@@ -32,6 +34,7 @@ UNIT_KEYWORDS = [
     "Timers",
     "Profiler",
     "Burn",
+    "Deleptonize",
 ]
 
 
