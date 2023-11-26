@@ -46,14 +46,14 @@ def Run(config):
     """
 
     # Get the dictionary from Flash-X setup_params file to enforce TOML file design
-    params_dict = __GetInputDict(config)
+    params_dict = __GetParamsDict(config)
 
     # Now create input files use params dictionary to enforce design of TOML files
     __CreateParfile(config, params_dict)
     __CreateHeater(config, params_dict)
 
 
-def __GetInputDict(config):
+def __GetParamsDict(config):
     """
     Build a dictionary to map runtime parameters to keywords for units and verify that
     input dictionary follows the required rules. This is done to enforce constraints on
@@ -81,7 +81,6 @@ def __GetInputDict(config):
     # Loop over the list of lines and start applying logic to find indices
     # of lines that store runtime parameters for individual units
     for index, line in enumerate(params):
-
         # Skip the first index
         if index == 0:
             continue
@@ -96,13 +95,15 @@ def __GetInputDict(config):
             if line[0] == "\n" and params[index - 1][0] != "\n":
                 index_range[index_counter, 1] = index - 1
 
+        if index == len(params) - 1:
+            index_range[index_counter, 1] = index
+
     # Now create an empty dictionary for parameters. This dictionary will be compared to
     # input dictionary to enforce design rules.
     params_dict = {}
 
     # Loop over number of units identified above. We will deal with each unit separately
-    for unit_index in range(index_counter):
-
+    for unit_index in range(index_counter + 1):
         # Empty group key to associate the unit with (this will be populated below), and
         # relative path to parsed from the list of lines in params file
         group_key = []
@@ -156,7 +157,6 @@ def __CreateParfile(config, params_dict):
     # Open flash.par in write mode in JobWorkDir, reserved environment
     # variable for working node along the directory tree.
     with open(config.job.workdir + os.sep + "flash.par", "w") as parfile:
-
         # Add a comment to the parfile to indicate that this was generated
         # using a tool. Add warning to note that this can be replaced and should
         # be copied to a new location or renamed before making changes.
@@ -166,11 +166,10 @@ def __CreateParfile(config, params_dict):
 
         # Loop over keys in the input dictionary to and start building the parfile
         for group in input_dict:
-
             if group not in UNIT_KEYWORDS + PREFERRED_KEYWORDS:
                 raise ValueError(
                     f'[jobrunner] Group "{group}" does not belong to Flash-X unit keywords\n'
-                    + f"{UNIT_KEYWORDS + PREFERED_KEYWORDS}"
+                    + f"{UNIT_KEYWORDS + PREFERRED_KEYWORDS}"
                 )
 
             # Create a group section for runtime parameters that will follow
@@ -178,7 +177,6 @@ def __CreateParfile(config, params_dict):
 
             # Loop over values in the corresponding keys and start populating
             for key, value in input_dict[group].items():
-
                 # Check if value is a dictionary or not. Dictionaries represent
                 # more complex configuration which will not be handled.
                 if type(value) == dict:
@@ -207,7 +205,6 @@ def __CreateParfile(config, params_dict):
                     )
 
                 else:
-
                     # Deal with True/False values
                     if isinstance(value, bool):
                         parfile.write(f"{key} = .{str(value).upper()}.\n")
@@ -236,7 +233,6 @@ def __CreateHeater(config, params_dict):
     # determin if we need to safely exit out of this subroutine
     exit_flag = False
     for group in input_dict:
-
         # Check case sensitivity first and raise value error
         if group.upper() == "HEATER" and group != "Heater":
             raise ValueError(f'[jobrunner] Group "{group}" should be "Heater"')
@@ -265,11 +261,9 @@ def __CreateHeater(config, params_dict):
     # and then loop over items in heater dictionary
     num_heaters = 0
     for key, info in heater_dict.items():
-
         # if info is of type dictionary we have hit a heater configuration
         # that needs to be written to a file. Start implementing that logic
         if type(info) == dict:
-
             # Increase heater counter to track number of heaters
             num_heaters = num_heaters + 1
 
