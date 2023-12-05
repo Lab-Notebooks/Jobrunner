@@ -468,23 +468,6 @@ which can be found in following repositories:
  Citation
 **********
 
-Source code citation
-
-.. code::
-
-  @software{akash_dhruv_2022_7255620,
-      author       = {Akash Dhruv},
-      title        = {akashdhruv/Jobrunner: October 2022},
-      month        = oct,
-      year         = 2022,
-      publisher    = {Zenodo},
-      version      = {22.10},
-      doi          = {10.5281/zenodo.7255620},
-      url          = {https://doi.org/10.5281/zenodo.7255620}
-   }
-
-Paper citation
-
 .. code::
 
   @article{dhruv_dubey_2023,
