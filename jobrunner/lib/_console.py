@@ -49,18 +49,28 @@ def BashProcess(basedir, workdir, script, verbose=False, exit_on_failure=False):
     )
 
     if verbose:
-        process = subprocess.Popen(
-            f"bash {script}".split(),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT,
-            text=True,
-        )
 
-        with open("job.output", "w") as output:
-            while process.poll() == None:
-                line = process.stdout.readline()
-                print(line.strip("\n"))
-                output.write(line)
+        # DEVNOTE (01/29/2024): Replacing the Popen command with run command
+        #                       to allow for interactive shell in verbose mode
+        #
+
+        # DEVNOTE (01/29/2024): interactive shell
+        process = subprocess.run(f"bash {script}".split())
+
+        # DEVNOTE (01/29/2024): non-interactive process (needs fixing)
+        #
+        # process = subprocess.Popen(
+        #    f"bash {script}".split(),
+        #    stdout=subprocess.PIPE,
+        #    stderr=subprocess.STDOUT,
+        #    text=True,
+        # )
+
+        # with open("job.output", "w") as output:
+        #    while process.poll() == None:
+        #        line = process.stdout.readline()
+        #        print(line.strip("\n"))
+        #        output.write(line)
 
     else:
         with open("job.output", "w") as output:
