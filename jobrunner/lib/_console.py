@@ -39,6 +39,8 @@ def SchedularProcess(basedir, workdir, command, script):
         check=True,
     )
 
+    return process
+
 
 def BashProcess(basedir, workdir, script, verbose=False, exit_on_failure=False):
     """
@@ -73,11 +75,11 @@ def BashProcess(basedir, workdir, script, verbose=False, exit_on_failure=False):
         #        output.write(line)
 
     else:
-        with open("job.output", "w") as output:
+        with open("job.output", "w") as output, open("job.error", "w") as error:
             process = subprocess.Popen(
                 f"bash {script}".split(),
                 stdout=output,
-                stderr=subprocess.STDOUT,
+                stderr=error,
                 text=True,
             )
 
@@ -87,8 +89,8 @@ def BashProcess(basedir, workdir, script, verbose=False, exit_on_failure=False):
 
     if process.returncode != 0:
         if not verbose:
-            with open("job.output", "r") as output:
-                print("".join(output.readlines()[-8:]))
+            with open("job.error", "r") as error:
+                print("".join(error.readlines()[-8:]))
 
         if exit_on_failure:
             raise ValueError(f"{lib.Color.red}FAILURE {lib.Color.end}")
@@ -101,3 +103,5 @@ def BashProcess(basedir, workdir, script, verbose=False, exit_on_failure=False):
     print(
         f'\n{lib.Color.purple}OUTPUT:{lib.Color.end} {workdir.replace(basedir,"<ROOT>")}/job.output'
     )
+
+    return process

@@ -232,6 +232,7 @@ def RemoveNodeFiles(config, nodedir):
         nodedir + os.sep + "job.submit",
         nodedir + os.sep + "job.target",
         nodedir + os.sep + "job.output",
+        nodedir + os.sep + "job.error",
     ]
 
     # loop over list of files in nodedir and append to

@@ -21,6 +21,9 @@ def setup(dirlist, verbose=False, exit_on_failure=False):
     # set variable to determine console separator
     separator = False
 
+    # create an empty list for output
+    output = []
+
     # loop over dirlist
     for workdir in dirlist:
 
@@ -51,13 +54,20 @@ def setup(dirlist, verbose=False, exit_on_failure=False):
                 print(f'{" "*4}- {value.replace(basedir,"<ROOT>")}')
 
         # run a bash process
-        lib.BashProcess(basedir, workdir, "job.setup", verbose, exit_on_failure)
+        process = lib.BashProcess(
+            basedir, workdir, "job.setup", verbose, exit_on_failure
+        )
+
+        # append process to output
+        output.append(process)
 
         # set separator value
         separator = True
 
         # Return to base directory
         os.chdir(basedir)
+
+    return output
 
 
 def submit(dirlist, verbose=False, exit_on_failure=False):
@@ -69,6 +79,9 @@ def submit(dirlist, verbose=False, exit_on_failure=False):
 
     # set variable to determine console separator
     separator = False
+
+    # create an empty list for output
+    output = []
 
     # loop over dirlist
     for workdir in dirlist:
@@ -116,18 +129,25 @@ def submit(dirlist, verbose=False, exit_on_failure=False):
 
         # Submit job
         if config.schedular.command == "bash":
-            lib.BashProcess(basedir, workdir, "job.submit", verbose, exit_on_failure)
+            process = lib.BashProcess(
+                basedir, workdir, "job.submit", verbose, exit_on_failure
+            )
 
         else:
-            lib.SchedularProcess(
+            process = lib.SchedularProcess(
                 basedir, workdir, config.schedular.command, "job.submit"
             )
+
+        # append process to output
+        output.append(process)
 
         # set separator value
         separator = True
 
         # Return to base directory
         os.chdir(basedir)
+
+    return output
 
 
 def clean(dirlist):
