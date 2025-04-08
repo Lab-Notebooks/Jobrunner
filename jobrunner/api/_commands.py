@@ -112,6 +112,13 @@ def submit(dirlist, verbose=False, exit_on_failure=False):
         for value in config.job.submit:
             print(f'{" "*4}- {value.replace(basedir,"<ROOT>")}')
 
+        # Build inputfile
+        lib.CreateInputFile(config)
+        if config.job.input:
+            print(f"\n{lib.Color.purple}INPUT: {lib.Color.end}")
+            for value in config.job.input:
+                print(f'{" "*4}- {value.replace(basedir,"<ROOT>")}')
+
         # Instrument specific work
         if options.INSTRUMENTS == 1 and config.instrument:
             if config.instrument in instruments.Run:
