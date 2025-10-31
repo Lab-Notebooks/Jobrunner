@@ -1,8 +1,12 @@
 """Command line interface for Jobrunner"""
 
 # Standard libraries
+import sys
 import subprocess
-import pkg_resources
+if sys.version_info < (3, 8):
+    import pkg_resources
+else:
+    from importlib import metadata
 
 # Feature libraries
 import click
@@ -24,4 +28,8 @@ def jobrunner(ctx, version):
         )
 
     if version:
-        click.echo(pkg_resources.require("PyJobrunner")[0].version)
+        if sys.version_info < (3, 8):
+            jobrunner_version = pkg_resources.require("PyJobrunner")[0].version
+        else:
+            jobrunner_version = metadata.version("PyJobrunner")
+        click.echo(jobrunner_version)
