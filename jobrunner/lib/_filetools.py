@@ -222,7 +222,7 @@ def RemoveNodeFiles(config, nodedir):
     # get the list of files in nodedir
     nodefile_list = [
         os.path.abspath(nodefile)
-        for nodefile in next(os.walk("."), (None, None, []))[2]
+        for nodefile in os.listdir(".")  # next(os.walk("."), (None, None, []))[2]
     ]
 
     # create a reference file list to test which nodefile should be archived
