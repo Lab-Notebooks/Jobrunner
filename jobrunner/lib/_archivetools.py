@@ -41,10 +41,7 @@ def CreateArchive(config, archive_tag):
             archive_list = []
 
             # get the list of files in nodedir
-            nodefile_list = [
-                os.path.abspath(nodefile)
-                for nodefile in next(os.walk("."), (None, None, []))[2]
-            ]
+            nodefile_list = [os.path.abspath(nodefile) for nodefile in os.listdir(".")]
 
             # create a reference file list to test which nodefile should be archived
             ref_list = config.job.archive + [
