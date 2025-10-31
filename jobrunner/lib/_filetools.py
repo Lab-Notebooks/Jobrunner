@@ -245,7 +245,10 @@ def RemoveNodeFiles(config, nodedir):
 
         # loop over archive_list and archive contents
         for filename in remove_list:
-            os.remove(filename)
+            if os.path.isfile(filename):
+                os.remove(filename)
+            elif os.path.isdir(filename):
+                shutil.rmtree(filename)
 
     # return back to working directory
     os.chdir(config.job.workdir)
