@@ -63,7 +63,11 @@ def CreateArchive(config, archive_tag):
 
                 # loop over archive_list and archive contents
                 for filename in archive_list:
-                    shutil.move(filename, nodedir + os.sep + archive_tag)
+                    if os.path.exists(filename + os.sep + "Jobfile"):
+                        print(f'{" "*4}[jobrunner] Cannot archive {filename} SKIPPING')
+                        continue
+                    else:
+                        shutil.move(filename, nodedir + os.sep + archive_tag)
 
     # return back to working directory
     os.chdir(config.job.workdir)

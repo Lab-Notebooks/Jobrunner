@@ -248,7 +248,11 @@ def RemoveNodeFiles(config, nodedir):
             if os.path.isfile(filename):
                 os.remove(filename)
             elif os.path.isdir(filename):
-                shutil.rmtree(filename)
+                if os.path.exists(filename + os.sep + "Jobfile"):
+                    print(f'{" "*4}[jobrunner] Cannot remove node {filename} SKIPPING')
+                    continue
+                else:
+                    shutil.rmtree(filename)
 
     # return back to working directory
     os.chdir(config.job.workdir)

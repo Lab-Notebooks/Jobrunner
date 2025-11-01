@@ -2,6 +2,7 @@
 
 # Standard libraries
 from datetime import date
+import subprocess
 
 # Feature libraries
 import click
