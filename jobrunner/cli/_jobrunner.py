@@ -22,7 +22,7 @@ def jobrunner(ctx, version):
     """
     if ctx.invoked_subcommand is None and not version:
         subprocess.run(
-            "export PATH=~/.local/bin:/usr/local/bin:$PATH && jobrunner --help",
+            "jobrunner --help",
             shell=True,
             check=True,
         )
