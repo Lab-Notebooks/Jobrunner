@@ -2,13 +2,13 @@
 
 # Standard libraries
 from datetime import date
-import subprocess
 
 # Feature libraries
 import click
 
 from jobrunner.cli import jobrunner
 from jobrunner import api
+from jobrunner.lib._logtools import logdiff
 
 
 @jobrunner.command(name="setup")
@@ -119,8 +119,4 @@ def diff(file1, file2):
     """
     Run diff on two files
     """
-    subprocess.run(
-        f"export PATH=~/.local/bin:/usr/local/bin:$PATH && logdiff {file1} {file2}",
-        shell=True,
-        check=True,
-    )
+    logdiff(file1, file2)

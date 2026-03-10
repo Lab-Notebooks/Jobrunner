@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "PyJobRunner"
+dynamic = ["version"]
+description = "Job runner for scientific computing workloads"
+authors = [{ name = "Akash Dhruv" }]
+license = { text = "Apache Software License" }
+readme = { file = "README.rst", content-type = "text/x-rst" }
+requires-python = ">=3.6"
+dependencies = ["click", "toml", "pyyaml", "alive-progress==3.1.4"]
+
+[project.scripts]
+jobrunner = "jobrunner.cli:jobrunner"
+
+[tool.setuptools.dynamic]
+version = { attr = "jobrunner.__meta__.__version__" }
+
+[tool.setuptools.packages.find]
+where = ["."]
+

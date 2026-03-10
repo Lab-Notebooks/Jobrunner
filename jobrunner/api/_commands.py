@@ -5,10 +5,6 @@ import os
 from datetime import date
 
 from jobrunner import lib
-from jobrunner import options
-
-if options.INSTRUMENTS == 1:
-    from jobrunner import instruments
 
 
 def setup(dirlist, verbose=False, exit_on_failure=False):
@@ -118,21 +114,6 @@ def submit(dirlist, verbose=False, exit_on_failure=False):
             print(f"\n{lib.Color.purple}INPUT: {lib.Color.end}")
             for value in config.job.input:
                 print(f'{" "*4}- {value.replace(basedir,"<ROOT>")}')
-
-        # Instrument specific work
-        if options.INSTRUMENTS == 1 and config.instrument:
-            if config.instrument in instruments.Run:
-                print(
-                    f"\n{lib.Color.purple}INSTRUMENT:{lib.Color.end} "
-                    + f"{config.instrument}"
-                )
-                instruments.Run[config.instrument](config)
-
-            else:
-                raise ValueError(
-                    f'[jobrunner] Instrument "{config.instrument}" not present in '
-                    + f"available instruments {list(instruments.Run.keys())}"
-                )
 
         # Submit job
         if config.schedular.command == "bash":
