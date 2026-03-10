@@ -22,55 +22,22 @@ Read our paper here: https://arxiv.org/abs/2308.15637
  Installation
 **************
 
-Stable releases of Jobrunner are hosted on Python Package Index website
-(https://pypi.org/project/PyJobRunner/) and can be installed by
-executing,
+Jobrunner can be installed directly from the ``development``
+branch on GitHub by executing,
 
 .. code::
 
-   pip install PyJobrunner
+   pip3 install git+https://github.com/Lab-Notebooks/Jobrunner.git
 
-Note that ``pip`` should point to ``python3+`` installation package
-``pip3``.
-
-Upgrading and uninstallation is easily managed through this interface
-using,
+For development mode $\\textemdash$ to design new features, debug, or
+customize options/commands $\\textemdash$ clone the repository and execute,
 
 .. code::
 
-   pip install --upgrade PyJobrunner
-   pip uninstall PyJobRunner
-
-The following installation option can be used to allow for using
-customization specific to instruments.
-
-.. code::
-
-   pip install PyJobruner --user --install-option="--with-instruments"
-
-This allow for the use of the ``instrument`` field in the Jobfile
-
-There maybe situations where users may want to install Jobrunner in
-development mode $\\textemdash$ to design new features, debug, or
-customize options/commands to their needs. This can be easily
-accomplished using the ``setup`` script located in the project root
-directory and executing,
-
-.. code::
-
-   ./setup develop --with-instruments
+   pip install -e .
 
 Development mode enables testing of features/updates directly from the
-source code and is an effective method for debugging. Note that the
-``setup`` script relies on ``click``, which can be installed using,
-
-.. code::
-
-   pip install click
-
-The ``jobrunner`` script is installed in ``$HOME/.local/bin`` directory
-and therfore the environment variable, ``PATH``, should be updated to
-include this location for command line use.
+source code and is an effective method for debugging.
 
 **************
  Dependencies
