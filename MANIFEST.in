@@ -1,6 +1,7 @@
 include README.rst
 include NOTICE
 include LICENSE
-include bin/*
-include requirements/*
+include pyproject.toml
 include media/*
+recursive-include jobrunner *.py
+recursive-include tests *.py
