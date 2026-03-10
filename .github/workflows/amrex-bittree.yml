@@ -16,7 +16,7 @@ jobs:
     name: "setup-submit" 
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2      
+    - uses: actions/checkout@v4
     - name: Install Dependencies
       run: |
           sudo apt-get update -y && apt-get install -y apt-utils && apt-get upgrade -y
@@ -25,7 +25,7 @@ jobs:
           sudo apt-get install -y python-is-python3
     - name: Install Jobrunner
       run: |
-          python3 setup.py develop --user
+          pip install -e .
           export PATH=$PATH:$HOME/.local/bin
     - name: Clone External Repo
       run: |
